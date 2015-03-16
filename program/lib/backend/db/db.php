@@ -86,12 +86,12 @@ class DB {
 	/**
 	 * Constructor SQL
 	 * 
-	 * @param array $db configuration vers la base de données
+	 * @param array $db configuration pdo vers la base de données
      * @access public
 	 */
 	public function __construct($db) {
 		Log::l(Log::DEBUG, "DB->__construct()");
-		$this->cnxstring = "pgsql:dbname=$db[database];host=$db[hostspec];port=$db[port]";
+		$this->cnxstring = $db['connexion'];
 		$this->username = $db['username'];
 		$this->password = $db['password'];
 		$this->persistent = $db['persistent'];

@@ -203,7 +203,7 @@ class Show {
         	} else {
 	    		o::set_env("error", "Error while saving the event in your calendar");
 	    	}
-	    } elseif (\Program\Data\Poll::get_current_poll()->locked === 0 
+	    } elseif (\Program\Data\Poll::get_current_poll()->locked == 0
 	            && (isset($username) && $username != ""
 	                || isset($hidden_modify))) {
 	        $csrf_token = trim(strtolower(Request::getInputValue("csrf_token", POLL_INPUT_POST)));
@@ -418,7 +418,7 @@ class Show {
     	        foreach (self::$responses as $response) {
     	            if (\Program\Data\User::isset_current_user() 
     	                    && $response->user_id == \Program\Data\User::get_current_user()->user_id
-    	                    && \Program\Data\Poll::get_current_poll()->locked === 0) {
+    	                    && \Program\Data\Poll::get_current_poll()->locked == 0) {
     	                // Réponse de l'utilisateur courant authentifié, si le sondage n'est pas locké
     	                self::view_current_user_unlock_response($response);
     	                break;
@@ -427,7 +427,7 @@ class Show {
         	                && Session::is_set("user_noauth_poll_id")
     	                    && Session::get("user_noauth_id") == $response->user_id
         	                && Session::get("user_noauth_poll_id") == \Program\Data\Poll::get_current_poll()->poll_id
-    	                    && \Program\Data\Poll::get_current_poll()->locked === 0) {
+    	                    && \Program\Data\Poll::get_current_poll()->locked == 0) {
     	                // Réponse de l'utilisateur courant non authentifié, si le sondage n'est pas locké
     	                self::view_unauthenticate_current_user_unlock_response($response);
     	                break;             
@@ -458,7 +458,7 @@ class Show {
     	    }
 	        // Si l'utilisateur n'a pas répondu
 	        if (!self::$user_responded
-	                && \Program\Data\Poll::get_current_poll()->locked === 0
+	                && \Program\Data\Poll::get_current_poll()->locked == 0
 	                && o::get_env("action") != ACT_MODIFY_ALL
 	                && (!\Program\Data\Poll::get_current_poll()->auth_only
                             || \Program\Data\User::isset_current_user())) {
@@ -468,7 +468,7 @@ class Show {
 	        // Ajout du nombre de réponses par proposition
 	        self::view_number_responses();
 	        // Ajout des boutons de validation d'une date si le sondage est vérouillé qu'on est organisateur
-	        if (\Program\Data\Poll::get_current_poll()->locked === 1) {
+	        if (\Program\Data\Poll::get_current_poll()->locked == 1) {
 	            // Ajout des boutons de validation des propositions
 	            self::view_validation_buttons();	            
 	        }
@@ -478,7 +478,7 @@ class Show {
     	        $html = \Program\Lib\HTML\html::tag("form", array("id" => "proposals_form", "class" => "pure-form pure-form-aligned", "action" => o::url(null, null, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid), false)."#poll", "method" => "post"),
     	                    \Program\Lib\HTML\html::div(array("id" => "proposals_div"),self::$table->show()) .
     	                    $hidden_field_csrf_token->show() .
-    	                    (o::get_env("mobile") && \Program\Data\Poll::get_current_poll()->locked === 0 && (!\Program\Data\Poll::get_current_poll()->auth_only || \Program\Data\User::isset_current_user())? \Program\Lib\HTML\html::tag("input", array("class" => "pure-button pure-button-save", "type" => "submit", "value" => Localization::g("Save"))) . " " . \Program\Lib\HTML\html::a(array("href" => o::url(null, ACT_DELETE_RESPONSE, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid, "t" => Session::getCSRFToken()), false), "id" => "button_delete_response", "class" => "pure-button pure-button-save customtooltip_bottom", "title" => Localization::g("Clic to delete your response", false)), Localization::g("delete")) : "")
+    	                    (o::get_env("mobile") && \Program\Data\Poll::get_current_poll()->locked == 0 && (!\Program\Data\Poll::get_current_poll()->auth_only || \Program\Data\User::isset_current_user())? \Program\Lib\HTML\html::tag("input", array("class" => "pure-button pure-button-save", "type" => "submit", "value" => Localization::g("Save"))) . " " . \Program\Lib\HTML\html::a(array("href" => o::url(null, ACT_DELETE_RESPONSE, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid, "t" => Session::getCSRFToken()), false), "id" => "button_delete_response", "class" => "pure-button pure-button-save customtooltip_bottom", "title" => Localization::g("Clic to delete your response", false)), Localization::g("delete")) : "")
     	                );
 	        } else {
 	            $hidden_field_modify_all = new \Program\Lib\HTML\html_hiddenfield(array("name" => "hidden_modify_all", "value" => \Program\Data\Poll::get_current_poll()->poll_id));
@@ -704,7 +704,7 @@ class Show {
 	        foreach (self::$proposals as $prop_key => $prop_value) {
 	            $class = "";
 	            if (isset(self::$validate_proposals[$prop_value])
-	                   && \Program\Data\Poll::get_current_poll()->locked === 1) {
+	                   && \Program\Data\Poll::get_current_poll()->locked == 1) {
 	                $class = "validate_prop_header";
 	            }
 	            $values = explode(' - ', $prop_value);
@@ -855,7 +855,7 @@ class Show {
 	    foreach (self::$proposals as $prop_key => $prop_value) {
 	        $class = "";
 	        if (isset(self::$validate_proposals[$prop_value])
-                   && \Program\Data\Poll::get_current_poll()->locked === 1) {
+                   && \Program\Data\Poll::get_current_poll()->locked == 1) {
 	            $class = "validate_prop_td";
 	        }
 	        if (isset($resp[$prop_value])
@@ -999,7 +999,7 @@ class Show {
 	            self::$nb_resp[$prop_value] = 0;
 	        $class = "";
 	        if (isset(self::$validate_proposals[$prop_value])
-                   && \Program\Data\Poll::get_current_poll()->locked === 1) {
+                   && \Program\Data\Poll::get_current_poll()->locked == 1) {
 	            $class .= "validate_prop_td ";
 	        }
 	        if (self::$max == self::$nb_resp[$prop_value]

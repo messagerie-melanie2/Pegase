@@ -22,6 +22,9 @@ h1 {
 	font-weight: bold;
 	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
+h1 span {
+    color: #28aeff;
+}
 #prevcontent {
   background-color: #e6e6e6;
   margin: 0px 20px 20px 20px;
@@ -43,6 +46,15 @@ h1 {
   width: 600px;
   margin: 10ex auto 2ex;
   border: 1px solid rgb(188, 188, 188);
+}
+#register_content {
+    background-color: #fff;
+    padding: 10px 30px;
+    box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+    position: relative;
+    width: 600px;
+    margin: 5ex auto 2ex;
+    border: 1px solid rgb(188, 188, 188);
 }
 #copyright {
   color: #808080;
@@ -153,6 +165,9 @@ h1 {
 	border-left: 2px solid #C42D2D;
 	padding: 5px 20px 5px 20px;
 	margin: 0px;
+}
+#login_create_user {
+    margin-left: 25%;
 }
 #warning_change_poll_type {
 	width: 570px;

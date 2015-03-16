@@ -42,7 +42,7 @@ define('TYPE_INTERNAL_PEGASE', 'internal');
  * Dans ce cas la configuration chargée sera fonction du ENVIRONNEMENT_LIBM2
  * La configuration TYPE_EXTERNAL va les lire les données dans un répertoire configuré dans CONFIGURATION_PATH_LIBM2
  */
-define('CONFIGURATION_TYPE_PEGASE', TYPE_EXTERNAL_PEGASE);
+define('CONFIGURATION_TYPE_PEGASE', TYPE_INTERNAL_PEGASE);
 
 
 /***** CONFIGURATION EXTERNE *******/
@@ -56,5 +56,5 @@ define('CONFIGURATION_PATH_PEGASE', '/etc/pegase');
 /**
  * Choix de l'environnement à configurer, si utilisation de la configuration interne (production, developpement, ...)
  */
-define('ENVIRONNEMENT_PEGASE', '');
+define('ENVIRONNEMENT_PEGASE', DEFAULT_CONF);
 

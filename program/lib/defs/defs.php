@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 /* Récupération de la version depuis le fichier */
-define('VERSION', '0.6-20140917');
+define('VERSION', '0.8-20150312');
 
 // framework constants
 define('POLL_CHARSET', 'UTF-8');
@@ -27,12 +27,7 @@ define('POLL_CHARSET', 'UTF-8');
 /*
  * Variables pour l'environnement
  */
-define('FEDERATEUR','af');
-define('DEVELOPPEMENT_FEDERATEUR','afida');
-define('DEVELOPPEMENT','ida');
-define('DEVELOPPEMENT_ROUNDCUBE', 'ida_roundcube');
-define('PRODUCTION', 'ac_prod');
-define('PREPRODUCTION', 'ac_preprod');
+define('DEFAULT_CONF', 'default');
 
 
 /*

@@ -42,11 +42,20 @@ class IHM {
 	/**
 	 * Configuration du nom de l'application
 	 */
-	public static $TITLE = 'Pégase';
+	public static $TITLE = 'PoollA';
+    /**
+     * Permettre la création de l'utilisateur depuis l'interface
+     * Le driver doit prendre en compte la création de l'utilisateur avec un mot de passe crypté
+     */
+    public static $CREATE_USER = true;
+    /**
+     * Configuration du timezone par defaut pour l'application
+     */
+    public static $DEFAULT_TIMEZONE = 'Europe/Paris';
 	/**
 	 * Type de stockage pour les sessions, 'php' ou 'memcache'
 	 */
-	public static $SESSION_TYPE = 'memcache';
+	public static $SESSION_TYPE = 'php';
 	/**
 	 * Durée de vie des sessions en minutes
 	 */
@@ -75,7 +84,7 @@ class IHM {
 	 * Host du serveur dans le cas ou il n'est pas récupérable facilement
 	 * [Optionnel] Peut être mis à null
 	 */
-	public static $HOST = null;
+	public static $HOST = "http://localhost:8080/";
 	/**
 	 * URL vers la page de login, peut être changée pour l'annuaire fédérateur
 	 * [Optionnel] Peut être mis à null
@@ -89,11 +98,11 @@ class IHM {
 	/**
 	 * Liste des types de sondage possible
 	 */
-	public static $POLL_TYPES = array("date", "prop");
+	public static $POLL_TYPES = ["date", "prop"];
 	/**
 	 * Configuration du ou des serveurs memcache
 	 */
-	public static $MEMCACHE_SERVER = array('localhost:11211');
+	public static $MEMCACHE_SERVER = [];
 
 	/**
 	 * Défini si l'application propose aux utilisateurs d'ajouter la réponse à leur calendrier.

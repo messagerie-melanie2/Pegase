@@ -34,5 +34,5 @@ class Driver {
     /**
      * Configuration du driver à utiliser pour l'accés aux données
      */
-    public static $Driver = "Pegase";
+    public static $Driver = "Sqlite";
 }

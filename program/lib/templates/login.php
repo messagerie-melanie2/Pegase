@@ -28,7 +28,6 @@ namespace Program\Lib\Templates;
 // Utilisation des namespaces
 use Program\Lib\Request\Session as Session;
 use Program\Lib\Request\Request as Request;
-use Program\Lib\Request\Output as Output;
 
 /**
  * Classe de gestion du login utilisateur pour l'application de sondage

@@ -18,13 +18,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-namespace Program\Drivers\Pegase;
+namespace Program\Drivers\Sqlite;
 
 /**
  * Classe abstraite pour le driver
  * les drivers doivent être implémentée à partir de cette classe
  */
-class Pegase extends \Program\Drivers\Driver {
+class Sqlite extends \Program\Drivers\Driver {
     /**
      * Authentification de l'utilisateur
      * Set le current user, charge les données dans le current user
@@ -35,10 +35,26 @@ class Pegase extends \Program\Drivers\Driver {
      */
     function authenticate($username, $password) {
         // Récupère l'utilisateur enregistré dans la base de données en fonction du username
-        $user = $this->getAuthUser($username);
+        if (\Program\Data\User::isset_current_user()) {
+            $user = \Program\Data\User::get_current_user();
+            if ($user->username != $username) {
+                unset($user);
+            }
+        }
+        if (!isset($user)) {
+            $user = $this->getAuthUser($username);
+        }
         if (isset($user)) {
             // Vérify de le hash dans la base de données
-            return password_verify($password, $user->password);
+            if (password_verify($password, $user->password)) {
+                if (isset($user->user_id)) {
+                    $user->last_login = date("Y-m-d H:i:s");
+                    if (!\Program\Lib\Request\Session::is_setUsername())
+                        $this->modifyUser($user);
+                    \Program\Data\User::set_current_user($user);
+                    return true;
+                }
+            }
         }
         //
         return false;

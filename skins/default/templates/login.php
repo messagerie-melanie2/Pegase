@@ -24,6 +24,7 @@ use Program\Lib\Request\Localization as l;
 use Program\Lib\Request\Template as t;
 use Program\Lib\Request\Request as r;
 use Program\Lib\Request\Session as s;
+use Config\IHM as c;
 ?>
 <?php t::inc('head') ?>
 <body>
@@ -49,11 +50,16 @@ use Program\Lib\Request\Session as s;
     		        			placeholder="<?= l::g('Password') ?>" x-moz-errormessage="<?= l::g('You have to put your password') ?>" required />
     		        </div>
     		        <input type="hidden" name="csrf_token" value="<?= s::getCSRFToken() ?>"/>
-    		        <div class="pure-controls" style="margin-left: 40%;">
+    		        <div class="pure-controls" style="margin-left: 35%;">
     		        	<button type="submit" class="pure-button pure-button-submit"><?= l::g('Connect') ?></button>
     		        </div>
     			</fieldset>
     		</form>
+            <?php if (c::$CREATE_USER) { ?>
+                <div id="login_create_user">
+                    <a href="<?= o::url("register") ?>"><?= l::g('Not register yet ? Sign up') ?></a>
+                </div>
+            <?php } ?>
     	</div>
     </div>
     <?php t::inc('login_copyright') ?>

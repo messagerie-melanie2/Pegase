@@ -35,54 +35,34 @@ class Sql {
      * Configuration du choix de serveur utilisé pour la lecture dans la base de données
      * @var string
      */
-    public static $READ_SERVER = "sgbd.server";
+    public static $READ_SERVER = "sqlite.local";
     /**
      * Configuration du choix de serveur utilisé pour l'écriture dans la base de données
      * @var string
      */
-    public static $WRITE_SERVER = "sgbd.server";
+    public static $WRITE_SERVER = "sqlite.local";
   	/**
   	 * Configuration de la connexion SQL
   	 * @var array
   	 */
-  	public static $SERVERS = array(
-        "sgbd.server" => array(
+  	public static $SERVERS = [
+        "sqlite.local" => [
       		/**
       		 * Connexion persistante
       		 */
       		'persistent' => 'true',
       		/**
-      		 * Hostname ou IP vers le serveur SGBD
+      		 * Chaine de connexion pdo
       		 */
-      		'hostspec' => 'sgbd.server',
-          /**
-           * Utilisateur pour la connexion à la base
-           */
-          'username' => 'poll',
+      		'connexion' => 'sqlite:/tmp/data.sqlite',
+            /**
+             * Utilisateur pour la connexion à la base
+             */
+            'username' => null,
       		/**
       		 * Mot de passe pour l'utilisateur
       		 */
-      		'password' => 'poll',
-      		/**
-      		 * Base de données Mélanie
-      		 */
-      		'database' => 'poll',
-      		/**
-      		 * Port de connexion
-      		 */
-      		'port' => 5432,
-      		/**
-      		 * Protocole de connexion
-      		 */
-      		'protocol' => 'tcp',
-      		/**
-      		 * Encodage de la base de données
-      		 */
-      		'charset' =>  'utf-8',
-      		/**
-      		 * Type de base : pgsql, mysql
-      		 */
-      		'phptype' => 'pgsql'
-        )
-	  );
+      		'password' => null,
+        ]
+    ];
 }

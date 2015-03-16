@@ -104,7 +104,7 @@ use Program\Data\User as u;
                     <br>
                     <div id="poll">
                         <?= s::GenerateProposalsTable() ?>
-                        <?php if (p::get_current_poll()->locked === 1) { ?>
+                        <?php if (p::get_current_poll()->locked == 1) { ?>
                             <br>
                             <div><?= l::g('Poll is locked, you can not respond') ?></div>
                             <?php if (count(o::get_env("best_proposals")) > 0) { ?>

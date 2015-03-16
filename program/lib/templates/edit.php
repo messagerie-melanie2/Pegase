@@ -70,7 +70,7 @@ class Edit {
 	    // Vérouillage/dévérouillage du sondage
 	    if (o::get_env("action") == ACT_LOCK
 	            && \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id
-	            && \Program\Data\Poll::get_current_poll()->locked === 0) {
+	            && \Program\Data\Poll::get_current_poll()->locked == 0) {
 	        $csrf_token = trim(strtolower(Request::getInputValue("_t", POLL_INPUT_GET)));
 	        if (Session::validateCSRFToken($csrf_token)) {
                 \Program\Data\Poll::get_current_poll()->locked = 1;
@@ -83,7 +83,7 @@ class Edit {
 	        }
 	    } elseif (o::get_env("action") == ACT_UNLOCK
 	            && \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id
-	            && \Program\Data\Poll::get_current_poll()->locked === 1) {
+	            && \Program\Data\Poll::get_current_poll()->locked == 1) {
 	        $csrf_token = trim(strtolower(Request::getInputValue("_t", POLL_INPUT_GET)));
 	        if (Session::validateCSRFToken($csrf_token)) {
     	        \Program\Data\Poll::get_current_poll()->locked = 0;

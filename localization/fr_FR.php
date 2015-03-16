@@ -79,6 +79,17 @@ $labels['Disconnect from the app'] = 'Se déconnecter de l\'application';
 $labels['Create a new poll'] = 'Cliquez ici pour créer un nouveau sondage';
 $labels['Go back to the main page'] = 'Retourner à la page d\'accueil de l\'application';
 $labels['Go back to poll list'] = 'Retourner à la liste des sondages';
+$labels['Not register yet ? Sign up'] = 'Pas encore enregistré ? Créez votre compte';
+// Register Page
+$labels['Register in the app'] = "S'enregistrer dans l'application";
+$labels['Register'] = "S'enregistrer";
+$labels['Fullname'] = 'Nom complet';
+$labels['Email'] = 'Adresse e-mail';
+$labels['Back'] = "Retour";
+$labels['You have to put your fullname'] = "Vous devez remplir le nom complet";
+$labels['You have to put your email'] = "Vous devez remplir votre adresse e-mail";
+$labels['You have to put your username to register'] = "Vous devez remplir votre nom d'utilisateur";
+$labels['You have to put your password to register'] = "Vous devez remplir votre mot de passe";
 // Error Page
 $labels['Error page'] = 'Page d\'erreur';
 // Errors

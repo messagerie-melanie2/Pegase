@@ -43,6 +43,7 @@ if (!o::isset_env("page")) {
 // Traitement particulier pour le login et le logout
 if (o::get_env("page") != "login"
 		&& o::get_env("page") != "external_login"
+        && o::get_env("page") != "register"
         && o::get_env("page") != "show"
         && o::get_env("page") != "ajax") {
     if (!Program\Lib\Request\Session::validateSession()) {
@@ -86,6 +87,9 @@ if (o::get_env("page") != "login"
     } elseif (o::get_env("page") == "ajax") {
         Program\Lib\Request\Session::validateSession();
         Program\Lib\Templates\Ajax::Process();
+    } elseif (o::get_env("page") == "register") {
+        Program\Lib\Request\Session::validateSession();
+        Program\Lib\Templates\Register::Process();
     }
 }
 // Chargement de la page

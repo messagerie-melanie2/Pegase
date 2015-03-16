@@ -33,6 +33,7 @@ use \Program\Lib\Request\Session as Session;
  * 
  * @property int $user_id Identifiant de l'utilisateur dans la bdd
  * @property string $username Login de l'utilisateur
+ * @property string $password Mot de passe de l'utilisateur
  * @property string $email Adresse email de l'utilisateur
  * @property string $fullname Nom complet de l'utilisateur
  * @property date $created Date de création de l'utilisateur

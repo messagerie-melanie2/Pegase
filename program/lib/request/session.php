@@ -60,6 +60,7 @@ class Session {
 			    Session::set("user_noauth_poll_id", null);
 			}
 			\Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Session::validateSession() Valid session : " . self::get(\Config\IHM::$SESSION_TOKEN));
+            \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Session::validateSession() Valid session : " . var_export($_SESSION, true));
 			return true;
 		} else {		    
 			\Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Session::validateSession() Invalid session, relogin : Cookie : " . self::genToken(Cookie::getCookie(\Config\IHM::$COOKIE_TOKEN)) . " / Session : " . self::get(\Config\IHM::$SESSION_TOKEN));			
