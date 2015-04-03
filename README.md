@@ -11,8 +11,8 @@ La version de Pegase sur git est une version en développement, elle ne doit pas
 Introduction
 ------------
 
-Pegase est une application en PHP5 de type doodle type. Elle permet de créer des sondages de date ou libre. Les utilisateurs pourront alors répondre au sondage avec des choix de type Oui/Non.  
-Les données de sondage sont stockées dans une base de données PostgreSQL et l'authentification s'effectue sur un annuaire LDAP. La personnalisation du driver permet de choisir une autre base de données et un autre type d'authentification (qui ne sont pas implémentés par défaut).
+Pegase est une application en PHP5 de type doodle. Elle permet de créer des sondages de date ou des sondages libres. Les utilisateurs pourront alors répondre au sondage avec des choix de type Oui/Non et optionnellement Possible.  
+Les données de sondage sont stockées dans une base de données PostgreSQL et l'authentification s'effectue sur un annuaire LDAP. La personnalisation du driver permet de choisir une autre base de données et un autre type d'authentification (qui ne sont pas implémentés par défaut). D'autres drivers de type sqlite et MySQL seront bientôt proposés
 
 Version
 -------
@@ -24,7 +24,7 @@ Pré-requis
 ------------
 
 Un serveur Web (Apache ou autre)
-PHP 5.3 ou suppérieur
+PHP 5.3 ou supérieur
 php5-memcache
 php5-pgsql
 php5-ldap
