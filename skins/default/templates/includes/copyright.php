@@ -25,5 +25,5 @@ use Program\Lib\Request\Localization as l;
 ?>
 
 <div id="copyright">
-<?= l::g('copyright') ?> - Version <?= VERSION ?> - <a href="<?= (o::get_env("page") == "show" ? o::url(null, ACT_MOBILE, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid)) : o::url(null, ACT_MOBILE)) ?>"><?= l::g("Mobile") ?></a>
+<?= l::g('copyright') ?> - Version <?= VERSION.'-'.BUILD ?> - <a href="<?= (o::get_env("page") == "show" ? o::url(null, ACT_MOBILE, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid)) : o::url(null, ACT_MOBILE)) ?>"><?= l::g("Mobile") ?></a>
 </div>

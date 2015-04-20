@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -30,7 +30,7 @@ use Program\Lib\Request\Output as o;
 
 /**
  * Définition d'un sondage pour l'application de sondage
- * 
+ *
  * @property int $poll_id Identifiant du sondage dans la bdd
  * @property string $poll_uid Identifiant unique du sondage
  * @property string $title Titre du sondage
@@ -46,11 +46,13 @@ use Program\Lib\Request\Output as o;
  * @property int $deleted Si le sondage est supprimé
  * @property int $count_responses Nombre de réponses pour le sondage
  * @property boolean $auth_only Si le sondage est réservé aux utilisateurs authentifiés
+ * @property boolean $if_needed Si le sondage propose aux répondeurs un "si besoin"
+ * @property boolean $anonymous Si le sondage est en mode anonyme, les utilisateurs ne voient pas les réponses des autres
  * @property array $validate_proposals Liste des propositions validées par l'organisateur du sondage
- * 
+ *
  * @package Data
  */
-class Poll extends Object {   
+class Poll extends Object {
     /***** PRIVATE ****/
     /**
      * Variable static pour le sondage courant
@@ -62,14 +64,14 @@ class Poll extends Object {
      * @var bool
      */
     private static $current_poll_loaded = false;
-    
+
     /******* METHODES *******/
     /**
      * Constructeur par défaut de la classe Poll
      * @param array $data Données à charger dans l'objet
      */
     public function __construct($data = null) {
-        if (isset($data) 
+        if (isset($data)
                 && is_array($data)) {
             foreach ($data as $key => $value) {
                 $key = strtolower($key);
@@ -198,5 +200,63 @@ class Poll extends Object {
         else
             // Valeur par défaut
             return array();
+    }
+    /**
+     * Positionne la valeur de paramètre $if_needed depuis les settings du sondage
+     * @param boolean $if_needed
+     * @return boolean
+     */
+    protected function __set_if_needed($if_needed) {
+      $settings = unserialize($this->settings);
+      if ($settings === false) {
+        $settings = array();
+      }
+      $settings['if_needed'] = $if_needed;
+      $this->settings = serialize($settings);
+      return true;
+    }
+    /**
+     * Retourne la valeur de paramètre $if_needed depuis les settings du sondage
+     * @return boolean
+     */
+    protected function __get_if_needed() {
+      $settings = unserialize($this->settings);
+      if ($settings === false) {
+        $settings = array();
+      }
+      if (isset($settings['if_needed']))
+        return $settings['if_needed'];
+      else
+        // Valeur par défaut
+        return false;
+    }
+    /**
+     * Positionne la valeur de paramètre $anonymous depuis les settings du sondage
+     * @param boolean $anonymous
+     * @return boolean
+     */
+    protected function __set_anonymous($anonymous) {
+      $settings = unserialize($this->settings);
+      if ($settings === false) {
+        $settings = array();
+      }
+      $settings['anonymous'] = $anonymous;
+      $this->settings = serialize($settings);
+      return true;
+    }
+    /**
+     * Retourne la valeur de paramètre $anonymous depuis les settings du sondage
+     * @return boolean
+     */
+    protected function __get_anonymous() {
+      $settings = unserialize($this->settings);
+      if ($settings === false) {
+        $settings = array();
+      }
+      if (isset($settings['anonymous']))
+        return $settings['anonymous'];
+      else
+        // Valeur par défaut
+        return false;
     }
 }

@@ -34,26 +34,29 @@ $(document).ready(function() {
 		header: {
 			left: 'agendaDay,agendaWeek,month',
 			center: 'title',
-			right: 'today prev,next'
+			right: 'today,prev,next'
 		},
 		aspectRatio: 1.8,
 		selectable: true,
 		selectHelper: false,
 		select: function(start, end, allDay) {
-			var id = addNewDate(start, end, allDay);
-			var event = {
-					id: id,
-					title: poll.env.poll_title,
-					start: start,
-					end: end,
-					allDay: allDay
-				};
-			calendar.fullCalendar('renderEvent',
-				event,
-				true // make the event "stick"
-			);
+		  if (!dateExist(start, end, allDay)) {
+		    var id = addNewDate(start, end, allDay);
+	      var event = {
+	          id: id,
+	          title: poll.env.poll_title,
+	          start: start,
+	          end: end,
+	          allDay: allDay
+	        };
+	      calendar.fullCalendar('renderEvent',
+	        event,
+	        true // make the event "stick"
+	      );
+		  }
 		},
 		eventMouseover: function(calEvent, domEvent) {
+		  if (calEvent.id.indexOf('edit_date') == -1) return;
 			var layer =	"<div id='events-layer' class='fc-transparent' style='position:absolute; width:100%; height:100%; top:2px; text-align:right; z-index:100; right: 2px;'> <a> <img border='0' width='12px' src='skins/"+poll.env.skin+"/images/1395421411_white_delete.png' title='"+poll.labels.Delete+"' onClick='deleteEvent("+calEvent.id+");'></a></div>";
 			$(this).append(layer);
 		},   
@@ -84,7 +87,7 @@ $(document).ready(function() {
 			day: 'dddd d/M'
 		},
 		timeFormat: { // for event elements
-			'': 'HH(:mm)', // default
+			'': 'HH:mm', // default
 			agenda: 'HH:mm{ - HH:mm}'
 		},	
 		axisFormat: 'HH:mm',
@@ -113,8 +116,12 @@ $(document).ready(function() {
 			day: poll.labels.Day
 		},
 		
-		// Liste les évènements
-		events: getAllEvents()
+//		// Liste les évènements
+//		events: getAllEvents()
+		eventSources: [
+		               getAllEvents(),
+		           ]
+
 	});
 	$( "#add_new_date" ).click(function() {
 		addDateDiv('');
@@ -129,7 +136,51 @@ $(document).ready(function() {
 		var date = poll.env.first_prop_date.split(" - ");
 		$('#calendar').fullCalendar('gotoDate', dateForm(date[0]));
 	}
+	// Ajout du bouton de masquage des agendas
+	$('#calendar td.fc-header-right').append('<span style="-moz-user-select: none;" unselectable="on" class="fc-button fc-button-hide-calendar fc-state-default fc-corner-right">'+poll.labels['show calendar']+'</span>');
+	$('#calendar td.fc-header-right').append('<span class="fc-header-legend" style="display: none;"><span class="fc-header-legend-name">'+poll.labels['Your freebusy']+':</span><span class="fc-header-legend-confirmed">'+poll.labels['Confirmed']+'</span><span class="fc-header-legend-tentative">'+poll.labels['Tentative']+'</span><span class="fc-header-legend-none">'+poll.labels['None']+'</span></span>');
+	$('#calendar td.fc-header-right span.fc-button-next').removeClass('fc-corner-right');
+	$( "#calendar td.fc-header-right span.fc-button-hide-calendar" ).hover(
+    function() {
+	    $(this).addClass('fc-state-hover');
+    }, function() {
+      $(this).removeClass('fc-state-hover');
+    }
+  );
+	$( "#calendar td.fc-header-right span.fc-button-hide-calendar" ).click(function() {
+    if ($(this).hasClass('hide-calendar')) {
+      $(this).removeClass('hide-calendar');
+      $(this).removeClass('fc-state-active');
+      $('#calendar span.fc-header-legend').hide();
+      calendar.fullCalendar('removeEventSource',
+          getM2EventSource()
+        );
+    }
+    else {
+      $(this).addClass('hide-calendar');      
+      $(this).addClass('fc-state-active');
+      $('#calendar span.fc-header-legend').show();
+      calendar.fullCalendar('addEventSource',
+          getM2EventSource()
+        );
+    }
+  });
 });
+/**
+ * Retourne la source vers l'agenda Melanie2
+ * @returns json
+ */
+function getM2EventSource() {
+  return {
+    url: './?_p=ajax&_a=get_user_events_json',
+    type: 'POST',
+    color: '#EBF1F6',   // a non-ajax option
+    textColor: 'black', // a non-ajax option
+    cache: true,
+    editable: false,
+    cache: true,
+  };
+}
 /**
  * Retourne une Date formatté
  * @param date
@@ -137,7 +188,7 @@ $(document).ready(function() {
  */
 function dateForm(date) {
 	if (date.length == 16
-			|| date.length == 19) {
+			|| date.length == 19) {
 		var tmp = date.split(" ");
 		var date_tmp = tmp[0].split("-");
 		var time_tmp = tmp[1].split(":");
@@ -148,7 +199,7 @@ function dateForm(date) {
 				&& time_tmp[1]) {
 			// Formatte la date avec toutes les données
 			return new Date(date_tmp[0], date_tmp[1] - 1, date_tmp[2], time_tmp[0], time_tmp[1]);
-		} else {
+		} else {
 			// Impossible de formatter la date on essaye tel quel
 			return new Date(date);
 		} 
@@ -165,7 +216,7 @@ function getAllEvents() {
 	var events = [];
 	$( "#props_list .edit_date" ).each(function( ) {
 		if ($(this).attr("value")
-				|| this.value) {
+				|| this.value) {
 			var date = $(this).attr("value").split(" - ");
 			if (!date) date = this.value.split(" - ");
 			var id = $(this).attr("id");
@@ -229,6 +280,24 @@ function addDateDiv(value) {
 	}
 	$('#props_list').append(html);
 	return id;
+}
+
+/**
+ * Test si la date existe déjà
+ * @param start
+ * @param end
+ * @param allDay
+ * @returns {Boolean}
+ */
+function dateExist(start, end, allDay) {
+  var date = getDateFromData(start, end, allDay);
+  var exist = false;
+  $( ".edit_date" ).each(function( ) {
+    if (this.value == date) {
+      exist = true;
+    }
+  });
+  return exist;
 }
 /**
  * Ajout une nouvelle date
@@ -307,9 +376,10 @@ function modifyCalendarEvent(id, value) {
 			var date = value.split(" - ");
 			// Création
 			var title = $('#poll_title').text();
+			var event;
 			if (date[1]) {
 				// Generation de l'évènement
-				var event = {
+				event = {
 						id: id,
 						title: title,
 						start: new Date(date[0]),
@@ -318,7 +388,7 @@ function modifyCalendarEvent(id, value) {
 					};
 			} else {
 				// Generation de l'évènement
-				var event = {
+				event = {
 						id: id,
 						title: title,
 						start: new Date(date[0]),

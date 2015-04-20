@@ -25,11 +25,24 @@ use Program\Lib\Request\Template as t;
 use Program\Lib\Request\Request as r;
 use Program\Lib\Templates\Edit_end as e;
 use Program\Data\Poll as p;
+use Program\Data\User as u;
 ?>
 <?php t::inc('head') ?>
 <body>
-<div id="prevcontent">
-    <div id="content">
+<div data-role="page">
+    <div data-role="header" data-position="fixed">
+          <h6> </h6>
+        <?php if (u::isset_current_user()) { ?>
+      		<div data-role="controlgroup" data-type="horizontal" class="ui-mini ui-btn-right">
+      		  <?php if (o::get_env("page") != "main") { ?>
+              <a class="pure-button-home ui-btn ui-btn-icon-right ui-icon-home ui-btn-icon-notext" data-role="button" title="<?= l::g("Go back to the main page", false) ?>" href="<?= o::url("main") ?>"><?= l::g('Return to the index') ?></a>
+            <?php } ?>
+            <a class="pure-button-new-poll ui-btn ui-btn-icon-right ui-icon-plus ui-btn-icon-notext" data-role="button" title="<?= l::g("Create a new poll", false) ?>" href="<?= o::url("edit", ACT_NEW) ?>"><?= l::g('New poll') ?></a>
+            <a class="pure-button-disconnect ui-btn ui-btn-icon-right ui-icon-power ui-btn-icon-notext" data-role="button" title="<?= l::g("Disconnect from the app", false) ?>" href="<?= o::url("logout") ?>"><?= l::g('Disconnect') ?></a>
+          </div>
+        <?php } ?>
+  	</div>
+    <div role="main" class="ui-content">
         <?php t::inc('message') ?>
         <br><br>
         <div><?= l::g('Congratulation, your poll is now created') ?></div>
@@ -38,7 +51,6 @@ use Program\Data\Poll as p;
         <br><br>
         <div><?= l::g('You can modify the poll by clicking ') ?><a href="<?= o::url("edit", ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('here') ?></a></div>
         <br>
-        <?php t::inc('connected') ?>
     </div>
     <?php t::inc('copyright') ?>
 </div>

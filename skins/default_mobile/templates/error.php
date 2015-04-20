@@ -27,8 +27,8 @@ use Program\Lib\Request\Request as r;
 ?>
 <?php t::inc('head') ?>
 <body>
-<div id="prevcontent">
-    <div id="content">
+<div data-role="page">
+    <div role="main" class="ui-content">
         <?php t::inc('message') ?>
         <div id="title">
             <h1><?= l::g('Error page') ?></h1>

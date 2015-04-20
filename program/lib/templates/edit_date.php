@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -26,13 +26,14 @@
 namespace Program\Lib\Templates;
 
 // Utilisation des namespaces
-use Program\Lib\Request\Request as Request;
-use Program\Lib\Request\Output as o;
-use Program\Lib\Request\Localization as Localization;
+use
+    Program\Lib\Request\Request as Request,
+    Program\Lib\Request\Output as o,
+    Program\Lib\Request\Localization as Localization;
 
 /**
  * Classe de gestion de l'édition du sondage par date
- * 
+ *
  * @package    Lib
  * @subpackage Request
  */
@@ -41,7 +42,7 @@ class Edit_date {
 	 *  Constructeur privé pour ne pas instancier la classe
 	 */
 	private function __construct() { }
-	
+
 	/**
 	 * Execution de la requête
 	 */
@@ -62,7 +63,7 @@ class Edit_date {
 	    if (o::get_env("mobile"))
 	        $nb_prop = 5;
 	    o::set_env("proposals", unserialize(\Program\Data\Poll::get_current_poll()->proposals), false);
-	    if (!is_array(o::get_env("proposals"))) 
+	    if (!is_array(o::get_env("proposals")))
 	        o::set_env("proposals", array(), false);
         o::set_env("nb_prop", $nb_prop, false);
 	    // Défini le nombre en fonction du nombre de propositions
@@ -91,6 +92,7 @@ class Edit_date {
     	    'Edit date (Y-m-d H:i:s)', 'Edit date', 'Delete',
     	    'Are you sure ? Not saved proposals are lost',
     	    'Choose date on the calendar',
+    	    'show calendar', 'None', 'Tentative', 'Confirmed', 'Your freebusy'
 	    ));
 	    // Ajout de l'environnement
 	    o::set_env('poll_title', \Program\Data\Poll::get_current_poll()->title);
@@ -110,7 +112,7 @@ class Edit_date {
 	public static function ShowProps() {
 	    $html = "";
 	    $proposals = o::get_env("proposals");
-	    
+
 	    // Génération des propositions
 	    for ($i = 1; $i <= o::get_env("nb_prop"); $i++) {
 	        if (!o::get_env("mobile")) {
@@ -189,8 +191,8 @@ class Edit_date {
 	                "type" => "time"
 	            );
 	            $input_time_end = new \Program\Lib\HTML\html_inputfield($attrib_time_end);
-	             
-	            
+
+
 	            $html .= \Program\Lib\HTML\html::div(array("class" => "pure-control-group"),
 	                    \Program\Lib\HTML\html::label(array("for" => "edit_date_start$i"), Localization::g('Edit date (Y-m-d H:i:s)')) . " " .
 	                    Localization::g("Start") . " " .
@@ -202,7 +204,7 @@ class Edit_date {
 	            );
 	            $html .= "<br>";
 	        }
-	        
+
 	    }
 	    return $html;
 	}

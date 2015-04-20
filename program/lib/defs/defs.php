@@ -19,7 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 /* Récupération de la version depuis le fichier */
-define('VERSION', '0.6-20140917');
+define('VERSION', '0.9');
+define('BUILD', '1504161828');
 
 // framework constants
 define('POLL_CHARSET', 'UTF-8');
@@ -27,13 +28,7 @@ define('POLL_CHARSET', 'UTF-8');
 /*
  * Variables pour l'environnement
  */
-define('FEDERATEUR','af');
-define('DEVELOPPEMENT_FEDERATEUR','afida');
-define('DEVELOPPEMENT','ida');
-define('DEVELOPPEMENT_ROUNDCUBE', 'ida_roundcube');
-define('PRODUCTION', 'ac_prod');
-define('PREPRODUCTION', 'ac_preprod');
-
+define('DEFAULT', 'default');
 
 /*
  * Définitions des inputs
@@ -62,6 +57,8 @@ define('ACT_MOBILE','mobile');
 define('ACT_DESKTOP','desktop');
 define('ACT_DOWNLOAD_ICS','download_ics');
 define('ACT_ADD_CALENDAR','add_calendar');
+define('ACT_ADD_TENTATIVE_CALENDAR','add_tentative_calendar');
 define('ACT_VALIDATE_PROP','validate_prop');
 define('ACT_UNVALIDATE_PROP','unvalidate_prop');
 define('ACT_GET_VALID_PROPOSALS','get_valid_proposals_text');
+define('ACT_GET_USER_EVENTS','get_user_events_json');

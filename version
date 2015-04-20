@@ -1,40 +1,61 @@
-Pégase - Version 0.7
-Pégase - Build 201412221301
+Pégase - Version 0.9
+Pégase - Build 1504161828
 Pégase - Liste des changements
 
-Pégase - 0.7 (Pas encore publiée) [ Afficher les bogues ]
+Pégase - 0.9 (Publiée 16/04/2015) [ Afficher les bogues ]
 =================================
+- 0003819: [General] Possibilité de créer automatiquement les évènements dans l'agenda M2 (thomas.payen) - résolu.
+- 0003827: [General] Amélioration du mail d'avis de création pour l'utiliser pour inviter les gens à répondre (thomas.payen) - résolu.
+- 0003828: [General] Pemettre d'indentifier simplement les gens ayant répondu sans adresses (thomas.payen) - résolu.
+- 0003818: [General] Mise en place d'un "driver" pour la gestion des agendas depuis Pégase (thomas.payen) - résolu.
+
+[4 bogues]
+
+Pégase - 0.8 (Publiée 27/03/2015) [ Afficher les bogues ]
+=================================
+- 0003801: [General] Possibilité de créer un sondage anonyme (thomas.payen) - résolu.
+- 0003802: [General] Possibilité de pouvoir créer des sondages à réponse multiple (thomas.payen) - résolu.
+- 0003815: [General] Améliorer l'affichage de la skin mobile (thomas.payen) - résolu.
+- 0003814: [General] Afficher les évènements de l'utilisateur lors de la création d'un sondage de date (thomas.payen) - résolu.
+- 0003808: [General] Afficher les disponibilités lors de la réponse à un sondage (thomas.payen) - résolu.
+
+[5 bogues]
+
+Pégase - 0.7 (Publiée 24/03/2015) [ Afficher les bogues ]
+=================================
+- 0003811: [General] Perte du texte saisi après une double cote (thomas.payen) - résolu.
+- 0003805: [General] Informations d'un sondage - Zones obligatoires (thomas.payen) - résolu.
+- 0003804: [General] Sondage libre - Perte de libellé de proposition (thomas.payen) - résolu.
+- 0003783: [General] Mise en place d'une skin courrielleur (thomas.payen) - résolu.
+- 0003775: [General] Fautes à corriger (thomas.payen) - résolu.
 - 0003670: [General] Externaliser la configuration (thomas.payen) - résolu.
 
-[1 bogue]
+[6 bogues]
 
 Pégase - 0.6 (Publiée 19/11/2014) [ Afficher les bogues ]
 =================================
-- 0003575: [General] Envoyer un mail aux participants à la validation d'une date (thomas.payen) - résolu.
-- 0003572: [General] Possibilité en tant qu'organisateur d'ajouter une réponse (thomas.payen) - résolu.
-- 0003566: [General] Possibilité de tout cocher/tout décocher (thomas.payen) - résolu.
 - 0003274: [General] Envoyer un mail au sondeur chaque fois qu'un sondé fait une réponse (thomas.payen) - résolu.
-- 0003492: [General] Evolutions en réponse aux exigences PSI4 (thomas.payen) - résolu.
 - 0003419: [General] Pegase encode mal les adresses des destinataires (thomas.payen) - résolu.
 - 0003478: [General] Balise </body> après balise </html> (thomas.payen) - résolu.
 - 0003479: [General] Esperluète non échapée dans les URL définient dans les liens (thomas.payen) - résolu.
+- 0003492: [General] Evolutions en réponse aux exigences PSI4 (thomas.payen) - résolu.
+- 0003566: [General] Possibilité de tout cocher/tout décocher (thomas.payen) - résolu.
+- 0003575: [General] Envoyer un mail aux participants à la validation d'une date (thomas.payen) - résolu.
+- 0003572: [General] Possibilité en tant qu'organisateur d'ajouter une réponse (thomas.payen) - résolu.
 
 [8 bogues]
 
-Pégase - 0.2 (Publiée 29/04/2014) [ Afficher les bogues ]
+Pégase - 0.5 (Publiée 13/08/2014) [ Afficher les bogues ]
 =================================
-- 0003212: [General] Protéger les formulaires contre le CSRF (thomas.payen) - résolu.
-- 0003185: [General] Positionnement du calendrier lors d'une modification (thomas.payen) - résolu.
+- 0003271: [General] Décalage d'une heure entre la date choisie dans le calendrier et celle qui est retenue (thomas.payen) - résolu.
+- 0003272: [General] Il manque une image de bouton (thomas.payen) - résolu.
+- 0003273: [General] Soucis de manipulation du calendrier (thomas.payen) - résolu.
+- 0003434: [General] Problème d'affichage des dates pour le mois d'octobre (thomas.payen) - résolu.
+- 0003360: [General] Orthographe (thomas.payen) - résolu.
 
-[2 bogues]
+[5 bogues]
 
-Pégase - 0.3 (Publiée 29/04/2014) [ Afficher les bogues ]
-=================================
-- 0003223: [General] Possibilité de créer un sondage ouvert seulement aux utilisateurs authentifiés (thomas.payen) - résolu.
-
-[1 bogue]
-
-Pégase - 0.4 (Publiée 29/04/2014) [ Afficher les bogues ]
+Pégase - 0.4 (Publiée 27/05/2014) [ Afficher les bogues ]
 =================================
 - 0003241: [General] Mise en place d'une authentification externe (thomas.payen) - résolu.
 - 0003242: [General] Mise en place des sessions dans memcache (thomas.payen) - résolu.
@@ -42,12 +63,15 @@ Pégase - 0.4 (Publiée 29/04/2014) [ Afficher les bogues ]
 
 [3 bogues]
 
-Pégase - 0.5 (Publiée 29/04/2014) [ Afficher les bogues ]
+Pégase - 0.3 (Publiée 29/04/2014) [ Afficher les bogues ]
 =================================
-- 0003434: [General] Problème d'affichage des dates pour le mois d'octobre (thomas.payen) - résolu.
-- 0003360: [General] Orthographe (thomas.payen) - résolu.
-- 0003272: [General] Il manque une image de bouton (thomas.payen) - résolu.
-- 0003271: [General] Décalage d'une heure entre la date choisie dans le calendrier et celle qui est retenue (thomas.payen) - résolu.
-- 0003273: [General] Soucis de manipulation du calendrier (thomas.payen) - résolu.
+- 0003223: [General] Possibilité de créer un sondage ouvert seulement aux utilisateurs authentifiés (thomas.payen) - résolu.
 
-[5 bogues]
+[1 bogue]
+
+Pégase - 0.2 (Publiée 03/04/2014) [ Afficher les bogues ]
+=================================
+- 0003212: [General] Protéger les formulaires contre le CSRF (thomas.payen) - résolu.
+- 0003185: [General] Positionnement du calendrier lors d'une modification (thomas.payen) - résolu.
+
+[2 bogues]

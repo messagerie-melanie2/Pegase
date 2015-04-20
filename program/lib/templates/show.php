@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -26,14 +26,16 @@
 namespace Program\Lib\Templates;
 
 // Utilisation des namespaces
-use Program\Lib\Request\Request as Request;
-use Program\Lib\Request\Output as o;
-use Program\Lib\Request\Cookie as Cookie;
-use Program\Lib\Request\Session as Session;
-use Program\Lib\Request\Localization as Localization;
+use
+    Program\Lib\Request\Request as Request,
+    Program\Lib\Request\Output as o,
+    Program\Lib\Request\Cookie as Cookie,
+    Program\Lib\Request\Session as Session,
+    Program\Lib\Request\Localization as Localization;
+
 /**
  * Classe de gestion de l'affichage du sondage
- * 
+ *
  * @package    Lib
  * @subpackage Request
  */
@@ -69,6 +71,11 @@ class Show {
      */
     private static $max;
     /**
+     * Conserve le nombre max de réponses si besoin pour les stats
+     * @var int
+     */
+    private static $max_if_needed;
+    /**
      * Défini si l'utilisateur à répondu ou non
      * @var boolean
      */
@@ -78,12 +85,12 @@ class Show {
      * @var int
      */
     private static $nb_others_responses = 0;
-    
+
 	/**
 	 *  Constructeur privé pour ne pas instancier la classe
 	 */
 	private function __construct() { }
-	
+
 	/**
 	 * Execution de la requête
 	 */
@@ -98,6 +105,14 @@ class Show {
 	    // Vérouillage du sondage
 	    Edit::LockPoll();
 	    o::set_env("poll_organizer", \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), false);
+	    // Positionne si c'est un sondage if needed
+	    o::set_env("poll_if_needed", \Program\Data\Poll::get_current_poll()->if_needed);
+	    // Position le token pour l'utilisation dans la page
+	    o::set_env("csrf_token", Session::getCSRFToken());
+	    // Ajoute le type de sondage
+	    o::set_env("poll_type", \Program\Data\Poll::get_current_poll()->type);
+	    // Est-ce que l'utilisateur est authentifié
+	    o::set_env("user_auth", \Program\Data\User::isset_current_user() && \Program\Data\User::get_current_user()->auth === 1);
 	    // Ajout des labels
 	    o::add_label(array(
 	       'Are you sure you want to delete the poll ?',
@@ -109,6 +124,7 @@ class Show {
 	       'This proposals is already in your calendar',
 	       'Remove',
 	       'Do you want to send a message to the attendees ?',
+	       'Would you like to add responses to your calendar as tentative ?',
 	    ));
 	    // Gestion du téléchargement de l'ICS
 	    if (o::get_env("action") == ACT_DOWNLOAD_ICS) {
@@ -117,8 +133,7 @@ class Show {
     	    	self::$proposals = unserialize(\Program\Data\Poll::get_current_poll()->proposals);
     	    	$prop = Request::getInputValue("_prop", POLL_INPUT_GET);
     	    	if (isset(self::$proposals[$prop])) {
-    		    	\Program\Lib\Event\Event::Init(self::$proposals[$prop]);
-    		    	$ics = \Program\Lib\Event\Event::ToICS();
+    		    	$ics = \Program\Lib\Event\Drivers\Driver::get_driver()->generate_ics(self::$proposals[$prop]);
     		    	header('Content-Description: File Transfer');
     		    	header('Content-Type: application/octet-stream');
     		    	header('Content-Disposition: attachment; filename=event.ics');
@@ -147,7 +162,7 @@ class Show {
 	    $username = Request::getInputValue("user_username", POLL_INPUT_POST);
 	    $hidden_modify = Request::getInputValue("hidden_modify", POLL_INPUT_POST);
 	    $hidden_modify_all = Request::getInputValue("hidden_modify_all", POLL_INPUT_POST);
-	    if (o::get_env("action") == ACT_DELETE && 
+	    if (o::get_env("action") == ACT_DELETE &&
 	            \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
 	        $csrf_token = trim(strtolower(Request::getInputValue("_t", POLL_INPUT_GET)));
 	        if (Session::validateCSRFToken($csrf_token)) {
@@ -195,15 +210,14 @@ class Show {
         	self::$proposals = unserialize(\Program\Data\Poll::get_current_poll()->proposals);
         	$prop = Request::getInputValue("_prop", POLL_INPUT_GET);
         	if (isset(self::$proposals[$prop])) {
-        		\Program\Lib\Event\Event::Init(self::$proposals[$prop]);
-        		if (\Program\Lib\Event\Event::AddToM2())
+      		  if (\Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar(self::$proposals[$prop]))
         			o::set_env("message", "Event has been saved in your calendar");
         		else
         			o::set_env("error", "Error while saving the event in your calendar");
         	} else {
 	    		o::set_env("error", "Error while saving the event in your calendar");
 	    	}
-	    } elseif (\Program\Data\Poll::get_current_poll()->locked === 0 
+	    } elseif (\Program\Data\Poll::get_current_poll()->locked === 0
 	            && (isset($username) && $username != ""
 	                || isset($hidden_modify))) {
 	        $csrf_token = trim(strtolower(Request::getInputValue("csrf_token", POLL_INPUT_POST)));
@@ -238,7 +252,7 @@ class Show {
         	            Session::set("user_noauth_id", $user_id);
         	            Session::set("user_noauth_name", $username);
         	            $user_name = $username;
-        	        }	        
+        	        }
         	        // Parcourir les responses
         	        $resp = array();
         	        foreach($_POST as $key => $post) {
@@ -249,12 +263,12 @@ class Show {
         	        }
         	        $response = \Program\Drivers\Driver::get_driver()->getPollUserResponse($user_id, \Program\Data\Poll::get_current_poll()->poll_id);
         	        // Cas d'une modification pour un utilisateur authentifié
-        	        if ((\Program\Data\User::isset_current_user() 
+        	        if ((\Program\Data\User::isset_current_user()
         	                || Session::is_set("user_noauth_id")
         	                && Session::is_set("user_noauth_name")
         	                && Session::is_set("user_noauth_poll_id"))
         	                && isset($hidden_modify)
-        	                && (\Program\Data\User::isset_current_user() && $hidden_modify == \Program\Data\User::get_current_user()->user_id 
+        	                && (\Program\Data\User::isset_current_user() && $hidden_modify == \Program\Data\User::get_current_user()->user_id
         	                        || Session::is_set("user_noauth_id") && $hidden_modify == Session::is_set("user_noauth_id"))
         	                || isset($response->poll_id)) {
         	            // Enregistrement de la réponse dans bdd
@@ -279,24 +293,24 @@ class Show {
         	                o::set_env("error", "Error when saving the response");
         	                return;
         	            }
-        	            if (isset(\Config\IHM::$SEND_MAIL) 
-        	                    && \Config\IHM::$SEND_MAIL 
+        	            if (isset(\Config\IHM::$SEND_MAIL)
+        	                    && \Config\IHM::$SEND_MAIL
         	                    && $user_id != o::get_env("poll_organizer")->user_id) {
         	                \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, $response, o::get_env("poll_organizer"));
-        	            }        	            
+        	            }
         	        }
         	        o::set_env("message", "Your response has been saved");
 	            }
 	        } else {
 	            o::set_env("error", "Invalid request");
 	        }
-	    } elseif (isset($_POST['user_username']) 
+	    } elseif (isset($_POST['user_username'])
 	            && $username == "") {
 	        o::set_env("error", "Please add your name");
 	        return;
 	    } elseif (isset($hidden_modify_all)
 	            && $hidden_modify_all == \Program\Data\Poll::get_current_poll()->poll_id
-	            &&\Program\Data\User::isset_current_user() 
+	            &&\Program\Data\User::isset_current_user()
                 && \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
 	        $csrf_token = trim(strtolower(Request::getInputValue("csrf_token", POLL_INPUT_POST)));
 	        if (Session::validateCSRFToken($csrf_token)) {
@@ -315,7 +329,7 @@ class Show {
     	                    $modify_responses[intval($keys[1])][Request::getInputValue($key, POLL_INPUT_POST)] = true;
     	                }
     	            } elseif ($keys[0] == 'delete') {
-    	                if (isset($keys[1])) 
+    	                if (isset($keys[1]))
     	                    $deleted_responses[intval($keys[1])] = true;
     	            } elseif ($keys[0] == 'newuser') {
     	                if (!is_array($new_responses[intval($keys[1])])) {
@@ -400,15 +414,16 @@ class Show {
 	        // Récupération des propositions validées
 	        self::$validate_proposals = \Program\Data\Poll::get_current_poll()->validate_proposals;
 	        // Récupération des réponses du sondage
-	        self::$responses = \Program\Drivers\Driver::get_driver()->getPollResponses(\Program\Data\Poll::get_current_poll()->poll_id);	        
+	        self::$responses = \Program\Drivers\Driver::get_driver()->getPollResponses(\Program\Data\Poll::get_current_poll()->poll_id);
 	        self::$table = new \Program\Lib\HTML\html_table(array("id" => "proposals_table"));
 	        // Compte le nombre de réponse
 	        self::$nb_resp = array();
 	        self::$max = 0;
+	        self::$max_if_needed = 0;
 	        // Gestion des en tête de la table HTML
-	        if (\Program\Data\Poll::get_current_poll()->type == "prop") {
+	        if (\Program\Data\Poll::get_current_poll()->type == "prop" || o::get_env("mobile")) {
 	            // Si c'est un sondage de propositions personnalisées
-	            self::view_type_prop_headers();	            
+	            self::view_type_prop_headers();
 	        } else {
 	            // Si c'est un sondage de date, on adapte l'affichage
 	            self::view_type_date_complex_headers();
@@ -416,9 +431,11 @@ class Show {
 	        self::$user_responded = false;
 	        if (o::get_env("action") != ACT_MODIFY_ALL) {
     	        foreach (self::$responses as $response) {
-    	            if (\Program\Data\User::isset_current_user() 
+    	            if (\Program\Data\User::isset_current_user()
     	                    && $response->user_id == \Program\Data\User::get_current_user()->user_id
     	                    && \Program\Data\Poll::get_current_poll()->locked === 0) {
+      	              // Afficher les freebusy de l'utilisateur
+      	              self::view_user_freebusy();
     	                // Réponse de l'utilisateur courant authentifié, si le sondage n'est pas locké
     	                self::view_current_user_unlock_response($response);
     	                break;
@@ -430,30 +447,42 @@ class Show {
     	                    && \Program\Data\Poll::get_current_poll()->locked === 0) {
     	                // Réponse de l'utilisateur courant non authentifié, si le sondage n'est pas locké
     	                self::view_unauthenticate_current_user_unlock_response($response);
-    	                break;             
+    	                break;
     	            } elseif (\Program\Data\User::isset_current_user()
 	                       && $response->user_id == \Program\Data\User::get_current_user()->user_id) {
     	                // Réponse de l'utilisateur
     	                self::view_user_response($response);
-    	                break;    	            	
+    	                break;
+    	            } elseif (Session::is_set("user_noauth_id")
+        	                && Session::is_set("user_noauth_name")
+        	                && Session::is_set("user_noauth_poll_id")
+    	                    && Session::get("user_noauth_id") == $response->user_id
+        	                && Session::get("user_noauth_poll_id") == \Program\Data\Poll::get_current_poll()->poll_id) {
+    	              // Réponse de l'utilisateur non authentifié
+    	              self::view_user_response($response);
+    	              break;
     	            }
     	        }
-    	        
-    	        foreach (self::$responses as $response) {
-    	            if ((!\Program\Data\User::isset_current_user()
-	                           || $response->user_id != \Program\Data\User::get_current_user()->user_id)
-	                       && (!Session::is_set("user_noauth_id")
-	                           || Session::get("user_noauth_id") != $response->user_id)) {
-    	                // Réponse de l'utilisateur
-    	                self::view_user_response($response);
-    	            }
+    	        if (\Program\Data\Poll::get_current_poll()->locked === 1
+    	            || !\Program\Data\Poll::get_current_poll()->anonymous
+    	            || \Program\Data\User::isset_current_user()
+    	              && \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
+      	        foreach (self::$responses as $response) {
+      	            if ((!\Program\Data\User::isset_current_user()
+  	                           || $response->user_id != \Program\Data\User::get_current_user()->user_id)
+  	                       && (!Session::is_set("user_noauth_id")
+  	                           || Session::get("user_noauth_id") != $response->user_id)) {
+      	                // Réponse de l'utilisateur
+      	                self::view_user_response($response);
+      	            }
+      	        }
     	        }
     	    } elseif (o::get_env("action") == ACT_MODIFY_ALL
-    	                        &&\Program\Data\User::isset_current_user() 
+    	                        &&\Program\Data\User::isset_current_user()
         	                    && \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
     	        foreach (self::$responses as $response) {
     	            // Ajout des modifications de réponse pour l'utilisateur
-    	            self::view_modify_user_response($response);    	            
+    	            self::view_modify_user_response($response);
     	        }
     	    }
 	        // Si l'utilisateur n'a pas répondu
@@ -462,15 +491,23 @@ class Show {
 	                && o::get_env("action") != ACT_MODIFY_ALL
 	                && (!\Program\Data\Poll::get_current_poll()->auth_only
                             || \Program\Data\User::isset_current_user())) {
+
 	            // Ajout du formulaire pour que l'utilisateur puisse répondre
-	            self::view_new_response();	            
-	        }	        
-	        // Ajout du nombre de réponses par proposition
-	        self::view_number_responses();
+	            self::view_new_response();
+	            // Ajout des freebusy
+	            self::view_user_freebusy();
+	        }
+	        if (\Program\Data\Poll::get_current_poll()->locked === 1
+	            || !\Program\Data\Poll::get_current_poll()->anonymous
+	            || \Program\Data\User::isset_current_user()
+    	              && \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
+  	        // Ajout du nombre de réponses par proposition
+  	        self::view_number_responses();
+	        }
 	        // Ajout des boutons de validation d'une date si le sondage est vérouillé qu'on est organisateur
 	        if (\Program\Data\Poll::get_current_poll()->locked === 1) {
 	            // Ajout des boutons de validation des propositions
-	            self::view_validation_buttons();	            
+	            self::view_validation_buttons();
 	        }
 	        $hidden_field_csrf_token = new \Program\Lib\HTML\html_hiddenfield(array("name" => "csrf_token", "value" => Session::getCSRFToken()));
 	        // Generation du tableau html
@@ -478,7 +515,7 @@ class Show {
     	        $html = \Program\Lib\HTML\html::tag("form", array("id" => "proposals_form", "class" => "pure-form pure-form-aligned", "action" => o::url(null, null, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid), false)."#poll", "method" => "post"),
     	                    \Program\Lib\HTML\html::div(array("id" => "proposals_div"),self::$table->show()) .
     	                    $hidden_field_csrf_token->show() .
-    	                    (o::get_env("mobile") && \Program\Data\Poll::get_current_poll()->locked === 0 && (!\Program\Data\Poll::get_current_poll()->auth_only || \Program\Data\User::isset_current_user())? \Program\Lib\HTML\html::tag("input", array("class" => "pure-button pure-button-save", "type" => "submit", "value" => Localization::g("Save"))) . " " . \Program\Lib\HTML\html::a(array("href" => o::url(null, ACT_DELETE_RESPONSE, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid, "t" => Session::getCSRFToken()), false), "id" => "button_delete_response", "class" => "pure-button pure-button-save customtooltip_bottom", "title" => Localization::g("Clic to delete your response", false)), Localization::g("delete")) : "")
+    	                    (o::get_env("mobile") && \Program\Data\Poll::get_current_poll()->locked === 0 && (!\Program\Data\Poll::get_current_poll()->auth_only || \Program\Data\User::isset_current_user())? \Program\Lib\HTML\html::tag("input", array("class" => "pure-button pure-button-save", "id" => "proposals_form_submit", "form" => "proposals_form", "type" => "submit", "value" => Localization::g("Save"))) . " " . \Program\Lib\HTML\html::a(array("href" => o::url(null, ACT_DELETE_RESPONSE, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid, "t" => Session::getCSRFToken()), false), "id" => "button_delete_response", "data-role" => "button", "class" => "pure-button pure-button-save customtooltip_bottom", "title" => Localization::g("Clic to delete your response", false)), Localization::g("delete")) : "")
     	                );
 	        } else {
 	            $hidden_field_modify_all = new \Program\Lib\HTML\html_hiddenfield(array("name" => "hidden_modify_all", "value" => \Program\Data\Poll::get_current_poll()->poll_id));
@@ -540,7 +577,7 @@ class Show {
 	    if (count($validate_proposals) === 0) return "";
 	    return count($validate_proposals) === 1 ? Localization::g('Proposal validate by the organizer is ', $html) . implode(', ', $validate_proposals_text) : Localization::g('Proposals validate by the organizer are ', $html) . implode(', ', $validate_proposals_text);
 	}
-	
+
 	/**
 	 * Génération de l'entête du tableau pour un sondage de type prop
 	 */
@@ -556,14 +593,29 @@ class Show {
 	        if (\Program\Data\Poll::get_current_poll()->type == "date") {
 	            if (strlen($prop_value) == 10)
 	                $prop = date("d/m/Y", strtotime($prop_value));
-	            else
+	            else {
+	              if (strpos($prop_value, ' - ') === false) {
 	                $prop = date("d/m/Y - H:i", strtotime($prop_value));
+	              }
+                else {
+                  $tmp = explode(' - ', $prop_value, 2);
+                  if (strlen($tmp[0]) == 10) {
+                    $prop = date("d/m/Y", strtotime($tmp[0])) . ' - ' . date("d/m/Y", strtotime($tmp[1]));
+                  }
+                  else {
+                    $prop = date("d/m/Y - H:i", strtotime($tmp[0])) . ' - ' . date("d/m/Y - H:i", strtotime($tmp[1]));
+                  }
+                }
+	            }
 	        } else {
 	            $prop = $prop_value;
 	        }
 	        self::$table->add_header(array("id" => "prop_header_$prop_key", "class" => "prop_header$class"),
 	                $prop);
 	        self::$nb_resp[$prop_value] = 0;
+	        if (\Program\Data\Poll::get_current_poll()->if_needed) {
+	          self::$nb_resp["$prop_value:if_needed"] = 0;
+	        }
 	    }
 	    if (o::get_env("action") == ACT_MODIFY_ALL) {
 	        self::$table->add_header(array("class" => "last_col"), Localization::g("Delete"));
@@ -654,7 +706,7 @@ class Show {
 	            if (!isset($month_list["$month $year"]))
 	                $month_list["$month $year"] = 0;
 	            $month_list["$month $year"]++;
-	             
+
 	            // Liste les date des propositions
 	            if (!isset($day_list["$day $d%%$month $year"]))
 	                $day_list["$day $d%%$month $year"] = 0;
@@ -721,6 +773,9 @@ class Show {
 	            self::$table->add(array("id" => "prop_header_$prop_key", "class" => "prop_header_time $class"),
 	                    $prop);
 	            self::$nb_resp[$prop_value] = 0;
+	            if (\Program\Data\Poll::get_current_poll()->if_needed) {
+	              self::$nb_resp["$prop_value:if_needed"] = 0;
+	            }
 	        }
 	        if (o::get_env("action") == ACT_MODIFY_ALL) {
 	            self::$table->add(array("class" => "last_col"), Localization::g("Delete"));
@@ -744,43 +799,107 @@ class Show {
 	    $resp = unserialize($response->response);
 	    if (!is_array($resp)) $resp = array();
 	    foreach (self::$proposals as $prop_key => $prop_value) {
-	        $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check_$prop_key", "name" => "check_$prop_key", "value" => "$prop_value"));
-	        if (isset($resp[$prop_value])
-	        && $resp[$prop_value]) {
-	            self::$table->add(array("title" => $prop_value, "class" => "prop_accepted prop_change customtooltip_bottom", "align" => "center"), $checkbox->show($prop_value));
-	            if (!isset(self::$nb_resp[$prop_value]))
-	                self::$nb_resp[$prop_value] = 0;
-	            self::$nb_resp[$prop_value]++;
-	            if (self::$nb_resp[$prop_value] > self::$max) self::$max = self::$nb_resp[$prop_value];
-	        } else {
-	            self::$table->add(array("title" => $prop_value, "class" => "prop_refused prop_change customtooltip_bottom", "align" => "center"), $checkbox->show());
-	        }
+        if (\Program\Data\Poll::get_current_poll()->if_needed) {
+          $checkbox = new \Program\Lib\HTML\html_radiobutton(array("id" => "check_$prop_key", "name" => "check_$prop_key"));
+          if (isset($resp[$prop_value])
+              && $resp[$prop_value]) {
+            $value = $prop_value;
+            $class = "prop_accepted";
+            if (!isset(self::$nb_resp[$prop_value]))
+              self::$nb_resp[$prop_value] = 0;
+            if (!isset(self::$nb_resp["$prop_value:if_needed"]))
+              self::$nb_resp["$prop_value:if_needed"] = 0;
+            self::$nb_resp[$prop_value]++;
+            if (self::$nb_resp[$prop_value] > self::$max) self::$max = self::$nb_resp[$prop_value];
+            if ((self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value])  > self::$max_if_needed) self::$max_if_needed = (self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value]);
+          }
+          elseif (isset($resp["$prop_value:if_needed"])
+              && $resp["$prop_value:if_needed"]) {
+            $value = "$prop_value:if_needed";
+            $class = "prop_if_needed";
+            if (!isset(self::$nb_resp[$prop_value]))
+              self::$nb_resp[$prop_value] = 0;
+            if (!isset(self::$nb_resp["$prop_value:if_needed"]))
+              self::$nb_resp["$prop_value:if_needed"] = 0;
+            self::$nb_resp["$prop_value:if_needed"]++;
+            if ((self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value])  > self::$max_if_needed) self::$max_if_needed = (self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value]);
+          }
+          else {
+            $value = false;
+            $class = "prop_refused";
+          }
+          // Gestion de la vue mobile
+          if (o::get_env("mobile"))
+            $br = '';
+          else
+            $br = \Program\Lib\HTML\html::tag('br');
+          self::$table->add(array("title" => $prop_value, "class" => "$class prop_change customtooltip_bottom", "align" => "center"),
+              $checkbox->show($value, ['value' => $prop_value, 'id' => "id$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "id$prop_value"], Localization::g('Yes')) . $br .
+              $checkbox->show($value, ['value' => "$prop_value:if_needed", 'id' => "idif_needed$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed$prop_value"], Localization::g('If needed')) . $br .
+              $checkbox->show($value, ['value' => false, 'id' => "iddeclined$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined$prop_value"], Localization::g('No'))
+          );
+        }
+        else {
+          $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check_$prop_key", "name" => "check_$prop_key", "value" => "$prop_value"));
+          if (isset($resp[$prop_value])
+              && $resp[$prop_value]) {
+            self::$table->add(array("title" => $prop_value, "class" => "prop_accepted prop_change customtooltip_bottom", "align" => "center"), $checkbox->show($prop_value));
+            if (!isset(self::$nb_resp[$prop_value]))
+              self::$nb_resp[$prop_value] = 0;
+            self::$nb_resp[$prop_value]++;
+            if (self::$nb_resp[$prop_value] > self::$max) self::$max = self::$nb_resp[$prop_value];
+          } else {
+            self::$table->add(array("title" => $prop_value, "class" => "prop_refused prop_change customtooltip_bottom", "align" => "center"), $checkbox->show());
+          }
+        }
 	    }
 	    $hidden_field = new \Program\Lib\HTML\html_hiddenfield(array("name" => "hidden_modify", "value" => $response->user_id));
 	    if (!o::get_env("mobile")) {
+	      if (\Program\Data\Poll::get_current_poll()->if_needed) {
 	        $a = \Program\Lib\HTML\html::a(
-	                array("onclick" => o::command("check_all"),
-	                    "class" => "check_all_button customtooltip_bottom",
-	                    "title" => Localization::g("Clic to check all checkboxes", false),
+	            array("onclick" => o::command("yes_to_all"),
+	                "class" => "yes_to_all_button customtooltip_bottom",
+	                "title" => Localization::g("Clic to check all yes radio", false),
+	            ),
+	            Localization::g('Yes')) . ' / ' .
+	            \Program\Lib\HTML\html::a(
+	                array("onclick" => o::command("if_needed_to_all"),
+	                    "class" => "if_needed_to_all_button customtooltip_bottom",
+	                    "title" => Localization::g("Clic to check all if needed radio", false),
 	                ),
-	                Localization::g('Check all')) . ' / ' .
+	                Localization::g('If needed')). ' / ' .
 	                \Program\Lib\HTML\html::a(
-	                        array("onclick" => o::command("uncheck_all"),
-	                            "class" => "uncheck_all_button customtooltip_bottom",
-	                            "title" => Localization::g("Clic to uncheck all checkboxes", false),
-	                        ),
-	                        Localization::g('Uncheck all'));
-	        self::$table->add(array("class" => "prop_cell_nobackground last_col two_buttons"),
-	                \Program\Lib\HTML\html::tag("input", array("class" => "pure-button pure-button-save customtooltip_bottom", "title" => Localization::g("Clic to save your responses", false), "type" => "submit", "value" => Localization::g("Modify response")))
-	                . $hidden_field->show()
-	                . " " .
-	                \Program\Lib\HTML\html::a(array("href" => o::url(null, ACT_DELETE_RESPONSE, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid, "t" => Session::getCSRFToken()), false), "id" => "button_delete_response", "class" => "pure-button pure-button-delete customtooltip_bottom", "title" => Localization::g("Clic to delete your response", false)),
-	                        \Program\Lib\HTML\html::img(array("src" => "skins/".o::get_env("skin")."/images/1397492211_RecycleBin.png", "height" => "15px"))
-	                )
-	        );
-	        self::$table->add("check_uncheck_all", $a);
+	                    array("onclick" => o::command("no_to_all"),
+	                        "class" => "no_to_all_button customtooltip_bottom",
+	                        "title" => Localization::g("Clic to check all no radio", false),
+	                    ),
+	                    Localization::g('No'));
+	      }
+	      else {
+          $a = \Program\Lib\HTML\html::a(
+                  array("onclick" => o::command("check_all"),
+                      "class" => "check_all_button customtooltip_bottom",
+                      "title" => Localization::g("Clic to check all checkboxes", false),
+                  ),
+                  Localization::g('Check all')) . ' / ' .
+                  \Program\Lib\HTML\html::a(
+                          array("onclick" => o::command("uncheck_all"),
+                              "class" => "uncheck_all_button customtooltip_bottom",
+                              "title" => Localization::g("Clic to uncheck all checkboxes", false),
+                          ),
+                          Localization::g('Uncheck all'));
+	      }
+        self::$table->add(array("class" => "prop_cell_nobackground last_col two_buttons"),
+                \Program\Lib\HTML\html::tag("input", array("class" => "pure-button pure-button-save customtooltip_bottom", "title" => Localization::g("Clic to save your responses", false), "type" => "submit", "value" => Localization::g("Modify response")))
+                . $hidden_field->show()
+                . " " .
+                \Program\Lib\HTML\html::a(array("href" => o::url(null, ACT_DELETE_RESPONSE, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid, "t" => Session::getCSRFToken()), false), "id" => "button_delete_response", "class" => "pure-button pure-button-delete customtooltip_bottom", "title" => Localization::g("Clic to delete your response", false)),
+                        \Program\Lib\HTML\html::img(array("src" => "skins/".o::get_env("skin")."/images/1397492211_RecycleBin.png", "height" => "15px"))
+                )
+        );
+        self::$table->add("check_uncheck_all", $a);
 	    }  else {
-	        self::$table->add(array("class" => "prop_cell_nobackground last_col"), $hidden_field->show());
+        self::$table->add(array("class" => "prop_cell_nobackground last_col"), $hidden_field->show());
 	    }
 	}
 	/**
@@ -796,17 +915,63 @@ class Show {
 	    $resp = unserialize($response->response);
 	    if (!is_array($resp)) $resp = array();
 	    foreach (self::$proposals as $prop_key => $prop_value) {
+	      if (\Program\Data\Poll::get_current_poll()->if_needed) {
+	        $checkbox = new \Program\Lib\HTML\html_radiobutton(array("id" => "check_$prop_key", "name" => "check_$prop_key"));
+	        if (isset($resp[$prop_value])
+	            && $resp[$prop_value]) {
+	          // L'utilisateur à répondu oui
+	          $value = $prop_value;
+	          $class = "prop_accepted";
+	          if (!isset(self::$nb_resp[$prop_value]))
+	            self::$nb_resp[$prop_value] = 0;
+	          if (!isset(self::$nb_resp["$prop_value:if_needed"]))
+	            self::$nb_resp["$prop_value:if_needed"] = 0;
+	          self::$nb_resp[$prop_value]++;
+	          if (self::$nb_resp[$prop_value] > self::$max) self::$max = self::$nb_resp[$prop_value];
+	          if ((self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value])  > self::$max_if_needed) self::$max_if_needed = (self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value]);
+	        }
+	        elseif (isset($resp["$prop_value:if_needed"])
+	            && $resp["$prop_value:if_needed"]) {
+	          // L'utilisateur à répondu si besoin
+	          $value = "$prop_value:if_needed";
+	          $class = "prop_if_needed";
+	          if (!isset(self::$nb_resp[$prop_value]))
+	            self::$nb_resp[$prop_value] = 0;
+	          if (!isset(self::$nb_resp["$prop_value:if_needed"]))
+	            self::$nb_resp["$prop_value:if_needed"] = 0;
+	          self::$nb_resp["$prop_value:if_needed"]++;
+	          if ((self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value])  > self::$max_if_needed) self::$max_if_needed = (self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value]);
+	        }
+	        else {
+	          // L'utilisateur à répondu non
+	          $value = false;
+	          $class = "prop_refused";
+	        }
+	        // Gestion de la vue mobile
+	        if (o::get_env("mobile"))
+            $br = '';
+          else
+            $br = \Program\Lib\HTML\html::tag('br');
+          // Ajout des boutons radio
+	        self::$table->add(array("title" => $prop_value, "class" => "$class prop_change customtooltip_bottom", "align" => "center"),
+	            $checkbox->show($value, ['value' => $prop_value, 'id' => "id$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "id$prop_value"], Localization::g('Yes')) . $br .
+	            $checkbox->show($value, ['value' => "$prop_value:if_needed", 'id' => "idif_needed$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed$prop_value"], Localization::g('If needed')) . $br .
+	            $checkbox->show($value, ['value' => false, 'id' => "iddeclined$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined$prop_value"], Localization::g('No'))
+	        );
+	      }
+	      else {
 	        $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check_$prop_key", "name" => "check_$prop_key", "value" => "$prop_value"));
 	        if (isset($resp[$prop_value])
-	        && $resp[$prop_value]) {
-	            self::$table->add(array("title" => $prop_value, "class" => "prop_accepted prop_change customtooltip_bottom", "align" => "center"), $checkbox->show($prop_value));
-	            if (!isset(self::$nb_resp[$prop_value]))
-	                self::$nb_resp[$prop_value] = 0;
-	            self::$nb_resp[$prop_value]++;
-	            if (self::$nb_resp[$prop_value] > self::$max) self::$max = self::$nb_resp[$prop_value];
+	            && $resp[$prop_value]) {
+	          self::$table->add(array("title" => $prop_value, "class" => "prop_accepted prop_change customtooltip_bottom", "align" => "center"), $checkbox->show($prop_value));
+	          if (!isset(self::$nb_resp[$prop_value]))
+	            self::$nb_resp[$prop_value] = 0;
+	          self::$nb_resp[$prop_value]++;
+	          if (self::$nb_resp[$prop_value] > self::$max) self::$max = self::$nb_resp[$prop_value];
 	        } else {
-	            self::$table->add(array("title" => $prop_value, "class" => "prop_refused prop_change customtooltip_bottom", "align" => "center"), $checkbox->show());
+	          self::$table->add(array("title" => $prop_value, "class" => "prop_refused prop_change customtooltip_bottom", "align" => "center"), $checkbox->show());
 	        }
+	      }
 	    }
 	    $hidden_field = new \Program\Lib\HTML\html_hiddenfield(array("name" => "hidden_modify", "value" => $response->user_id));
 	    if (!o::get_env("mobile")) {
@@ -820,6 +985,153 @@ class Show {
 	    }  else {
 	        self::$table->add(array("class" => "prop_cell_nobackground last_col"), $hidden_field->show());
 	    }
+	}
+	/**
+	 * Génération de l'affichage des freebusy pour l'utilisateur courant
+	 */
+	private static function view_user_freebusy() {
+    if (!\Program\Data\User::isset_current_user()
+        || !\Program\Data\Poll::isset_current_poll()
+        || \Program\Data\Poll::get_current_poll()->type != "date") {
+      return;
+    }
+    try {
+      // Récupération du timezone depuis le Driver
+      $timezone = \Program\Lib\Event\Drivers\Driver::get_driver()->get_user_timezone();
+      // Parcourir les proposition pour trouver le start et end
+      foreach (self::$proposals as $prop_key => $prop_value) {
+        if (strpos($prop_value, ' - ')) {
+          $prop = explode(' - ', $prop_value, 2);
+          $prop_start = new \DateTime($prop[0], $timezone);
+          $prop_end = new \DateTime($prop[1], $timezone);
+        }
+        else {
+          $prop_start = new \DateTime($prop_value, $timezone);
+          $prop_end = clone $prop_start;
+          $prop_end->add(new \DateInterval('P1D'));
+        }
+        if (!isset($start)
+            && !isset($end)) {
+          // Positionnement de la date de début et de fin
+          $start = $prop_start;
+          $end = $prop_end;
+        }
+        else {
+          if ($prop_end > $end) {
+            // Si tmp est supérieur, on conserve comme fin
+            $end = $prop_end;
+          }
+          if ($prop_start < $start) {
+            // Si tmp est inférieur, on conserve comme début
+            $start = $prop_start;
+          }
+        }
+      }
+      // Récupération des événements depuis le Driver
+      $events = \Program\Lib\Event\Drivers\Driver::get_driver()->get_user_freebusy($start, $end);
+      // Ajout de la nouvelle ligne
+      self::$table->add_row(array("class" => "prop_row_freebusy"));
+      self::$table->add(
+          array(
+              "class" => "user_freebusy_first_col user_calendar first_col customtooltip_bottom",
+              "title" => Localization::g("Your freebusy title", false)
+          ), Localization::g("Your freebusy"));
+      // Parcour les événements
+      foreach ($events as $event) {
+        // Parcour les propositions pour la comparaison
+        foreach (self::$proposals as $prop_key => $prop_value) {
+          if (strpos($prop_value, ' - ')) {
+            $prop = explode(' - ', $prop_value, 2);
+            if ($event->allday) {
+              $prop_start = new \DateTime($prop[0], new \DateTimeZone('UTC'));
+              $prop_end = new \DateTime($prop[1], new \DateTimeZone('UTC'));
+            }
+            else {
+              $prop_start = new \DateTime($prop[0], $timezone);
+              $prop_end = new \DateTime($prop[1], $timezone);
+            }
+
+          }
+          else {
+            if ($event->allday) {
+              $prop_start = new \DateTime($prop_value, new \DateTimeZone('UTC'));
+            }
+            else {
+              $prop_start = new \DateTime($prop_value, $timezone);
+            }
+            $prop_end = clone $prop_start;
+            $prop_end->add(new \DateInterval('P1D'));
+          }
+          if ($event->start <= $prop_start && $event->end > $prop_start
+              || $event->start < $prop_end && $event->end >= $prop_end
+              || $event->start >= $prop_start && $event->start < $prop_end
+              || $event->end > $prop_start && $event->end <= $prop_end) {
+            if (!isset($freebusy[$prop_key])) {
+              $freebusy[$prop_key] = array();
+            }
+            if (isset($event->status))
+              $status = ucfirst(strtolower($event->status));
+            else
+              $status = 'None';
+            if ($event->allday) {
+              $event_end_date = clone $event->end;
+              $event_end_date->sub(new \DateInterval('P1D'));
+              if ($event->start->format('d/m/Y') == $event_end_date->format('d/m/Y')) {
+                $date = $event->start->format('d/m/Y');
+              }
+              else {
+                $date = $event->start->format('d/m/Y') . ' - ' . $event_end_date->format('d/m/Y');
+              }
+            }
+            else {
+              if ($event->start->format('dmY') != $event->end->format('dmY')) {
+                $date = $event->start->format('d/m/Y H:i') . ' - ' . $event->end->format('d/m/Y H:i');
+              }
+              else {
+                $date = $event->start->format('H:i') . ' - ' . $event->end->format('H:i');
+              }
+            }
+            // Ajoute l'évènement à la liste des freebusy
+            $freebusy[$prop_key][] = array(
+                'status' => $status,
+                'title' => $event->title,
+                'date' => $date,
+            );
+          }
+        }
+      }
+      // Parcourir les propositions
+      foreach (self::$proposals as $prop_key => $prop_value) {
+        $status = 'None';
+        $title = '';
+        $count = '';
+        if (isset($freebusy[$prop_key])) {
+          foreach($freebusy[$prop_key] as $event) {
+            if ($status == 'None' || $event['status'] == 'Confirmed')
+              $status = $event['status'];
+            if ($title != "") $title .= " / ";
+            $title .= $event['date'] . " " . $event['title'];
+          }
+          $count = ' ('.count($freebusy[$prop_key]).')';
+          // Si c'est annulé, on le rend libre
+          if ($status == 'Cancelled') $status = 'None';
+        }
+        else {
+          $title = Localization::g($status);
+        }
+        // Ajoute le champ de status à la table
+        self::$table->add(
+            array(
+                "title" => $title,
+                "class" => "freebusy_".strtolower($status)." customtooltip_bottom",
+                "align" => "center"), Localization::g($status).$count);
+      }
+      // Ajout de la derniere colonne
+      self::$table->add(array("class" => "prop_cell_nobackground last_col"), " ");
+    }
+    catch(\Exception $ex) {
+      return;
+    }
 	}
 	/**
 	 * Génération de l'affichage pour un utilisateur qui a répondu
@@ -838,9 +1150,10 @@ class Show {
 	    if (!\Program\Data\User::isset_current_user()) {
 	        $name = self::AnonymName($name, $user->auth);
 	    }
-	    $authenticate_class = $user->auth === 1 ? " user_authenticate" : "";
+	    $authenticate_class = $user->auth === 1 ? " user_authenticate" : (!empty($user->email) ? " user_email" : "");
 	    if (\Program\Data\User::isset_current_user()
-	           && $response->user_id == \Program\Data\User::get_current_user()->user_id) {
+	           && $response->user_id == \Program\Data\User::get_current_user()->user_id
+	        || Session::get("user_noauth_id") == $response->user_id) {
 	        // Ajout de la nouvelle ligne
 	        self::$table->add_row(array("class" => "prop_row_elements prop_current_user_elements"));
 	        self::$table->add(array("class" => "user_list_name user_list_name_connected first_col customtooltip_bottom$authenticate_class", "title" => ($user->auth === 1 ? Localization::g("User authenticate", false) : Localization::g("User not authenticate", false)) . " : $name"), $name);
@@ -863,8 +1176,20 @@ class Show {
 	            self::$table->add(array("class" => "prop_accepted customtooltip_bottom $class", "align" => "center", "title" => "$prop_value"), Localization::g("Ok"));
 	            if (!isset(self::$nb_resp[$prop_value]))
 	                self::$nb_resp[$prop_value] = 0;
+	            if (!isset(self::$nb_resp["$prop_value:if_needed"]))
+	              self::$nb_resp["$prop_value:if_needed"] = 0;
 	            self::$nb_resp[$prop_value]++;
 	            if (self::$nb_resp[$prop_value] > self::$max) self::$max = self::$nb_resp[$prop_value];
+	            if ((self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value])  > self::$max_if_needed) self::$max_if_needed = (self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value]);
+	        } elseif (isset($resp["$prop_value:if_needed"])
+	            && $resp["$prop_value:if_needed"]) {
+	          self::$table->add(array("class" => "prop_if_needed customtooltip_bottom $class", "align" => "center", "title" => "$prop_value"), Localization::g("If needed"));
+	          if (!isset(self::$nb_resp[$prop_value]))
+	            self::$nb_resp[$prop_value] = 0;
+	          if (!isset(self::$nb_resp["$prop_value:if_needed"]))
+	            self::$nb_resp["$prop_value:if_needed"] = 0;
+	          self::$nb_resp["$prop_value:if_needed"]++;
+	          if ((self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value])  > self::$max_if_needed) self::$max_if_needed = (self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value]);
 	        } else {
 	            self::$table->add(array("class" => "prop_refused customtooltip_bottom $class", "title" => "$prop_value"), "");
 	        }
@@ -885,15 +1210,61 @@ class Show {
 	    $resp = unserialize($response->response);
 	    if (!is_array($resp)) $resp = array();
 	    foreach (self::$proposals as $prop_key => $prop_value) {
+	      if (\Program\Data\Poll::get_current_poll()->if_needed) {
+	        $checkbox = new \Program\Lib\HTML\html_radiobutton(array("id" => "check--".$response->user_id."--$prop_key", "name" => "check--".$response->user_id."--$prop_key"));
+	        if (isset($resp[$prop_value])
+	            && $resp[$prop_value]) {
+	          // L'utilisateur à répondu oui
+	          $value = $prop_value;
+	          $class = "prop_accepted";
+	          if (!isset(self::$nb_resp[$prop_value]))
+	            self::$nb_resp[$prop_value] = 0;
+	          if (!isset(self::$nb_resp["$prop_value:if_needed"]))
+	            self::$nb_resp["$prop_value:if_needed"] = 0;
+	          self::$nb_resp[$prop_value]++;
+	          if (self::$nb_resp[$prop_value] > self::$max) self::$max = self::$nb_resp[$prop_value];
+	          if ((self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value])  > self::$max_if_needed) self::$max_if_needed = (self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value]);
+	        }
+	        elseif (isset($resp["$prop_value:if_needed"])
+	            && $resp["$prop_value:if_needed"]) {
+	          // L'utilisateur à répondu si besoin
+	          $value = "$prop_value:if_needed";
+	          $class = "prop_if_needed";
+	          if (!isset(self::$nb_resp[$prop_value]))
+	            self::$nb_resp[$prop_value] = 0;
+	          if (!isset(self::$nb_resp["$prop_value:if_needed"]))
+	            self::$nb_resp["$prop_value:if_needed"] = 0;
+	          self::$nb_resp["$prop_value:if_needed"]++;
+	          if ((self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value])  > self::$max_if_needed) self::$max_if_needed = (self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value]);
+	        }
+	        else {
+	          // L'utilisateur à répondu non
+	          $value = false;
+	          $class = "prop_refused";
+	        }
+	        // Gestion de la vue mobile
+	        if (o::get_env("mobile"))
+	          $br = '';
+	        else
+	          $br = \Program\Lib\HTML\html::tag('br');
+	        // Ajout des boutons radio
+	        self::$table->add(array("title" => $prop_value, "class" => "$class", "align" => "center"),
+	            $checkbox->show($value, ['value' => $prop_value, 'id' => "id".$response->user_id."--$prop_key"]) . \Program\Lib\HTML\html::label(['for' => "id".$response->user_id."--$prop_key"], Localization::g('Yes')) . $br .
+	            $checkbox->show($value, ['value' => "$prop_value:if_needed", 'id' => "idif_needed".$response->user_id."--$prop_key"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed".$response->user_id."--$prop_key"], Localization::g('If needed')) . $br .
+	            $checkbox->show($value, ['value' => false, 'id' => "iddeclined".$response->user_id."--$prop_key"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined".$response->user_id."--$prop_key"], Localization::g('No'))
+	        );
+	      }
+	      else {
 	        $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check--".$response->user_id."--$prop_key", "name" => "check--".$response->user_id."--$prop_key", "value" => "$prop_value"));
 	        if (isset($resp[$prop_value])
-	                && $resp[$prop_value]) {
-	            self::$table->add(array("class" => "prop_accepted", "align" => "center"), $checkbox->show($prop_value));
-	            self::$nb_resp[$prop_value]++;
-	            if (self::$nb_resp[$prop_value] > self::$max) self::$max = self::$nb_resp[$prop_value];
+	            && $resp[$prop_value]) {
+	          self::$table->add(array("class" => "prop_accepted", "align" => "center"), $checkbox->show($prop_value));
+	          self::$nb_resp[$prop_value]++;
+	          if (self::$nb_resp[$prop_value] > self::$max) self::$max = self::$nb_resp[$prop_value];
 	        } else {
-	            self::$table->add(array("class" => "prop_refused", "align" => "center"), $checkbox->show());
+	          self::$table->add(array("class" => "prop_refused", "align" => "center"), $checkbox->show());
 	        }
+	      }
 	    }
 	    $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "delete--".$response->user_id, "name" => "delete--".$response->user_id, "value" => Localization::g("Delete")));
 	    self::$table->add(array("align" => "center", "class" => "prop_cell_nobackground last_col"), $checkbox->show());
@@ -911,9 +1282,9 @@ class Show {
 	    } else {
 	        $input_name = new \Program\Lib\HTML\html_inputfield(array("style" => "width: 100%;", "type" => "text", "id" => "user_username", "name" => "user_username", "placeholder" => Localization::g("Your name"), "required" => "required"));
 	        $input_email = new \Program\Lib\HTML\html_inputfield(array("style" => "width: 100%;", "type" => "text", "id" => "user_email", "name" => "user_email", "placeholder" => Localization::g("Your email")));
-	        $html = \Program\Lib\HTML\html::div(array("id" => "div_show_more_inputs"), 
-	                    \Program\Lib\HTML\html::span(array(), Localization::g("Put your email if you want to received notifications")) 
-	                    . $input_email->show() 
+	        $html = \Program\Lib\HTML\html::div(array("id" => "div_show_more_inputs"),
+	                    \Program\Lib\HTML\html::span(array(), Localization::g("Put your email if you want to received notifications"))
+	                    . $input_email->show()
 	                    . \Program\Lib\HTML\html::a(
         	                        array("onclick" => o::command("hide_attendees"),
         	                                "class" => "hide_attendees_button customtooltip_bottom",
@@ -930,23 +1301,63 @@ class Show {
 	                    );
 	        self::$table->add(array("class" => "first_col"), $input_name->show() . $html);
 	    }
-	    foreach (self::$proposals as $prop_key => $prop_value) {	        
+	    foreach (self::$proposals as $prop_key => $prop_value) {
+	      if (\Program\Data\Poll::get_current_poll()->if_needed) {
+	        $checkbox = new \Program\Lib\HTML\html_radiobutton(array("id" => "check_$prop_key", "name" => "check_$prop_key"));
+	        // Gestion de la vue mobile
+	        if (o::get_env("mobile"))
+	          $br = '';
+	        else
+	          $br = \Program\Lib\HTML\html::tag('br');
+	        // Ajout des boutons radio
+	        self::$table->add(array("title" => $prop_value, "class" => "prop_not_responded prop_change customtooltip_bottom", "align" => "center"),
+	            $checkbox->show('', ['value' => $prop_value, 'id' => "id$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "id$prop_value"], Localization::g('Yes')) . $br .
+	            $checkbox->show('', ['value' => "$prop_value:if_needed", 'id' => "idif_needed$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed$prop_value"], Localization::g('If needed')) . $br .
+	            $checkbox->show('', ['value' => false, 'id' => "iddeclined$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined$prop_value"], Localization::g('No'))
+	        );
+	      }
+	      else {
 	        $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check_$prop_key", "name" => "check_$prop_key", "value" => "$prop_value"));
 	        self::$table->add(array("title" => $prop_value, "class" => "prop_not_responded customtooltip_bottom", "align" => "center"), $checkbox->show());
+	      }
+
 	    }
 	    if (!o::get_env("mobile")) {
-	        $a = \Program\Lib\HTML\html::a(
-	                array("onclick" => o::command("check_all"),
-	                    "class" => "check_all_button customtooltip_bottom",
-	                    "title" => Localization::g("Clic to check all checkboxes", false),
-	                ),
-	                Localization::g('Check all')) . ' / ' .
-	                \Program\Lib\HTML\html::a(
-	                        array("onclick" => o::command("uncheck_all"),
-	                            "class" => "uncheck_all_button customtooltip_bottom",
-	                            "title" => Localization::g("Clic to uncheck all checkboxes", false),
-	                        ),
-	                        Localization::g('Uncheck all'));
+	        if (\Program\Data\Poll::get_current_poll()->if_needed) {
+	          $a = \Program\Lib\HTML\html::a(
+	              array("onclick" => o::command("yes_to_all"),
+	                  "class" => "yes_to_all_button customtooltip_bottom",
+	                  "title" => Localization::g("Clic to check all yes radio", false),
+	              ),
+	              Localization::g('Yes')) . ' / ' .
+	              \Program\Lib\HTML\html::a(
+	                  array("onclick" => o::command("if_needed_to_all"),
+	                      "class" => "if_needed_to_all_button customtooltip_bottom",
+	                      "title" => Localization::g("Clic to check all if needed radio", false),
+	                  ),
+	                  Localization::g('If needed')). ' / ' .
+	              \Program\Lib\HTML\html::a(
+	                  array("onclick" => o::command("no_to_all"),
+	                      "class" => "no_to_all_button customtooltip_bottom",
+	                      "title" => Localization::g("Clic to check all no radio", false),
+	                  ),
+	                  Localization::g('No'));
+	        }
+	        else {
+	          $a = \Program\Lib\HTML\html::a(
+	              array("onclick" => o::command("check_all"),
+	                  "class" => "check_all_button customtooltip_bottom",
+	                  "title" => Localization::g("Clic to check all checkboxes", false),
+	              ),
+	              Localization::g('Check all')) . ' / ' .
+	              \Program\Lib\HTML\html::a(
+	                  array("onclick" => o::command("uncheck_all"),
+	                      "class" => "uncheck_all_button customtooltip_bottom",
+	                      "title" => Localization::g("Clic to uncheck all checkboxes", false),
+	                  ),
+	                  Localization::g('Uncheck all'));
+	        }
+
 	        self::$table->add(array("class" => "prop_cell_nobackground last_col"),
 	                \Program\Lib\HTML\html::tag("input", array("class" => "pure-button pure-button-save customtooltip_bottom", "title" => Localization::g("Clic to save your responses", false), "type" => "submit", "value" => Localization::g("Save")))
 	        );
@@ -992,7 +1403,7 @@ class Show {
 	        );
 	    } else {
 	        self::$table->add(array("class" => "first_col"), "");
-	    }	    
+	    }
 	    $best_proposals = array();
 	    foreach (self::$proposals as $prop_key => $prop_value) {
 	        if (!isset(self::$nb_resp[$prop_value]))
@@ -1003,25 +1414,41 @@ class Show {
 	            $class .= "validate_prop_td ";
 	        }
 	        if (self::$max == self::$nb_resp[$prop_value]
-	               && self::$max != 0) {
-	            $class .= "prop_best";
-	            $prop = $prop_value;
-	            if (\Program\Data\Poll::get_current_poll()->type == "date") {
-	                $values = explode(' - ', $prop_value);
-	                $time = strtotime($values[0]);
-	                $month = Localization::g(date("F", $time));
-	                $day = Localization::g(date("l", $time));
-	                $d = date("d", $time);
-	                $year = date("Y", $time);
-	                $hour = date("H", $time);
-	                $minute = date("i", $time);
-	                $prop = "$day $d $month $year";
-	                if (strlen($values[0]) != 10)
-	                    $prop .= " - ".$hour."h".$minute;
-	            }
-	            $best_proposals[] = '"'.$prop.'" ('.self::$nb_resp[$prop_value].' '. (self::$nb_resp[$prop_value] > 1 ? Localization::g('responses') : Localization::g('response')) .')';
+	            && self::$max != 0
+ 	            && !\Program\Data\Poll::get_current_poll()->if_needed
+	            || self::$max == self::$nb_resp[$prop_value]
+	            && self::$max != 0
+	            && isset(self::$nb_resp["$prop_value:if_needed"])
+	            && self::$max_if_needed == (self::$nb_resp["$prop_value:if_needed"] * 0.1 + self::$nb_resp[$prop_value])) {
+            $class .= "prop_best";
+            $prop = $prop_value;
+            if (\Program\Data\Poll::get_current_poll()->type == "date") {
+                $values = explode(' - ', $prop_value);
+                $time = strtotime($values[0]);
+                $month = Localization::g(date("F", $time));
+                $day = Localization::g(date("l", $time));
+                $d = date("d", $time);
+                $year = date("Y", $time);
+                $hour = date("H", $time);
+                $minute = date("i", $time);
+                $prop = "$day $d $month $year";
+                if (strlen($values[0]) != 10)
+                    $prop .= " - ".$hour."h".$minute;
+            }
+            if (isset(self::$nb_resp["$prop_value:if_needed"])) {
+              $best_proposals[] = '"'.$prop.'" ('.self::$nb_resp[$prop_value].' ('.self::$nb_resp["$prop_value:if_needed"].') '. (self::$nb_resp[$prop_value] > 1 ? Localization::g('responses') : Localization::g('response')) .')';
+            }
+            else {
+              $best_proposals[] = '"'.$prop.'" ('.self::$nb_resp[$prop_value].' '. (self::$nb_resp[$prop_value] > 1 ? Localization::g('responses') : Localization::g('response')) .')';
+            }
 	        }
-	        self::$table->add(array("class" => $class, "align" => "center"), "".self::$nb_resp[$prop_value]."");
+	        if (isset(self::$nb_resp["$prop_value:if_needed"])
+	            && self::$nb_resp["$prop_value:if_needed"] != 0) {
+	          self::$table->add(array("class" => "$class customtooltip_bottom  tooltipstered", "align" => "center", "title" => Localization::g('Ok')." (".Localization::g('If needed').")"), "".self::$nb_resp[$prop_value]." (".self::$nb_resp["$prop_value:if_needed"].")");
+	        }
+	        else {
+	          self::$table->add(array("class" => "$class customtooltip_bottom  tooltipstered", "align" => "center", "title" => Localization::g('Ok')), "".self::$nb_resp[$prop_value]."");
+	        }
 	    }
 	    o::set_env("best_proposals", $best_proposals);
 	    self::$table->add(array("class" => "last_col"), "");
@@ -1050,14 +1477,14 @@ class Show {
 	                    ),
 	                    Localization::g("Validate proposal"));
 	        }
-	        
+
 	        if (\Program\Data\Poll::get_current_poll()->type == "date") {
 	            if (\Program\Data\User::isset_current_user()
 	                   && \Config\IHM::$ADD_TO_CALENDAR) {
-	                if (!\Program\Lib\Event\Event::IsEventExists($prop_value)) {
+	                if (!\Program\Lib\Event\Drivers\Driver::get_driver()->event_exists($prop_value, null, null, \Program\Data\Event::STATUS_CONFIRMED)) {
 	                   $html .= \Program\Lib\HTML\html::a(
 	                               array("onclick" => o::command("show_add_to_calendar", o::url("ajax", ACT_ADD_CALENDAR, null, false), ACT_ADD_CALENDAR, array("prop_key" => $prop_key, "poll_uid" => \Program\Data\Poll::get_current_poll()->poll_uid, "token" => Session::getCSRFToken())),
-                                           "class" => "pure-button pure-button-calendar customtooltip_bottom", 
+                                           "class" => "pure-button pure-button-calendar customtooltip_bottom",
 	                                       "title" => Localization::g("Clic to add this proposal to your calendar", false),
 	                                       "style" => (!isset(self::$validate_proposals[$prop_value]) ? "display: none;" : ""),
 	                                       ),
@@ -1072,9 +1499,9 @@ class Show {
 	                }
 	            } else {
 	                $html .= \Program\Lib\HTML\html::a(
-	                               array("target" => "_blank", 
-	                                       "href" => o::url(null, ACT_DOWNLOAD_ICS, array("prop" => $prop_key, "u" => \Program\Data\Poll::get_current_poll()->poll_uid, "t" => Session::getCSRFToken()), false), 
-	                                       "class" => "pure-button pure-button-calendar customtooltip_bottom", 
+	                               array("target" => "_blank",
+	                                       "href" => o::url(null, ACT_DOWNLOAD_ICS, array("prop" => $prop_key, "u" => \Program\Data\Poll::get_current_poll()->poll_uid, "t" => Session::getCSRFToken()), false),
+	                                       "class" => "pure-button pure-button-calendar customtooltip_bottom",
 	                                       "title" => Localization::g("Clic to download ICS of the proposal and add it to your calendar client", false),
 	                                       "style" => (!isset(self::$validate_proposals[$prop_value]) ? "display: none;" : ""),
 	                                       ),
@@ -1095,7 +1522,7 @@ class Show {
 	    }
 	    self::$table->add(array("class" => "last_col"), "");
 	}
-	
+
 	/**
 	 * Rend les noms anonyme en les formattant à l'affichage
 	 * @param string $name le nom a anonymiser
@@ -1118,7 +1545,7 @@ class Show {
 	        $ano_name = "";
 	        // Si c'est un utilisateur authentifié, on se base sur les norme (majuscule pour le nom, première majuscule pour le prénom)
 	        foreach ($names as $_name) {
-	            if ($_name == '-' 
+	            if ($_name == '-'
 	                    || strpos($_name, '(') === 0) {
 	                // Si on arrive au - ou a la ( c'est qu'on n'est plus dans le nom
 	                break;
@@ -1137,5 +1564,5 @@ class Show {
 	        }
 	    }
 	    return $ano_name;
-	} 
+	}
 }

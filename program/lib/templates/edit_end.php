@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -24,15 +24,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 namespace Program\Lib\Templates;
+
 // Utilisation des namespaces
-use Program\Lib\Request\Request as Request;
-use Program\Lib\Request\Session as Session;
-use Program\Lib\Request\Output as o;
-use Program\Lib\Request\Localization as Localization;
+use
+    Program\Lib\Request\Request as Request,
+    Program\Lib\Request\Session as Session,
+    Program\Lib\Request\Output as o,
+    Program\Lib\Request\Localization as Localization;
 
 /**
  * Classe de gestion de l'édition du sondage
- * 
+ *
  * @package    Lib
  * @subpackage Request
  */
@@ -41,7 +43,7 @@ class Edit_end {
 	 *  Constructeur privé pour ne pas instancier la classe
 	 */
 	private function __construct() { }
-	
+
 	/**
 	 * Execution de la requête
 	 */
@@ -59,7 +61,7 @@ class Edit_end {
 	    $csrf_token = trim(strtolower(Request::getInputValue("csrf_token", POLL_INPUT_POST)));
 	    if (Session::validateCSRFToken($csrf_token)) {
             // récupération des données de post
-            if (!o::get_env("mobile") 
+            if (!o::get_env("mobile")
                     || \Program\Data\Poll::get_current_poll()->type == "prop") {
                 $post = $_POST;
             } else {
@@ -68,9 +70,9 @@ class Edit_end {
                     if (strpos($key, "edit_date_start") === 0
                             && $value != "") {
                         $id = str_replace("edit_date_start", "", $key);
-                        $post["edit_date$id"] = Request::getInputValue($key, POLL_INPUT_POST) 
-                                . (isset($_POST["edit_time_start$id"]) && $_POST["edit_time_start$id"] != "" ? " " . Request::getInputValue("edit_time_start$id", POLL_INPUT_POST) : "") 
-                                . (isset($_POST["edit_date_end$id"]) && $_POST["edit_date_end$id"] != "" ? " - " . Request::getInputValue("edit_date_end$id", POLL_INPUT_POST) : "") 
+                        $post["edit_date$id"] = Request::getInputValue($key, POLL_INPUT_POST)
+                                . (isset($_POST["edit_time_start$id"]) && $_POST["edit_time_start$id"] != "" ? " " . Request::getInputValue("edit_time_start$id", POLL_INPUT_POST) : "")
+                                . (isset($_POST["edit_date_end$id"]) && $_POST["edit_date_end$id"] != "" ? " - " . Request::getInputValue("edit_date_end$id", POLL_INPUT_POST) : "")
                                 . (isset($_POST["edit_time_end$id"]) && $_POST["edit_time_end$id"] != "" && isset($_POST["edit_date_end$id"]) && $_POST["edit_date_end$id"] != "" ? " " . Request::getInputValue("edit_time_end$id", POLL_INPUT_POST) : "");
                     }
                 }
@@ -78,7 +80,7 @@ class Edit_end {
     	    // Génération des propositions du sondage
     	    $proposals = array();
     	    foreach($post as $key => $value) {
-    	        if (strpos($key, "edit_date") === 0 
+    	        if (strpos($key, "edit_date") === 0
     	                || strpos($key, "edit_prop") === 0 ) {
     	            $val = Request::getInputValue($key, POLL_INPUT_POST);
     	            if (empty($val)
@@ -109,8 +111,8 @@ class Edit_end {
 	public static function GetPublicUrl($newtab = false) {
 	    $url = o::get_poll_url();
 	    $params = array(
-	            "title" => Localization::g("Copy this url to share your poll", false), 
-	            "class" => "public_url_link customtooltip_bottom", 
+	            "title" => Localization::g("Copy this url to share your poll", false),
+	            "class" => "public_url_link customtooltip_bottom",
 	            "href" => $url);
 	    if ($newtab) $params['target'] = "_blank";
 	    return \Program\Lib\HTML\html::a($params, $url);

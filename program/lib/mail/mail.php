@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -26,23 +26,24 @@
 namespace Program\Lib\Mail;
 
 // Utilisation des namespaces
-use Program\Lib\Log\Log as Log;
-use Program\Lib\Request\Output as Output;
-use Program\Lib\Request\Request as Request;
-use Program\Lib\Request\Localization as Localization;
+use
+    Program\Lib\Log\Log as Log,
+    Program\Lib\Request\Output as Output,
+    Program\Lib\Request\Request as Request,
+    Program\Lib\Request\Localization as Localization;
 
 /**
  * Classe de gestion des mails
- * 
+ *
  * @package    Lib
  * @subpackage Mail
  */
-class Mail {	
+class Mail {
 	/**
 	 *  Constructeur privé pour ne pas instancier la classe
 	 */
 	private function __construct() { }
-	
+
 	/**
 	 * Méthode pour envoyer un message
 	 * @param string $from adresse utilisée pour envoyer le message
@@ -62,9 +63,9 @@ class Mail {
 	    if (isset($bcc)) {
 	        $headers[] = "Bcc: " . $bcc;
 	    }
-	    $headers[] = "X-Mailer: ".quoted_printable_encode(\Config\IHM::$TITLE."/".VERSION);
+	    $headers[] = "X-Mailer: ".quoted_printable_encode(\Config\IHM::$TITLE."/".VERSION.'-'.BUILD);
 	    $envelopefrom = "-f $from";
-	    
+
 	    return mail($to, mb_encode_mimeheader(utf8_decode($subject)), $body, implode("\r\n", $headers), $envelopefrom);
 	}
 	/**
@@ -80,14 +81,30 @@ class Mail {
 	    $from = \Config\IHM::$FROM_MAIL;
 	    $to = '=?UTF-8?B?'.base64_encode('"'.$user->fullname.'"').'?='."\r\n <" . $user->email . ">";
 	    $body .= Localization::g("Mail sent by a robot", false);
-        // Replace elements	    
+        // Replace elements
 	    $subject = str_replace("%%app_name%%", \Config\IHM::$TITLE, $subject);
 	    $subject = str_replace("%%poll_title%%", $poll->title, $subject);
 	    $body = str_replace("%%app_name%%", \Config\IHM::$TITLE, $body);
 	    $body = str_replace("%%poll_title%%", $poll->title, $body);
+	    // Gestion de l'emplacement
+	    if (!empty($poll->location)) {
+	      $location =  "\r\n\r\n" . Localization::g('Edit location', false) . ": " . $poll->location;
+	    }
+	    else {
+	      $location = '';
+	    }
+	    $body = str_replace("%%poll_location%%", $location, $body);
+	    // Gestion de la description
+	    if (!empty($poll->description)) {
+	      $description =  "\r\n\r\n" . Localization::g('Edit description', false) . ":\r\n" . $poll->description;
+	    }
+	    else {
+	      $description = '';
+	    }
+	    $body = str_replace("%%poll_description%%", $description, $body);
 	    $body = str_replace("%%poll_url%%", Output::get_poll_url($poll), $body);
 	    $body = str_replace("%%user_fullname%%", $user->fullname, $body);
-	    
+
 	    return self::SendMail($from, $to, $subject, $body);
 	}
 	/**
@@ -110,9 +127,25 @@ class Mail {
 	    $subject = str_replace("%%poll_title%%", $poll->title, $subject);
 	    $body = str_replace("%%app_name%%", \Config\IHM::$TITLE, $body);
 	    $body = str_replace("%%poll_title%%", $poll->title, $body);
+	    // Gestion de l'emplacement
+	    if (!empty($poll->location)) {
+	      $location =  "\r\n\r\n" . Localization::g('Edit location', false) . ": " . $poll->location;
+	    }
+	    else {
+	      $location = '';
+	    }
+	    $body = str_replace("%%poll_location%%", $location, $body);
+	    // Gestion de la description
+	    if (!empty($poll->description)) {
+	      $description =  "\r\n\r\n" . Localization::g('Edit description', false) . ":\r\n" . $poll->description;
+	    }
+	    else {
+	      $description = '';
+	    }
+	    $body = str_replace("%%poll_description%%", $description, $body);
 	    $body = str_replace("%%poll_url%%", Output::get_poll_url($poll), $body);
 	    $body = str_replace("%%user_fullname%%", $user_name, $body);
-	     
+
 	    return self::SendMail($from, $to, $subject, $body);
 	}
 	/**
@@ -130,24 +163,40 @@ class Mail {
 	    $to = "undisclosed-recipients:;";
 	    $bcc = "";
 	    $body .= Localization::g("Mail sent by a robot", false);
-	    
+
 	    // Replace elements
 	    $subject = str_replace("%%app_name%%", \Config\IHM::$TITLE, $subject);
 	    $subject = str_replace("%%poll_title%%", $poll->title, $subject);
 	    $body = str_replace("%%app_name%%", \Config\IHM::$TITLE, $body);
 	    $body = str_replace("%%poll_title%%", $poll->title, $body);
+	    // Gestion de l'emplacement
+	    if (!empty($poll->location)) {
+	      $location =  "\r\n\r\n" . Localization::g('Edit location', false) . ": " . $poll->location;
+	    }
+	    else {
+	      $location = '';
+	    }
+	    $body = str_replace("%%poll_location%%", $location, $body);
+	    // Gestion de la description
+	    if (!empty($poll->description)) {
+	      $description =  "\r\n\r\n" . Localization::g('Edit description', false) . ":\r\n" . $poll->description;
+	    }
+	    else {
+	      $description = '';
+	    }
+	    $body = str_replace("%%poll_description%%", $description, $body);
 	    $body = str_replace("%%poll_url%%", Output::get_poll_url($poll), $body);
 	    $body = str_replace("%%validate_proposal%%", $proposals[$prop_key], $body);
-	    
+
 	    // Récupération des réponses du sondage
 	    $responses = \Program\Drivers\Driver::get_driver()->getPollResponses($poll->poll_id);
 	    // Parcour les réponses pour récupérer les adresses mails des participants
-	    foreach ($responses as $response) {	        
+	    foreach ($responses as $response) {
 	        $user = \Program\Drivers\Driver::get_driver()->getUser($response->user_id);
-	        if (empty($user->email) 
-	                || $user->user_id == $poll->organizer_id) {
+	        if (empty($user->email)
+	            || $user->user_id == $poll->organizer_id) {
 	            continue;
-	        }	        
+	        }
 	        $name = $user->auth ? $user->fullname : $user->username;
 	        if ($bcc != "") {
 	            $bcc .= "\r\n ";
@@ -158,5 +207,93 @@ class Mail {
 	        return false;
 	    }
 	    return self::SendMail($from, $to, $subject, $body, $bcc);
+	}
+
+	/**
+	 * Méthode d'envoi du message de notification quand une proposition est validée par l'organisateur
+	 * @param \Program\Data\Poll $poll sondage validé
+	 * @param string $prop_key identifiant de la proposition validée par l'organisateur
+	 * @param boolean $notification_sent Défini si la notification a bien été envoyé aux participants
+	 * @return boolean
+	 */
+	public static function SendValidateProposalOrganizerMail(\Program\Data\Poll $poll, $prop_key, $notification_sent = true) {
+	  Log::l(Log::DEBUG, "Mail::SendValidateProposalOrganizerMail()");
+	  $subject = Localization::g("Validate proposal organizer mail subject", false);
+	  $body = Localization::g("Validate proposal organizer mail body", false);
+	  $from = \Config\IHM::$FROM_MAIL;
+	  $proposals = unserialize($poll->proposals);
+	  $organizer = \Program\Data\User::get_current_user();
+	  $to = '=?UTF-8?B?'.base64_encode('"'.$organizer->fullname.'"').'?='."\r\n <" . $organizer->email . ">";
+	  $body .= Localization::g("Mail sent by a robot", false);
+
+	  // Replace elements
+	  $subject = str_replace("%%app_name%%", \Config\IHM::$TITLE, $subject);
+	  $subject = str_replace("%%poll_title%%", $poll->title, $subject);
+	  $body = str_replace("%%app_name%%", \Config\IHM::$TITLE, $body);
+	  $body = str_replace("%%poll_title%%", $poll->title, $body);
+	  // Gestion de l'emplacement
+	  if (!empty($poll->location)) {
+	    $location =  "\r\n\r\n" . Localization::g('Edit location', false) . ": " . $poll->location;
+	  }
+	  else {
+	    $location = '';
+	  }
+	  $body = str_replace("%%poll_location%%", $location, $body);
+	  // Gestion de la description
+	  if (!empty($poll->description)) {
+	    $description =  "\r\n\r\n" . Localization::g('Edit description', false) . ":\r\n" . $poll->description;
+	  }
+	  else {
+	    $description = '';
+	  }
+	  $body = str_replace("%%poll_description%%", $description, $body);
+	  $body = str_replace("%%poll_url%%", Output::get_poll_url($poll), $body);
+	  $body = str_replace("%%validate_proposal%%", $proposals[$prop_key], $body);
+
+	  // Récupération des réponses du sondage
+	  $responses = \Program\Drivers\Driver::get_driver()->getPollResponses($poll->poll_id);
+	  $email_attendees = [];
+	  $no_email_attendees = [];
+	  // Parcour les réponses pour récupérer les adresses mails des participants
+	  foreach ($responses as $response) {
+	    $user = \Program\Drivers\Driver::get_driver()->getUser($response->user_id);
+	    if ($user->user_id == $poll->organizer_id) {
+	      continue;
+	    }
+	    $name = $user->auth ? $user->fullname : $user->username;
+	    if (empty($user->email)) {
+	      $no_email_attendees[] = '"'.$name.'"';
+	    }
+	    else {
+	      $email_attendees[] = '"'.$name.'" <' . $user->email . '>';
+	    }
+	  }
+	  $attendees = "";
+	  if ($notification_sent) {
+	    // Si les participants ont été notifiés
+      // Ajoute les participant notifiés
+      if (count($email_attendees) > 0) {
+        $attendees .= "\r\n\r\n" . Localization::g('Notified attendees list', false) . "\r\n" . implode("\r\n", $email_attendees);
+      }
+      // Ajout les participants non notifiés
+      if (count($no_email_attendees) > 0) {
+        $attendees .= "\r\n\r\n" . Localization::g('Unnotified attendees list', false) . "\r\n" . implode("\r\n", $no_email_attendees);
+      }
+	  }
+	  else {
+	    // Si les participants n'ont pas été notifiés
+	    $attendees .= "\r\n\r\n" . Localization::g('Attendees were not notified', false);
+	    // Ajout les participants avec une adresse mail
+	    if (count($email_attendees) > 0) {
+        $attendees .= "\r\n\r\n" . Localization::g('Attendees with email address', false) . "\r\n" . implode("\r\n", $email_attendees);
+      }
+      // Ajout les participants sans adresse mail
+      if (count($no_email_attendees) > 0) {
+        $attendees .= "\r\n\r\n" . Localization::g('Attendees without email address', false) . "\r\n" . implode("\r\n", $no_email_attendees);
+      }
+	  }
+	  // Ajoute la liste des participants
+	  $body = str_replace("%%attendees_list%%", $attendees, $body);
+	  return self::SendMail($from, $to, $subject, $body);
 	}
 }

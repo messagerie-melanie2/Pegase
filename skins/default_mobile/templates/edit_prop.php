@@ -25,33 +25,55 @@ use Program\Lib\Request\Template as t;
 use Program\Lib\Request\Request as r;
 use Program\Lib\Templates\Edit_prop as e;
 use Program\Data\Poll as p;
+use Program\Data\User as u;
 use Program\Lib\Request\Session as s;
 ?>
 <?php t::inc('head') ?>
 <body>
-<div id="prevcontent">
-    <div id="content">
-        <?php t::inc('message') ?>        
+<div data-role="page" id="edit_prop_page">
+    <div data-role="header" data-position="fixed">
+          <h6> </h6>
+        <?php if (p::isset_current_poll()
+                      && u::isset_current_user()
+                      && p::get_current_poll()->organizer_id == u::get_current_user()->user_id) { ?>
+    		  <a href="#manage-poll-left-panel" data-icon="gear" class="ui-mini ui-btn-left">Menu</a>
+    		<?php } ?>
+        <?php if (u::isset_current_user()) { ?>
+      		<div data-role="controlgroup" data-type="horizontal" class="ui-mini ui-btn-right">
+      		  <?php if (o::get_env("page") != "main") { ?>
+              <a class="pure-button-home ui-btn ui-btn-icon-right ui-icon-home ui-btn-icon-notext" data-role="button" title="<?= l::g("Go back to the main page", false) ?>" href="<?= o::url("main") ?>"><?= l::g('Return to the index') ?></a>
+            <?php } ?>
+            <a class="pure-button-new-poll ui-btn ui-btn-icon-right ui-icon-plus ui-btn-icon-notext" data-role="button" title="<?= l::g("Create a new poll", false) ?>" href="<?= o::url("edit", ACT_NEW) ?>"><?= l::g('New poll') ?></a>
+            <a class="pure-button-disconnect ui-btn ui-btn-icon-right ui-icon-power ui-btn-icon-notext" data-role="button" title="<?= l::g("Disconnect from the app", false) ?>" href="<?= o::url("logout") ?>"><?= l::g('Disconnect') ?></a>
+          </div>
+        <?php } ?>
+  	</div>
+  	<div data-role="panel" data-position-fixed="true" data-display="push" data-theme="b" id="manage-poll-left-panel">
+        <h2>Menu</h2>
+        <ul data-role="listview">
+          <li><a class="pure-button pure-button-edit-poll" href="<?= o::url("edit", ACT_MODIFY, array('u' => p::get_current_poll()->poll_uid)) ?>"><?= l::g('Return to the edit page of poll') ?></a></li>
+          <?php if (p::isset_current_poll()
+                      && o::get_env("action") != ACT_NEW) { ?>
+                  <li><a class="pure-button pure-button-see-poll" href="<?= o::url(null, null, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('See the poll') ?></a></li>
+          <?php }?>
+        </ul>
+    </div>
+    <div role="main" class="ui-content">
+        <?php t::inc('message') ?>
         <div id="title">
-            <?php if (o::get_env("action") == ACT_NEW) { ?>
-                <h1><?= l::g('Create poll page, modify your own propositions') ?></h1>
+            <h3><?php if (o::get_env("action") == ACT_NEW) { ?>
+                <?= l::g('Create poll page, modify your own propositions') ?>
             <?php } else {
             ?>
-                <h1><?= l::g('Modification poll page, change your own dates') ?></h1>
-            <?php }?>
+                <?= l::g('Modification poll page, change your own dates') ?>
+            <?php }?></h3>
         </div>
-        <div><a class="pure-button pure-button-edit-poll" href="<?= o::url("edit", ACT_MODIFY, array('u' => p::get_current_poll()->poll_uid)) ?>"><img alt="Modify" src="skins/<?= o::get_env("skin") ?>/images/1395932254_gear-01_white.png" height="15px"/> <?= l::g('Return to the edit page of poll') ?></a></div>
-        <?php if (p::isset_current_poll()
-                    && o::get_env("action") != ACT_NEW) { ?>
-                <div><a class="pure-button pure-button-see-poll" href="<?= o::url(null, null, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="See" src="skins/<?= o::get_env("skin") ?>/images/1395933052_message-01_white.png" height="15px"/> <?= l::g('See the poll') ?></a></div>
-        <?php }?>
-        <br>
         <div class="pure-control-group">
-        	<label style="width: 35%;"><i><?= l::g('Poll name') ?> : </i></label>
+        	<label><i><?= l::g('Poll name') ?> : </i></label>
         	<span id="poll_title"><?= o::tohtml(p::get_current_poll()->title) ?></span>
         </div>
         <div class="pure-control-group">
-        	<label style="width: 35%;"><?= l::g('Last modification time') ?> </label> <?= o::date_format(strtotime(p::get_current_poll()->modified)) ?>
+        	<label><?= l::g('Last modification time') ?> <?= o::date_format(strtotime(p::get_current_poll()->modified)) ?></label>
         </div>
         <br>
         <div id="edit">
@@ -72,7 +94,6 @@ use Program\Lib\Request\Session as s;
     			</fieldset>
     		</form>
     	</div>
-    	<?php t::inc('connected') ?>
     </div>
     <?php t::inc('copyright') ?>
 </div>

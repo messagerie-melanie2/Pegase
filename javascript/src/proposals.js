@@ -29,15 +29,33 @@
  */
 function addPropDiv(value) {
 	// Gets the number of elements with class yourClass
-	var numItems = $('.edit_prop').length + 1;
-	id = "edit_prop" + numItems;
-	var html = '<div class="pure-control-group"><label style="width: 35%;" for="'+id+'">'+poll.labels['Edit proposition']+'</label> <input id="'+id+'" type="text" name="'+id+'" class="edit_prop" placeholder=" '+poll.labels['Edit proposition']+'" value="'+value+'"></div><br>';
+  poll.env.nb_prop++;
+	id = "edit_prop" + poll.env.nb_prop;
+	var html = '<div class="pure-control-group">';
+	html += '<label style="width: 35%;" for="'+id+'">'+poll.labels['Edit proposition']+'</label>';
+	html += ' <input id="'+id+'" type="text" name="'+id+'" class="edit_prop" placeholder="'+poll.labels['Edit proposition']+'" value="'+value+'">';
+	html += ' <a class="pure-button pure-button-delete-date" style="padding-top: 3px;" onclick="deletePropDiv(\''+id+'\');"></a>';
+	html += '<br></div>';
 	$('#props_list').append(html);
+}
+
+/**
+ * Suppression d'une date dans la liste
+ * Supprime l'évènement en même temps
+ * @param id
+ * @returns
+ */
+function deletePropDiv(id) {
+  $('#'+id).parent().remove();
+  return false;
 }
 
 $(document).ready(function() {
 	$( "#add_new_prop" ).click(function() {
 		addPropDiv('');
+		if ($('#edit_prop_page').length) {
+		  $("#edit_prop_page").trigger('create');
+		}
 		return false;
 	});
 	$( ".change_type_poll" ).click(function () {

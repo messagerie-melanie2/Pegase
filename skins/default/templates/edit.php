@@ -24,12 +24,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 // Utilisation des namespaces
-use Program\Lib\Request\Output as o;
-use Program\Lib\Request\Localization as l;
-use Program\Lib\Request\Template as t;
-use Program\Lib\Request\Request as r;
-use Program\Data\Poll as p;
-use Program\Lib\Request\Session as s;
+use Program\Lib\Request\Output as o,
+  Program\Lib\Request\Localization as l,
+  Program\Lib\Request\Template as t,
+  Program\Lib\Request\Request as r,
+  Program\Data\Poll as p,
+  Program\Lib\Request\Session as s;
 ?>
 <?php t::inc('head') ?>
 <body>
@@ -54,7 +54,7 @@ use Program\Lib\Request\Session as s;
             <a class="pure-button pure-button-edit-poll customtooltip_bottom" title="<?= l::g("Clic to change poll proposals", false) ?>"  style="width: 15%;" href="<?= o::url("edit_".p::get_current_poll()->type, ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="List" src="skins/<?= o::get_env("skin") ?>/images/1395932290_list-01_white.png" height="12px"/> <?= l::g('Modify propositions') ?></a>
             <a class="pure-button pure-button-edit-poll customtooltip_bottom" title="<?= l::g("Clic to lock the poll", false) ?>"  style="width: 15%;" href="<?= o::url("edit", (p::get_current_poll()->locked === 0 ? ACT_LOCK : ACT_UNLOCK), array("u" => p::get_current_poll()->poll_uid, "t" => s::getCSRFToken())) ?>"><img alt="Lock" src="skins/<?= o::get_env("skin") ?>/images/1395932256_link-01_white.png" height="12px"/> <?= (p::get_current_poll()->locked === 0 ? l::g('Lock') : l::g('Unlock')) ?></a>
             <br>
-        <?php }?>        
+        <?php }?>
         <br>
         <div id="edit">
     		<form id="edit_form" action="<?= o::url(p::isset_current_poll() ? "edit_" . p::get_current_poll()->type : "edit_date", o::get_env("action"), array("u" => o::get_env("poll_uid"))) ?>" method="post"  class="pure-form">
@@ -62,7 +62,7 @@ use Program\Lib\Request\Session as s;
     		        <div class="pure-control-group">
     		        	<label for="edit_title"><?= l::g('Edit title') ?> <span style="color: red;">*</span></label>
     		        	<br>
-    		        	<input style="width: 60%;" id="edit_title" type="text" name="edit_title" value="<?= p::isset_current_poll() ? p::get_current_poll()->title : '' ?>"
+    		        	<input style="width: 60%;" id="edit_title" type="text" name="edit_title" value="<?= p::isset_current_poll() ? o::tohtml(p::get_current_poll()->title) : '' ?>"
     		        			class="customtooltip_right" title="<?= l::g('Title of the poll', false) ?>"
     		        			placeholder="<?= l::g('Edit title') ?>" required x-moz-errormessage="<?= l::g('You have to put a title for the poll') ?>" />
     		        </div>
@@ -87,11 +87,11 @@ use Program\Lib\Request\Session as s;
     		        	</select>
     		        	<div id="warning_change_poll_type"><?= l::g("Warning: If you change poll type, proposals previously add (date or free) will be lost") ?></div>
     		        </div>
-    		        <br>		        
+    		        <br>
     		        <div class="pure-control-group">
     		        	<label for="edit_location"><?= l::g('Edit location') ?></label>
     		        	<br>
-    		        	<input style="width: 60%;" id="edit_location" type="text" name="edit_location" value="<?= p::isset_current_poll() ? p::get_current_poll()->location : '' ?>"
+    		        	<input style="width: 60%;" id="edit_location" type="text" name="edit_location" value="<?= p::isset_current_poll() ? o::tohtml(p::get_current_poll()->location) : '' ?>"
     		        			class="customtooltip_right"  title="<?= l::g('Location of the poll', false) ?>"
     		        			placeholder="<?= l::g('Edit location') ?>" />
     		        </div>
@@ -104,9 +104,26 @@ use Program\Lib\Request\Session as s;
     		        </div>
     		        <br>
     		        <div class="pure-control-group">
+    		        	<label style="width: 60%;">
+    		        	    <?= l::g('Advanced options') ?>
+    		        	</label>
+    		        </div>
+    		        <div class="pure-control-group">
     		        	<label style="width: 60%;" for="edit_only_auth_user" class="customtooltip_right" title="<?= l::g("This poll is only open for auth users", false) ?>">
     		        	    <input id="edit_only_auth_user" name="edit_only_auth_user" type="checkbox" value="true" <?= p::isset_current_poll() && p::get_current_poll()->auth_only || !p::isset_current_poll() ? 'checked' : '' ?>>
     		        	    <?= l::g('Poll for only auth user') ?>
+    		        	</label>
+    		        </div>
+    		        <div class="pure-control-group">
+    		        	<label style="width: 60%;" for="edit_if_needed" class="customtooltip_right" title="<?= l::g("This poll allows users to use the if needed answer", false) ?>">
+    		        	    <input id="edit_if_needed" name="edit_if_needed" type="checkbox" value="true" <?= p::isset_current_poll() && p::get_current_poll()->if_needed ? 'checked' : '' ?>>
+    		        	    <?= l::g('Allow users to use the if needed answer') ?>
+    		        	</label>
+    		        </div>
+    		        <div class="pure-control-group">
+    		        	<label style="width: 60%;" for="edit_anonymous" class="customtooltip_right" title="<?= l::g("Check this for an anonyme poll, user cannot see others responses until the poll is lock", false) ?>">
+    		        	    <input id="edit_anonymous" name="edit_anonymous" type="checkbox" value="true" <?= p::isset_current_poll() && p::get_current_poll()->anonymous ? 'checked' : '' ?>>
+    		        	    <?= l::g('Anonymous poll, user cannot see others responses') ?>
     		        	</label>
     		        </div>
     		        <br>

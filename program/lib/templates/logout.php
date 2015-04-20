@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -27,7 +27,7 @@ namespace Program\Lib\Templates;
 
 /**
  * Classe de gestion de la déconnexion de l'utilisateur pour l'application de sondage
- * 
+ *
  * @package    Lib
  * @subpackage Request
  */
@@ -36,17 +36,18 @@ class Logout {
 	 *  Constructeur privé pour ne pas instancier la classe
 	 */
 	private function __construct() { }
-	
+
 	/**
-	 * Execution de la requête d'authentification 
+	 * Execution de la requête d'authentification
 	 * @return multitype:string
 	 */
 	public static function Process() {
+	  $username = \Program\Lib\Request\Session::getUsername();
 	    // Destruction de la session
 		\Program\Lib\Request\Session::destroy();
 		// Redirection vers la connexion
 		header('Location: ' . (isset(\Config\IHM::$LOGIN_URL) ? \Config\IHM::$LOGIN_URL : '?_p=login'));
-		\Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "Logout::Process()");
+		\Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "Logout::Process() Logout for user $username");
 		exit();
 	}
 }

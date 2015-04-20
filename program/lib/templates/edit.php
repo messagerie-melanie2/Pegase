@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -26,13 +26,14 @@
 namespace Program\Lib\Templates;
 
 // Utilisation des namespaces
-use Program\Lib\Request\Output as o;
-use Program\Lib\Request\Request as Request;
-use Program\Lib\Request\Session as Session;
+use
+    Program\Lib\Request\Output as o,
+    Program\Lib\Request\Request as Request,
+    Program\Lib\Request\Session as Session;
 
 /**
  * Classe de gestion de l'édition du sondage pour les informations de base
- * 
+ *
  * @package    Lib
  * @subpackage Request
  */
@@ -41,7 +42,7 @@ class Edit {
 	 *  Constructeur privé pour ne pas instancier la classe
 	 */
 	private function __construct() { }
-	
+
 	/**
 	 * Execution de la requête
 	 */
@@ -110,6 +111,8 @@ class Edit {
     	        $edit_location = Request::getInputValue("edit_location", POLL_INPUT_POST);
     	        $edit_description = Request::getInputValue("edit_description", POLL_INPUT_POST);
     	        $edit_only_auth_user = Request::getInputValue("edit_only_auth_user", POLL_INPUT_POST);
+    	        $edit_if_needed = Request::getInputValue("edit_if_needed", POLL_INPUT_POST);
+    	        $edit_anonymous = Request::getInputValue("edit_anonymous", POLL_INPUT_POST);
     	        if (o::get_env("action") == ACT_NEW) {
     	            $poll = new \Program\Data\Poll(array(
     	                "title" => $edit_title,
@@ -119,6 +122,8 @@ class Edit {
     	                "type" => $type,
     	            ));
     	            $poll->auth_only = $edit_only_auth_user == "true";
+    	            $poll->if_needed = $edit_if_needed == "true";
+    	            $poll->anonymous = $edit_anonymous == "true";
     	            // Création du sondage
     	            $poll->poll_uid = \Program\Data\Poll::generation_uid();
     	            if (!is_null($poll->poll_uid)) {
@@ -127,7 +132,7 @@ class Edit {
     	                    \Program\Data\Poll::set_current_poll(\Program\Drivers\Driver::get_driver()->getPoll($poll_id));
     	                    if (isset(\Config\IHM::$SEND_MAIL) && \Config\IHM::$SEND_MAIL) {
     	                        \Program\Lib\Mail\Mail::SendCreatePollMail(\Program\Data\Poll::get_current_poll(), \Program\Data\User::get_current_user());
-    	                    }    	                    
+    	                    }
     	                } else {
     	                    o::set_env("page", "edit");
     	                    o::set_env("error", "Error creating the poll");
@@ -144,6 +149,8 @@ class Edit {
     	            $poll->description = $edit_description;
     	            $poll->type = $type;
     	            $poll->auth_only = $edit_only_auth_user == "true";
+    	            $poll->if_needed = $edit_if_needed == "true";
+    	            $poll->anonymous = $edit_anonymous == "true";
     	            if (\Program\Drivers\Driver::get_driver()->modifyPoll($poll)) {
     	                o::set_env("message", 'The poll is modified');
     	            }

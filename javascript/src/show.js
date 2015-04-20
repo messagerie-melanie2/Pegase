@@ -28,6 +28,9 @@ $(document).ready(function() {
 		hide_attendees(null);
 	}
 	$(document).on('click', "#proposals_table .prop_not_responded", function() {
+	  if (poll.env.poll_if_needed) {
+	    return;
+	  }
 		var checkbox = $(this).find('input:checkbox');
 		if (checkbox.attr('checked')) {
 			$(this).css('background-color', '#ffffff');
@@ -39,6 +42,9 @@ $(document).ready(function() {
 		$(this).html($(this).html());
 	});
 	$(document).on('click', "#proposals_table .prop_accepted", function() {
+	  if (poll.env.poll_if_needed) {
+      return;
+    }
 		var checkbox = $(this).find('input:checkbox');
 		if (checkbox.attr('checked')) {
 			checkbox.attr('checked', false);
@@ -48,6 +54,9 @@ $(document).ready(function() {
 		$(this).html($(this).html());
 	});
 	$(document).on('click', "#proposals_table .prop_refused", function() {
+	  if (poll.env.poll_if_needed) {
+      return;
+    }
 		var checkbox = $(this).find('input:checkbox');
 		if (checkbox.attr('checked')) {
 			checkbox.attr('checked', false);
@@ -80,7 +89,47 @@ $(document).ready(function() {
 		$("#div_show_more_inputs").show();
 		$(".prop_row_nb_props .hide_attendees_button").remove();
 		$(".prop_row_nb_props .show_attendees_button").remove();
-	});	
+	});
+	$("#proposals_form").submit(function(event) {
+	  if (poll.env.poll_type == 'date'
+	      && poll.env.user_auth
+	      && !$("input[name='hidden_modify_all']").length 
+	      && confirm(poll.labels['Would you like to add responses to your calendar as tentative ?'])) {	    
+	    event.preventDefault();
+	    var prop_keys = [];
+	    if (poll.env.poll_if_needed) {
+	      $("#proposals_form input:radio").each(function() {
+          if ($(this).attr('checked') 
+              && $(this).attr('value') != '') {
+            prop_keys.push($(this).attr('name').replace('check_', ''));
+          }
+        });  
+	    }
+	    else {
+	      $("#proposals_form input:checkbox").each(function() {
+	        if ($(this).attr('checked')) {
+	          prop_keys.push($(this).attr('name').replace('check_', ''));
+	        }
+	      });  
+	    }
+	    var _this = $(this);
+	    $.ajax({
+        type: 'POST', 
+        url: '?_p=ajax&_a=add_tentative_calendar', 
+        data: {
+          token: poll.env.csrf_token,
+          prop_keys: prop_keys,
+          poll_uid: poll.env.poll_uid
+        },
+        success: function(data) {
+          _this.unbind('submit').submit();
+        },
+        error: function(o, status, err) {
+          _this.unbind('submit').submit();
+        }
+      });
+	  }
+	});
 });
 
 // Function pour valider/dévalider une proposition
@@ -257,4 +306,54 @@ function uncheck_all(args) {
 		}
 		tr.html(tr.html());
 	});
+}
+
+// Valide tous les boutons radio à yes
+function yes_to_all(args) {
+  $(document).ready(function() {
+    var tr = $('.yes_to_all_button').parents('tr');
+    tr.find('input:radio').each(function() {
+      if ($(this).attr('value').length 
+          && $(this).attr('value').indexOf(":if_needed") == -1) {
+        $(this).attr('checked', 'checked');
+      }
+      else {
+        $(this).attr('checked', false);
+      }
+    });
+    tr.html(tr.html());
+  });
+}
+
+//Valide tous les boutons radio à if_needed
+function if_needed_to_all(args) {
+  $(document).ready(function() {
+    var tr = $('.if_needed_to_all_button').parents('tr');
+    tr.find('input:radio').each(function() {
+      if ($(this).attr('value').length 
+          && $(this).attr('value').indexOf(":if_needed") != -1) {
+        $(this).attr('checked', 'checked');
+      }
+      else {
+        $(this).attr('checked', false);
+      }
+    });
+    tr.html(tr.html());
+  });
+}
+
+//Valide tous les boutons radio à no
+function no_to_all(args) {
+  $(document).ready(function() {
+    var tr = $('.no_to_all_button').parents('tr');
+    tr.find('input:radio').each(function() {
+      if (!$(this).attr('value').length) {
+        $(this).attr('checked', 'checked');
+      }
+      else {
+        $(this).attr('checked', false);
+      }
+    });
+    tr.html(tr.html());
+  });
 }

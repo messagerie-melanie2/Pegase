@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -26,15 +26,16 @@
 namespace Program\Lib\Templates;
 
 // Utilisation des namespaces
-use Program\Lib\Request\Localization as l;
-use Program\Lib\Request\Request as Request;
-use Program\Lib\Request\Session as Session;
-use Program\Lib\Request\Output as Output;
-use Program\Lib\Request\Cookie as Cookie;
+use
+    Program\Lib\Request\Localization as l,
+    Program\Lib\Request\Request as Request,
+    Program\Lib\Request\Session as Session,
+    Program\Lib\Request\Output as Output,
+    Program\Lib\Request\Cookie as Cookie;
 
 /**
  * Classe de gestion de la page principale de l'application
- * 
+ *
  * @package    Lib
  * @subpackage Request
  */
@@ -43,7 +44,7 @@ class Main {
 	 *  Constructeur privé pour ne pas instancier la classe
 	 */
 	private function __construct() { }
-	
+
 	/**
 	 * Execution de la requête
 	 */
@@ -106,10 +107,10 @@ class Main {
     	    foreach($polls as $poll) {
     	        if (!Output::get_env("mobile")) {
     	            $table->add_row();
-    	            $table->add(array("style" => "padding-right: 10px;"), \Program\Lib\HTML\HTML::a(array("class" => "customtooltip_bottom", "title" => l::g('Clic to view the poll (Number of responses)', false), "href" => Output::url(null, null, array("u" => $poll->poll_uid), false)), $poll->title 
-    	                                . " (" . $poll->count_responses . ")" 
+    	            $table->add(array("style" => "padding-right: 10px;"), \Program\Lib\HTML\HTML::a(array("class" => "customtooltip_bottom", "title" => l::g('Clic to view the poll (Number of responses)', false), "href" => Output::url(null, null, array("u" => $poll->poll_uid), false)), $poll->title
+    	                                . " (" . $poll->count_responses . ")"
     	                    ));
-    	        
+
         	        $table->add(array("style" => "padding-right: 10px;"), \Program\Lib\HTML\HTML::a(array("class" => "pure-button pure-button-modify-poll button_edit_poll customtooltip_bottom", "title" => l::g('Clic to edit the poll', false), "href" => Output::url("edit", ACT_MODIFY, array("u" => $poll->poll_uid), false)), \Program\Lib\HTML\HTML::img(array("alt" => "Modify", "src" => "skins/".Output::get_env("skin")."/images/1395932254_gear-01_white.png", "height" => "12px")) . " " . l::g('Modify poll')));
         	        $table->add(array("style" => "padding-right: 10px;"), \Program\Lib\HTML\HTML::a(array("class" => "pure-button pure-button-modify-poll button_delete_poll customtooltip_bottom", "title" => l::g('Clic to delete the poll', false), "href" => Output::url("main", ACT_DELETE, array("u" => $poll->poll_uid, "t" => Session::getCSRFToken()), false)), \Program\Lib\HTML\HTML::img(array("alt" => "Delete", "src" => "skins/".Output::get_env("skin")."/images/1395836978_remove-01_white.png", "height" => "12px")) . " " . l::g('Delete poll')));
         	        $table->add(array(), $poll->locked === 1 ? " (" . l::g('Locked') .")" : "");

@@ -23,7 +23,7 @@ use Program\Lib\Request\Output as o;
 use Program\Data\User as u;
 use Program\Lib\Request\Localization as l;
 ?>
-
-<div id="copyright">
-<?= l::g('copyright') ?> - Version <?= VERSION ?> - <a href="<?= (o::get_env("page") == "show" ? o::url(null, ACT_DESKTOP, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid)) : o::url(null, ACT_DESKTOP)) ?>"><?= l::g("Desktop") ?></a>
+<div data-role="footer">
+  <h6><?= l::g('copyright') ?> - Version <?= VERSION.'-'.BUILD ?></h6>
+  <a class="ui-btn" href="<?= (o::get_env("page") == "show" ? o::url(null, ACT_DESKTOP, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid)) : o::url(null, ACT_DESKTOP)) ?>"><?= l::g("Desktop") ?></a>
 </div>

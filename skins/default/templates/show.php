@@ -45,7 +45,7 @@ use Program\Data\User as u;
             <div id="title">
                 <h1><img alt="Find" src="skins/<?= o::get_env("skin") ?>/images/1395837531_aiga_information_bg_blue.png" height="23px"/> <?= o::tohtml(p::get_current_poll()->title) ?></h1>
             </div>
-            <?php if (u::isset_current_user() 
+            <?php if (u::isset_current_user()
                     && p::get_current_poll()->organizer_id == u::get_current_user()->user_id) { ?>
                     <a id="button_edit_poll" title="<?= l::g("Clic to edit the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url("edit", ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="Modify" src="skins/<?= o::get_env("skin") ?>/images/1395932254_gear-01_white.png" height="12px"/> <?= l::g('Modify poll') ?></a>
                     <a id="button_edit_prop_poll" title="<?= l::g("Clic to change poll proposals", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url("edit_".p::get_current_poll()->type, ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="List" src="skins/<?= o::get_env("skin") ?>/images/1395932290_list-01_white.png" height="12px"/> <?= l::g('Modify propositions') ?></a>
@@ -54,7 +54,7 @@ use Program\Data\User as u;
                     <a id="button_delete_poll" title="<?= l::g("Clic to delete the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url("main", ACT_DELETE, array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><img alt="Delete" src="skins/<?= o::get_env("skin") ?>/images/1395836978_remove-01_white.png" height="12px"/> <?= l::g('Delete poll') ?></a>
                     <br><br>
             <?php } elseif (!u::isset_current_user()) { ?>
-                    <a class="pure-button pure-button-connect-with-account customtooltip_bottom" title="<?= l::g("Clic to connect and respond with your account") ?>" href="<?= o::url("login", null, array("url" => urlencode(o::get_poll_url()))) ?>"><img alt="Connect" src="skins/<?= o::get_env("skin") ?>/images/1395933029_user-01_white.png" height="20px"/> <?= l::g('Login, to respond with your account') ?></a>
+                    <a class="pure-button pure-button-connect-with-account customtooltip_bottom" title="<?= l::g("Clic to connect and respond with your account") ?>" href="<?= o::url("login", null, array("poll" => p::get_current_poll()->poll_uid)) ?>"><img alt="Connect" src="skins/<?= o::get_env("skin") ?>/images/1395933029_user-01_white.png" height="20px"/> <?= l::g('Login, to respond with your account') ?></a>
                     <br><br>
             <?php } ?>
             <div id="edit">
@@ -76,9 +76,9 @@ use Program\Data\User as u;
                         	<?php } else {?>
                         	    <?php if (!\Program\Data\User::isset_current_user()) { ?>
                         	        <b><?= o::tohtml(s::AnonymName(o::get_env("poll_organizer")->fullname)) ?></b>
-                        	    <?php } else { ?>
+                        	    <?php } else { ?>
                         	        <b><?= o::tohtml(o::get_env("poll_organizer")->fullname) ?></b>
-                        	    <?php } ?>                        	    
+                        	    <?php } ?>
                         	<?php }?>
                         	 <?= o::date_format(strtotime(p::get_current_poll()->created)) ?>.
                         	 <label style="width: 35%;"> <?= l::g('Last modification time') ?> </label> <?= o::date_format(strtotime(p::get_current_poll()->modified)) ?>
@@ -87,6 +87,11 @@ use Program\Data\User as u;
                     <?php if (p::get_current_poll()->auth_only) { ?>
                         <div class="pure-control-group">
                         	<label style="width: 35%;"><?= l::g('This poll only accept auth users') ?></label>
+                        </div>
+                    <?php } ?>
+                    <?php if (p::get_current_poll()->anonymous) { ?>
+                        <div class="pure-control-group">
+                        	<label style="width: 35%;"><?= l::g('This poll is anonyme, user cannot see others responses until the poll is lock') ?></label>
                         </div>
                     <?php } ?>
                     <br>
@@ -120,7 +125,7 @@ use Program\Data\User as u;
                         <div class="validate_proposals"><?= s::GetValidateProposalsText() ?></div>
                     <?php } ?>
                     <br>
-                <?php } ?>                
+                <?php } ?>
         	</div>
     	<?php } ?>
     </div>

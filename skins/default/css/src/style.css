@@ -174,7 +174,6 @@ h1 {
 #proposals_table {
 	border-spacing: 3px; 
 	border-collapse: separate;
-	width: 100%;
 	right: 85px;
 }
 #proposals_table .prop_header {
@@ -211,6 +210,13 @@ h1 {
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
     color: red;
     height: 18px;
+}
+#proposals_table .prop_if_needed {
+  background-color: #F5DBC0;
+  border-radius: 2px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  color: #61380B;
+  height: 18px;
 }
 #proposals_table .prop_not_responded {
 	background-color: #FFFFFF;
@@ -286,7 +292,10 @@ h1 {
 	background: url("../../images/wait-big.gif") center center no-repeat;
 }
 #proposals_table .user_authenticate {
-	background: url("../../images/1399479249_user.png") 2px 6px no-repeat;
+	background: url("../../images/1399479249_user.png") 2px 7px no-repeat;
+}
+#proposals_table .user_email {
+  background: url("../../images/1429207099_email.png") 2px 11px no-repeat;
 }
 #proposals_table td.user_list_name:hover {
 	width: auto;
@@ -307,6 +316,43 @@ h1 {
     white-space: nowrap;
     text-align: center;
 }
+#proposals_table .user_calendar {
+    background: url("../../images/1427238024_calendar.png") no-repeat scroll 2px 7px transparent;
+}
+#proposals_table td.user_freebusy_first_col {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-color: #8095A9;
+    color: white;
+    padding-left: 20px;
+    width: 205px;
+    border-radius: 2px;
+}
+#proposals_table .freebusy_confirmed {
+    background-color: #DBE3FC;
+    border-radius: 2px;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+    color: #14214A;
+    border: 1px solid #96A2C4;
+    height: 18px;
+}
+#proposals_table .freebusy_none {
+    background-color: #E2F2D0;
+    border-radius: 2px;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+    color: #006100;
+    border: 1px solid #94A97B;
+    height: 18px;
+}
+#proposals_table .freebusy_tentative {
+    background-color: #F5F5E0;
+    border-radius: 2px;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+    color: #4B2112;
+    border: 1px solid #B6B77C;
+    height: 18px;
+}
 #calendar .fc-border-separate {
 	border-radius: 2px;
 	box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
@@ -321,6 +367,31 @@ h1 {
 }
 #calendar .fc-button {
 	font-size: 85%;
+}
+#calendar .fc-header-legend {
+	float: right;
+	margin-top: -12px;
+}
+#calendar .fc-header-legend span {
+	border-radius: 4px;
+	font-size: 80%;
+  margin-left: 3px;
+  padding: 2px 5px;
+}
+#calendar .fc-header-legend-confirmed {
+  background-color: #DBE3FC;
+  color: #14214A;
+  border: 1px solid #96A2C4;
+}
+#calendar .fc-header-legend-none {
+  background-color: #E2F2D0;
+  color: #006100;
+  border: 1px solid #94A97B;
+}
+#calendar .fc-header-legend-tentative {
+  background-color: #F5F5E0;
+  color: #4B2112;
+  border: 1px solid #B6B77C;
 }
 /* This is how you would create a theme called "my-custom-theme": */
 .af-tooltip-theme {
@@ -350,6 +421,9 @@ h1 {
 .remove_attendee_button,
 .check_all_button,
 .uncheck_all_button,
+.yes_to_all_button,
+.if_needed_to_all_button,
+.no_to_all_button,
 .hide_attendees_button,
 .show_attendees_button {
 	cursor: pointer;

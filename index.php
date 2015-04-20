@@ -8,7 +8,7 @@
  *
  * @author Thomas Payen
  * @author PNE Annuaire et Messagerie
- * @version 0.7-201412221301
+ * @version 0.9-1504161828
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,10 +24,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 // Utilisation des namespaces
-use Program\Lib\Request\Template as t;
-use Program\Lib\Request\Request as r;
-use Program\Lib\Request\Output as o;
-use Program\Lib\Request\Localization as l;
+use
+    Program\Lib\Request\Template as t,
+    Program\Lib\Request\Request as r,
+    Program\Lib\Request\Output as o,
+    Program\Lib\Request\Localization as l;
 
 // Inclusion
 include 'program/include/includes.php';
@@ -54,6 +55,13 @@ if (o::get_env("page") != "login"
             o::set_env("page", "login");
             if (Program\Lib\Request\Session::is_set("user_id"))
                 o::set_env("error", "Auth error, please re-login");
+            // MANTIS 3759: Déconnexion Mon compte RC
+            // Si on est sur le Courrielleur, rediriger vers la page de login pour l'authentification automatique
+            if (r::isCourrielleur() && isset(Config\IHM::$LOGIN_URL)) {
+              // Redirection vers la connexion
+              header('Location: ' . \Config\IHM::$LOGIN_URL);
+              exit();
+            }
         }
     } else {
         if (Program\Data\Poll::isset_current_poll()
@@ -81,7 +89,13 @@ if (o::get_env("page") != "login"
     		o::set_env("error", "Auth error, bad login or password");
     	}
     } elseif (o::get_env("page") == "show") {
-        Program\Lib\Request\Session::validateSession();
+        if (!Program\Lib\Request\Session::validateSession() && r::isCourrielleur()) {
+          if (isset(Config\IHM::$LOGIN_URL)) {
+            // Redirection vers la connexion
+            header('Location: ' . \Config\IHM::$LOGIN_URL);
+            exit();
+          }
+        }
         Program\Lib\Templates\Show::Process();
     } elseif (o::get_env("page") == "ajax") {
         Program\Lib\Request\Session::validateSession();

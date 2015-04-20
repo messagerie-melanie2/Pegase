@@ -117,7 +117,7 @@ class Request {
 
 	    if (is_array($value)) {
 	        foreach ($value as $idx => $val)
-	            $value[$idx] = self::parseInputValue($val, $allow_html, $charset);
+	            $value[$idx] = self::parseInputValue($val, $allow_html);
 	        return $value;
 	    }
 
@@ -149,6 +149,6 @@ class Request {
 	 */
 	public static function isCourrielleur() {
 	    $useragent = $_SERVER['HTTP_USER_AGENT'];
-	    return preg_match('/Lightning/i', $useragent);
+	    return preg_match('/(Thunderbird|Lightning)/i', $useragent);
 	}
 }

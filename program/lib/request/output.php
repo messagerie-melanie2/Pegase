@@ -134,7 +134,8 @@ class Output {
         // Gestion de l'authentification cross domain depuis Roundcube
         if (isset(\Config\IHM::$ROUNDCUBE_CORS)) {
             if (is_array(\Config\IHM::$ROUNDCUBE_CORS)) {
-                if (in_array($_SERVER['HTTP_ORIGIN'], \Config\IHM::$ROUNDCUBE_CORS)) {
+                if (isset($_SERVER['HTTP_ORIGIN'])
+                      && in_array($_SERVER['HTTP_ORIGIN'], \Config\IHM::$ROUNDCUBE_CORS)) {
                     header("Access-Control-Allow-Origin: " . $_SERVER['HTTP_ORIGIN']);
                     header("Access-Control-Allow-Credentials: true");
                     header("Access-Control-Allow-Headers: X-Roundcube-Request");
@@ -271,6 +272,13 @@ class Output {
 	            if ($url == "") $url = "?";
 	            else $url .= "$amp";
 	            $url .= "_url=$_url";
+	        }
+	        // Si le poll est passé on la conserve
+	        $_poll = Request::getInputValue("_poll", POLL_INPUT_GET);
+	        if (!empty($_poll)) {
+	          if ($url == "") $url = "?";
+	          else $url .= "$amp";
+	          $url .= "_poll=$_poll";
 	        }
 	        // Si l'url est passé on la conserve
 	        $_skin = Request::getInputValue("_skin", POLL_INPUT_GET);

@@ -27,26 +27,27 @@ use Program\Lib\Request\Session as s;
 ?>
 <?php t::inc('head') ?>
 <body>
-<div id="prevcontent">
-    <div id="content">
+<div data-role="page">
+    <div role="main" class="ui-content">
         <?php t::inc('message') ?>
         <div id="title">
-            <h1><?= l::g('Welcome to doodle of the MEDDE') ?></h1>
+            <h3><?= l::g('Welcome to doodle of the MEDDE') ?></h3>
         </div>
         <div id="login">
     		<form action="<?= o::url("login") ?>" method="post" class="pure-form pure-form-stacked">
     			<fieldset>
     			    <legend><?= l::g('Log-in to create new poll and list all your polls') ?></legend>
+    			      <br>
     		        <div class="pure-control-group">
     		        	<label for="username"><?= l::g('Username') ?><span style="color: red;">*</span></label>
-    		        	<input style="width: 95%;" id="username" type="text" name="username"
+    		        	<input id="username" type="text" name="username"
     		        	        value="<?= r::getInputValue('username', POLL_INPUT_POST) ?>"
     		        			placeholder="<?= l::g('Username') ?>" required x-moz-errormessage="<?= l::g('You have to put your username') ?>" />
     		        </div>
-    		        <br>			        
+    		        <br>
     		        <div class="pure-control-group">
     		        	<label for="password"><?= l::g('Password') ?><span style="color: red;">*</span></label>
-    		        	<input style="width: 95%;" id="password" type="password" name="password" 
+    		        	<input id="password" type="password" name="password"
     		        			placeholder="<?= l::g('Password') ?>" x-moz-errormessage="<?= l::g('You have to put your password') ?>" required />
     		        </div>
     		        <input type="hidden" name="csrf_token" value="<?= s::getCSRFToken() ?>"/>

@@ -27,7 +27,7 @@
 /**
  * Localisation FR
  */
-$labels = array();
+$labels = [];
 $labels['Application name'] = Config\IHM::$TITLE;
 $labels['Poll'] = 'Sondage';
 // Labels Title
@@ -44,7 +44,7 @@ $labels['Welcome to doodle of the MEDDE'] = 'Bienvenue sur le service de créati
 $labels['Create new poll'] = 'Création d\'un nouveau sondage';
 $labels['New poll'] = 'Nouveau sondage';
 $labels['List of your polls'] = 'Vos sondages';
-$labels['List of polls you have responded'] = 'Les sondages auquels vous participez';
+$labels['List of polls you have responded'] = 'Les sondages auxquels vous participez';
 $labels['Clic to view the poll'] = 'Cliquez ici pour voir le sondage';
 $labels['Clic to view the poll (Number of responses)'] = 'Cliquez ici pour voir le sondage (Nombre de reponses au sondage)';
 $labels['Clic to edit the poll'] = "Cliquez ici pour éditer le sondage";
@@ -67,7 +67,7 @@ $labels['Create poll page, modify the dates'] = 'Création du sondage, choisisse
 $labels['Modification poll page, change your own dates'] = 'Modification de vos propositions pour le sondage';
 $labels['Create poll page, modify your own propositions'] = 'Création du sondage, choisissez vos propositions';
 // Login Page
-$labels['Log-in to create new poll and list all your polls'] = 'Connectez-vous avec votre compte Mélanie2 pour lister vos sondages ou en créer de nouveaux';
+$labels['Log-in to create new poll and list all your polls'] = 'Connectez-vous avec votre compte Mélanie2 (prénom.nom) pour lister vos sondages ou en créer de nouveaux';
 $labels['Username'] = 'Identifiant utilisateur';
 $labels['Password'] = 'Mot de passe de l\'utilisateur';
 $labels['You have to put your username'] = 'Vour devez saisir votre identifiant utilisateur pour vous connecter';
@@ -79,6 +79,10 @@ $labels['Disconnect from the app'] = 'Se déconnecter de l\'application';
 $labels['Create a new poll'] = 'Cliquez ici pour créer un nouveau sondage';
 $labels['Go back to the main page'] = 'Retourner à la page d\'accueil de l\'application';
 $labels['Go back to poll list'] = 'Retourner à la liste des sondages';
+$labels['You are disconnected from the app'] = "Vous êtes déconnecté de l'application de sondage";
+$labels['Please close the tab and reopen the tab'] = "Vous pouvez fermer puis ré-ouvrir l'onglet";
+$labels['Clic here to reconnect'] = "Cliquez-ici pour vous reconnecter";
+$labels['Or clic here to reconnect'] = "Ou bien cliquez ici pour vous reconnecter";
 // Error Page
 $labels['Error page'] = 'Page d\'erreur';
 // Errors
@@ -115,6 +119,7 @@ $labels['Congratulation, your poll is now created'] = 'Félicitations, votre son
 $labels['You can now share this url with your friend'] = 'Vous pouvez désormais partager l\'url ci-dessous avec vos contacts : ';
 $labels['You can modify the poll by clicking '] = 'Vous pouvez modifier le sondage en cliquant ';
 $labels['You can see the poll by clicking '] = 'Vous pouvez voir le sondage en cliquant ';
+$labels['You have to put a title for the poll'] = 'Vous devez saisir un titre pour le sondage';
 $labels['here'] = 'ici';
 $labels['See the poll'] = 'Voir le sondage';
 $labels['Current poll is not defined'] = 'Le sondage n\'existe pas';
@@ -129,7 +134,8 @@ $labels['Poll name'] = 'Titre du sondage';
 $labels['Modify poll'] = 'Modifier le sondage';
 $labels['Delete poll'] = 'Supprimer le sondage';
 $labels['Locked'] = 'Verrouillé';
-$labels['Select dates by clicking in the calendar'] = 'Sélectionnez des dates en cliquant dans le calendrier ci-dessous. Vous pouvez les créer sur plusieurs jours en vue Mois ou sur une plage horaire en vue Semaine/Jour. Chaque date peut être déplacée en glissant/déposant et supprimée en cliquant sur la croix blanche.';
+$labels['Advanced options'] = 'Options avancées';
+$labels['Select dates by clicking in the calendar'] = 'Sélectionnez des dates en cliquant dans le calendrier ci-dessous. Vous pouvez les créer sur plusieurs jours en vue Mois ou sur une plage horaire en vue Semaine/Jour. Chaque date peut être déplacée en glissant/déposant et supprimée en cliquant sur la croix blanche. Cliquez sur "Afficher votre agenda" pour visualiser votre agenda Mélanie2 par défaut.';
 $labels['Selected date list'] = 'Liste des dates sélectionnées dans l\'agenda';
 $labels['Warning: If you change poll type, proposals previously add (date or free) will be lost'] = 'Attention : si vous changez le type de sondage, les propositions déjà saisies (dates ou libres) seront perdues.';
 $labels['Save the poll informations and modify proposals'] = 'Cliquez ici pour enregistrer les informations du sondage et passer à la modification des propositions';
@@ -140,6 +146,13 @@ $labels['Description of the poll'] = 'Saisissez la description du sondage';
 $labels['This poll is only open for auth users'] = 'Cochez cette case pour que seuls les utilisateurs authentifiés puissent répondre au sondage';
 $labels['select poll type date'] = 'Sondage de dates, les dates seront à sélectionner dans un calendrier';
 $labels['select poll type prop'] = 'Sondage libre, choisissez vous même les propositions du sondage';
+$labels['hide calendar'] = 'Masquer votre agenda';
+$labels['show calendar'] = 'Afficher votre agenda';
+$labels['This poll allows users to use the if needed answer'] = "Cochez cette case pour que ce sondage permette aux utilisateurs de répondre 'Si nécessaire'";
+$labels['Allow users to use the if needed answer'] = "Permettre une troisième réponse : 'Si nécessaire'";
+$labels['Anonymous poll, user cannot see others responses'] = "Sondage anonyme, les utilisateurs ne peuvent voir les autres réponses";
+$labels['Check this for an anonyme poll, user cannot see others responses until the poll is lock'] = "Cochez cette case pour rendre ce sondage anonyme, les participants ne pourront pas voir les autres réponses tant que vous ne l'aurez pas verrouillé";
+$labels['This poll is anonyme, user cannot see others responses until the poll is lock'] = "Ce sondage est anonyme. Les participants verront les autres réponses lorsque le sondage aura été verrouillé par l'organisateur";
 // Information page
 $labels['Poll information page'] = 'Page d\'information sur le sondage';
 $labels['Save'] = 'Enregistrer';
@@ -160,17 +173,17 @@ $labels['responses'] = 'réponses';
 $labels['response'] = 'réponse';
 $labels['Your name'] = 'Votre nom';
 $labels['You'] = 'Vous';
-$labels['Yes'] = 'Oui';
 $labels['Modify responses'] = 'Modifier les réponses';
 $labels['Delete'] = 'Supprimer';
 $labels['Cancel'] = 'Annuler';
 $labels['Yes'] = 'Oui';
 $labels['No'] = 'Non';
+$labels['If needed'] = 'Possible';
 $labels['delete'] = 'Supprimer';
 $labels['Remove'] = 'Enlever';
 $labels['Your response has been saved'] = 'Votre réponse a correctement été prise en compte';
 $labels['date_label'] = 'le %%l %%d %%F %%Y à %%Hh%%i';
-$labels['Are you sure ? Not saved proposals are lost'] = 'Etes-vous sur de vouloir changer de type de sondage ? Les propositions non sauvegardees seront perdues.';
+$labels['Are you sure ? Not saved proposals are lost'] = 'Êtes-vous sûr de vouloir changer de type de sondage ? Les propositions non sauvegardees seront perdues.';
 $labels['attendee'] = 'participant';
 $labels['attendees'] = 'participants';
 $labels['Poll attendees list'] = "Liste des participants au sondage";
@@ -218,6 +231,13 @@ $labels['This proposals is already in your calendar'] = "Cette proposition est d
 $labels['Your email'] = "Votre adresse email";
 $labels['Put your email if you want to received notifications'] = "Saisissez votre adresse email si vous souhaitez recevoir les notifications";
 $labels['Do you want to send a message to the attendees ?'] = "Souhaitez-vous envoyer un message de notification aux participants du sondage ?";
+$labels['Your freebusy'] = "Vos disponibilités (Bêta)";
+$labels['Your freebusy title'] = "Liste de vos disponibilités basées sur votre agenda Mélanie2 par défaut (service en bêta)";
+$labels['None'] = "Libre";
+$labels['Tentative'] = "Provisoire";
+$labels['Confirmed'] = "Occupé";
+$labels['Cancelled'] = "Annulé";
+$labels['Would you like to add responses to your calendar as tentative ?'] = "Souhaitez-vous créer la/les réponse(s) dans votre agenda en événement(s) provisoire(s) ?";
 // Date information
 $labels['Start'] = 'Début';
 $labels['End'] = 'Fin';
@@ -271,8 +291,16 @@ $labels['copyright'] = 'METL/MEDDE PNE annuaire et messagerie';
 // Mail
 $labels['Mail sent by a robot'] = "Ne répondez pas à ce message, il est envoyé automatiquement par un robot.\r\nSi vous avez des difficultés d'utilisation de l'application, vous pouvez vous rapprocher de votre cellule informatique.";
 $labels['Create poll mail subject'] = "%%app_name%% : Votre sondage « %%poll_title%% » vient d'être créé";
-$labels['Create poll mail body'] = "Votre sondage « %%poll_title%% » vient d'être créé depuis l'application %%app_name%%.\r\nLe lien vers le sondage est le suivant : %%poll_url%%.\r\n\r\nVous pouvez dés a présent transférer ce lien aux personnes que vous souhaitez interroger.\r\n\r\n";
+$labels['Create poll mail body'] = "Votre sondage « %%poll_title%% » vient d'être créé depuis l'application %%app_name%%.\r\nLe lien vers le sondage est le suivant : %%poll_url%%.%%poll_location%%%%poll_description%%\r\n\r\nVous pouvez dès à présent transférer ce lien aux personnes que vous souhaitez interroger.\r\n\r\n";
 $labels['Response notification mail subject'] = "%%app_name%% : Un nouvel utilisateur vient de répondre à votre sondage « %%poll_title%% »";
 $labels['Response notification mail body'] = "L'utilisateur '%%user_fullname%%' vient de répondre à votre sondage « %%poll_title%% ».\r\nCliquez sur le lien suivant pour accéder aux réponses du sondage : %%poll_url%%.\r\n\r\n";
 $labels['Validate proposal mail subject'] = "%%app_name%% : Une proposition du sondage « %%poll_title%% » vient d'être validée par l'organisateur";
-$labels['Validate proposal mail body'] = "La proposition « %%validate_proposal%% » vient d'être validée par l'organisateur du sondage « %%poll_title%% ».\r\n\r\nVous pouvez accéder au lien suivant pour voir et intéragir avec la liste des propositions validées par l'organisateur du sondage :\r\n%%poll_url%%.\r\n\r\n";
+$labels['Validate proposal mail body'] = "La proposition « %%validate_proposal%% » vient d'être validée par l'organisateur du sondage « %%poll_title%% ».\r\n\r\nVous pouvez accéder au lien suivant pour voir et intéragir avec la liste des propositions validées par l'organisateur du sondage :\r\n%%poll_url%%.%%poll_location%%%%poll_description%%\r\n\r\n";
+
+$labels['Validate proposal organizer mail subject'] = "%%app_name%% : Vous venez de valider une proposition du sondage « %%poll_title%% »";
+$labels['Validate proposal organizer mail body'] = "Vous venez de valider la proposition « %%validate_proposal%% » pour votre sondage « %%poll_title%% ».\r\n\r\nVous pouvez accéder au lien suivant pour voir et intéragir avec la liste des propositions validées :\r\n%%poll_url%%.%%poll_location%%%%poll_description%%%%attendees_list%%\r\n\r\n";
+$labels['Notified attendees list'] = 'Voici la liste des participants qui ont été notifiés :';
+$labels['Unnotified attendees list'] = "Voici la liste des participants qui n'ont pas pu être notifiés, car ils n'ont pas renseigné d'adresse e-mail:";
+$labels['Attendees were not notified'] = "Les participants n'ont pas été notifiés.";
+$labels['Attendees with email address'] = "Liste des participants avec une adresses e-mail:";
+$labels['Attendees without email address'] = "Liste des participants qui n'ont pas renseigné d'adresse e-mail:";
