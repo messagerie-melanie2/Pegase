@@ -17,8 +17,8 @@ Les données de sondage sont stockées dans une base de données PostgreSQL et l
 Version
 -------
 
-Version 0.7
-Build 201412221301
+Version 0.9
+Build 1504161828
 
 Pré-requis
 ------------
@@ -36,7 +36,7 @@ Configuration
 Configuration de l'application dans config/default/ihm.php
 Configuration du serveur LDAP dans config/default/ldap.php
 Configuration du serveur SQL dans config/default/sql.php
-Configuration des logs dans config/default/sql.php
+Configuration des logs dans config/default/log.php
 
 Si driver personnalisé, configuration du driver dans config/default/driver.php
 
