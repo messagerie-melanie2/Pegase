@@ -25,13 +25,6 @@
  */
 namespace Program\Lib\Templates;
 
-// Configuration du nom de l'application pour l'ORM
-if (!defined('CONFIGURATION_APP_LIBM2')) {
-  define('CONFIGURATION_APP_LIBM2', 'roundcube');
-}
-// Inclusion de l'ORM
-include_once 'includes/libm2.php';
-
 // Utilisation des namespaces
 use
     Program\Lib\Request\Localization as l,
@@ -178,7 +171,7 @@ class Ajax {
 	 * Ajout de la proposition dans le calendrier
 	 */
     private static function add_calendar() {
-      \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Ajax::add_calendar()");
+      	\Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Ajax::add_calendar()");
         if (!\Program\Data\Poll::isset_current_poll()) {
             self::$success = false;
             self::$message = "Poll does not exist";
@@ -187,7 +180,11 @@ class Ajax {
             self::$success = false;
             self::$message = "You have no right to access to this resource";
             self::Send();
-        }
+        } elseif (!\Config\IHM::$ADD_TO_CALENDAR) {
+	      	self::$success = false;
+	        self::$message = "";
+	        self::Send();
+	      }
         $proposals = unserialize(\Program\Data\Poll::get_current_poll()->proposals);
         $prop_key = r::getInputValue("prop_key", POLL_INPUT_POST);
         if (isset($proposals[$prop_key])) {
@@ -230,6 +227,10 @@ class Ajax {
         self::$message = "You have no right to access to this resource";
         \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Ajax::add_tentative_calendar() Error : You have no right to access to this resource");
         self::Send();
+      } elseif (!\Config\IHM::$ADD_TO_CALENDAR) {
+      	self::$success = false;
+        self::$message = "";
+        self::Send();
       }
       $proposals = unserialize(\Program\Data\Poll::get_current_poll()->proposals);
       $prop_keys = r::getInputValue("prop_keys", POLL_INPUT_POST);
@@ -256,6 +257,10 @@ class Ajax {
       if (!\Program\Data\User::isset_current_user()) {
         self::$success = false;
         self::$message = "You have no right to access to this resource";
+        self::Send();
+      } elseif (!\Config\IHM::$ADD_TO_CALENDAR) {
+      	self::$success = false;
+        self::$message = "";
         self::Send();
       }
       // Retourne du JSON

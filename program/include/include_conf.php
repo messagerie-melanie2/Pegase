@@ -23,6 +23,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 if (CONFIGURATION_TYPE_PEGASE == TYPE_EXTERNAL_PEGASE) {
     // Chargement de la configuration de l'application en fonction de l'environnement
     include_once CONFIGURATION_PATH_PEGASE.'/driver.php';

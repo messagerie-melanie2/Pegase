@@ -42,47 +42,52 @@ class Sql {
      */
     public static $WRITE_SERVER = "sgbd.server";
   	/**
-  	 * Configuration de la connexion SQL
+  	 * Configuration des serveurs SQL
+  	 * Chaque clé indique le nom du serveur ldap et sa configuration de connexion
   	 * @var array
   	 */
   	public static $SERVERS = array(
         "sgbd.server" => array(
-      		/**
-      		 * Connexion persistante
-      		 */
-      		'persistent' => 'true',
-      		/**
-      		 * Hostname ou IP vers le serveur SGBD
-      		 */
-      		'hostspec' => 'sgbd.server',
-          /**
-           * Utilisateur pour la connexion à la base
-           */
-          'username' => 'poll',
-      		/**
-      		 * Mot de passe pour l'utilisateur
-      		 */
-      		'password' => 'poll',
-      		/**
-      		 * Base de données Mélanie
-      		 */
-      		'database' => 'poll',
-      		/**
-      		 * Port de connexion
-      		 */
-      		'port' => 5432,
-      		/**
-      		 * Protocole de connexion
-      		 */
-      		'protocol' => 'tcp',
-      		/**
-      		 * Encodage de la base de données
-      		 */
-      		'charset' =>  'utf-8',
-      		/**
-      		 * Type de base : pgsql, mysql
-      		 */
-      		'phptype' => 'pgsql'
+          		/**
+          		 * Connexion persistante
+          		 */
+          		'persistent' => 'true',
+              /**
+               * Le Data Source Name (DSN) de PDO
+               */
+              'dsn' => null,
+          		/**
+          		 * Hostname ou IP vers le serveur SGBD
+          		 */
+          		'hostspec' => 'sgbd.server',
+              /**
+               * Utilisateur pour la connexion à la base
+               */
+              'username' => 'poll',
+          		/**
+          		 * Mot de passe pour l'utilisateur
+          		 */
+          		'password' => 'poll',
+          		/**
+          		 * Base de données Mélanie
+          		 */
+          		'database' => 'poll',
+          		/**
+          		 * Port de connexion
+          		 */
+          		'port' => 5432,
+          		/**
+          		 * Protocole de connexion
+          		 */
+          		'protocol' => 'tcp',
+          		/**
+          		 * Encodage de la base de données
+          		 */
+          		'charset' =>  'utf-8',
+          		/**
+          		 * Type de base : pgsql, mysql, sqlite
+          		 */
+          		'phptype' => 'pgsql'
         )
 	  );
 }

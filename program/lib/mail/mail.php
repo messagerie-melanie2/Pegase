@@ -54,6 +54,9 @@ class Mail {
 	 * @return boolean
 	 */
 	public static function SendMail($from, $to, $subject, $body, $bcc = null) {
+		if (!\Config\IHM::$SEND_MAIL) {
+			return true;
+		}
 	    Log::l(Log::DEBUG, "Mail::SendMail($from, $to, $subject)");
 	    $headers   = array();
 	    $headers[] = "MIME-Version: 1.0";

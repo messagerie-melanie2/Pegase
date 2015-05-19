@@ -62,7 +62,7 @@ use Program\Data\User as u;
               <ul data-role="listview">
                 <li><a id="button_edit_poll" title="<?= l::g("Clic to edit the poll", false) ?>" class="pure-button-edit-poll" href="<?= o::url("edit", ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('Modify poll') ?></a></li>
                 <li><a id="button_edit_prop_poll" title="<?= l::g("Clic to change poll proposals", false) ?>" class="pure-button-edit-poll" href="<?= o::url("edit_".p::get_current_poll()->type, ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('Modify propositions') ?></a></li>
-                <li><a id="button_lock_poll" title="<?= l::g("Clic to lock the poll", false) ?>" class="pure-button-edit-poll" href="<?= o::url(null, (p::get_current_poll()->locked === 0 ? ACT_LOCK : ACT_UNLOCK), array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><?= (p::get_current_poll()->locked === 0 ? l::g('Lock') : l::g('Unlock')) ?></a></li>
+                <li><a id="button_lock_poll" title="<?= l::g("Clic to lock the poll", false) ?>" class="pure-button-edit-poll" href="<?= o::url(null, (p::get_current_poll()->locked == 0 ? ACT_LOCK : ACT_UNLOCK), array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><?= (p::get_current_poll()->locked == 0 ? l::g('Lock') : l::g('Unlock')) ?></a></li>
                 <li><a id="button_delete_poll" title="<?= l::g("Clic to delete the poll", false) ?>" class="pure-button-edit-poll" href="<?= o::url("main", ACT_DELETE, array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><?= l::g('Delete poll') ?></a></li>
               </ul>
           <?php } ?>
@@ -121,7 +121,7 @@ use Program\Data\User as u;
                     <br><br>
                     <div id="poll">
                         <?= s::GenerateProposalsTable() ?>
-                        <?php if (p::get_current_poll()->locked === 1) { ?>
+                        <?php if (p::get_current_poll()->locked == 1) { ?>
                             <br>
                             <div><?= l::g('Poll is locked, you can not respond') ?></div>
                             <?php if (count(o::get_env("best_proposals")) > 0) { ?>

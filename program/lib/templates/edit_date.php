@@ -58,6 +58,8 @@ class Edit_date {
 	        o::set_env("error", "Current poll is not defined");
 	        return;
 	    }
+	    // L'application doit elle enregistrer les événements dans l'agenda
+	    o::set_env("add_to_calendar", \Config\IHM::$ADD_TO_CALENDAR);
 	    // Définition du nombre de prop par défaut
 	    $nb_prop = 1;
 	    if (o::get_env("mobile"))
@@ -92,7 +94,8 @@ class Edit_date {
     	    'Edit date (Y-m-d H:i:s)', 'Edit date', 'Delete',
     	    'Are you sure ? Not saved proposals are lost',
     	    'Choose date on the calendar',
-    	    'show calendar', 'None', 'Tentative', 'Confirmed', 'Your freebusy'
+    	    'show calendar', 'None', 'Tentative', 'Confirmed', 'Your freebusy',
+	    	'Loading your events...',
 	    ));
 	    // Ajout de l'environnement
 	    o::set_env('poll_title', \Program\Data\Poll::get_current_poll()->title);

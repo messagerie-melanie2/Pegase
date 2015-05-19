@@ -50,6 +50,8 @@ class Output {
 	 * Initialisation des variables de sortie
 	 */
 	public static function init() {
+        // Définition du timezone
+        date_default_timezone_set(\Config\IHM::$DEFAULT_TIMEZONE);
 	    // Définition de la skin
 	    self::$skin = \Config\IHM::$SKIN;
 	    // Test si une skin est passée en GET

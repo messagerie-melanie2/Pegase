@@ -55,6 +55,38 @@ function poll_app()
 		$('.message').fadeIn().delay(3000).fadeOut('slow'); 
 	}
 	
+	this.show_loading = function(msg)
+	{
+		$('.loading .loading_message').text(msg);
+		$('.loading').show();
+	}
+	
+	this.hide_loading = function()
+	{
+		$('.loading').hide();
+	}
+	
+	this.show_popup = function(e, popup)
+	{
+		e.preventDefault();
+		e.stopPropagation();
+		if ($('#' + popup).is(':visible')) {
+			$('#' + popup).hide();
+			$('.button-' + popup).removeClass('open');
+		}
+		else {
+			$('#' + popup).show();
+			$('.button-' + popup).addClass('open');
+		}
+		$('.popup').each(function() {
+			if ($(this).attr('id') != popup
+					&& $(this).is(':visible')) {
+				$('.button-' + $(this).attr('id')).removeClass('open');
+				$(this).hide();
+			}
+		});
+	}
+	
 	this.command = function(command, args)
 	{
 		try {
@@ -73,3 +105,19 @@ $(document).on({
     	$('.message').hide();
     }
 }, ".message"); //pass the element as an argument to .on
+$(document).on({
+    click: function () {
+    	$('.popup').each(function() {
+			if ($(this).is(':visible')) {
+				$('.button-' + $(this).attr('id')).removeClass('open');
+				$(this).hide();
+			}
+		});
+    }
+}, "html"); //pass the element as an argument to .on
+$(document).on({
+    click: function (e) {
+    	e.stopPropagation();
+    }
+}, ".popup"); //pass the element as an argument to .on
+

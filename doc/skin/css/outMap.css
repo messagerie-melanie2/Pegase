@@ -1,0 +1,56 @@
+ul.sw_outMap_navList{
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+	padding:0px;
+	text-align:left;
+	margin:0px
+}
+ul.sw_outMap_navList ul{
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+	padding: 0px 40px;
+	margin: 0px
+}
+ul.sw_outMap_navList li{
+	padding: 1px 0px;
+}
+ul.sw_outMap_navList a{
+	display: block;
+	min-height:17px;
+	padding-left: 22px;
+	background-repeat: no-repeat;
+	background-position: left top;
+	padding-top:2px
+}
+ul.sw_outMap_navList a.mnuSel_yes{
+	color: #569926;
+}
+li.outRoot a.mnuSel_no,
+li.outPre a.mnuSel_no{
+	background-image:url("../img/out/outHome.gif");
+}
+li.outIntro a.mnuSel_no{
+	background-image:url("../img/out/outIntro.gif");
+}
+li.outSec a.mnuSel_no{
+	background-image:url("../img/out/outSec.gif");
+}
+li.outConc a.mnuSel_no{
+	background-image:url("../img/out/outConc.gif");
+}
+
+li.outRoot a.mnuSel_yes,
+li.outPre a.mnuSel_yes{
+	background-image:url("../img/out/outHomeSel.gif");
+}
+li.outIntro a.mnuSel_yes{
+	background-image:url("../img/out/outIntroSel.gif");
+}
+li.outSec a.mnuSel_yes{
+	background-image:url("../img/out/outSecSel.gif");
+}
+li.outConc a.mnuSel_yes{
+	background-image:url("../img/out/outConcSel.gif");
+}

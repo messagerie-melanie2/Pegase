@@ -1,0 +1,28 @@
+span.sw_outStack_navRoot{
+	display: block;
+	cursor: default;
+	position: absolute;
+	bottom: 2px;
+	left:5px;
+	font-size:0.9em;
+	background-color: white;
+	-moz-opacity:0.8; 
+	filter:Alpha(opacity=80); 
+	opacity:0.8;
+	padding:0px 3px;
+	color: #696989;
+	font-size: 0.8em;
+}
+a.stkSel_no{
+	text-decoration: none;
+	color: #696989;
+}
+a.stkSel_no:hover{
+	text-decoration: underline;
+}
+span.stkSel_yes{
+	color: #569926;
+}
+span.stkSep{
+	color: silver;
+}

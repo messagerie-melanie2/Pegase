@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -34,9 +34,9 @@
  * @param string $pClassName
  */
 function pollautoload($pClassName) {
-	if (strpos($pClassName, 'LibMelanie') === 0 
-			|| strpos($pClassName, 'Composer') === 0)
-		return;
+    if (strpos($pClassName, 'LibMelanie') === 0
+    		|| strpos($pClassName, 'Composer') === 0)
+    	return;
     // Définition du nom du fichier et du chemin
     $dir_class = $pClassName . '.php';
     // Remplace les \ du namespace par /

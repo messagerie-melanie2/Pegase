@@ -1,0 +1,83 @@
+/* ========== GENERAL HTML TAG SETUP ========== */
+html{
+	margin: 0px;
+	padding: 0px;
+}
+body {
+	background-color: White;
+	font-family:sans-serif;
+	font-size: 14px;
+	overflow-y: scroll;
+	margin: 0px;
+	padding: 0px;
+	color: #535353;
+	line-height:1.2em;
+}
+table{
+	border-collapse: collapse;
+	border-spacing: 0px;
+	font-family:sans-serif;
+	font-size: 14px;
+	color: #535353;
+	line-height:1.3em;
+}
+td{
+	padding: 0px;
+	margin: 0px;
+}
+p{
+	padding: 0px;
+	margin: 0.8em 0px;
+}
+a img{
+	border-width:0;
+}
+a {
+	color: #5f5f7c;
+	text-decoration: none;
+}
+a:hover{
+	text-decoration: underline;
+}
+a:visited{
+	color: #5f5f7c;
+}
+
+h1{
+color: #569926;
+	font-size: 1.5em;
+	margin: 0.5em 0em; 
+}
+h2{
+	margin: 1.5em 0em 0.5em 0em;
+	font-size: 1.3em;
+	color: #929292;
+	font-style: italic;
+	padding-bottom: 3px;
+	border-bottom: medium solid #afafaf;
+}
+h3{
+	margin: 0.5em 0em;
+	font-size: 1.1em;
+	color: #8e8e8e;
+}
+h4{
+	margin: 0.5em 0em;
+	font-size: 1em;
+	color: #46436E;
+}
+h5{
+	margin: 0.5em 0em;
+	font-size: 1em;
+	color: #46436E;
+}
+h6{
+	margin: 0.5em 0em;
+	font-size: 1em;
+	color: #46436E;
+}
+
+/** rapprocher la liste du paragraphe précédent, souvent fortement lié sémantiquement à cette liste **/
+ol, ul{
+	margin-top: 2px;
+}

@@ -353,6 +353,12 @@ h1 {
     border: 1px solid #B6B77C;
     height: 18px;
 }
+#proposals_table tr.prop_new_element {
+  height: 85px;
+}
+#proposals_table tr.prop_new_element .newemail {
+  margin-top: 4px;
+}
 #calendar .fc-border-separate {
 	border-radius: 2px;
 	box-shadow: 0px 0px 9px rgba(0,0,0,0.15);

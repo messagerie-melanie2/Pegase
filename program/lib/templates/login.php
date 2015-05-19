@@ -48,6 +48,11 @@ class Login {
 	 * @return multitype:string
 	 */
 	public static function Process() {
+		// Utilisation du SSO
+		if (isset(\Config\IHM::$USE_SSO)
+		        && \Config\IHM::$USE_SSO) {
+			return \Api\SSO\SSO::get_sso()->process();
+		}
 		// Session instanciée
 		if (Session::is_setUsername()
 				&& Session::is_setPassword()) {
@@ -72,14 +77,16 @@ class Login {
     		            }
     		            return true;
     		        } else {
-    		        	\Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "Login::Process() Bad login for user $username");
-  		            return false;
+    	              \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "Login::Process() Bad login for user $username");
+    		        	  Output::set_env("error", "Auth error, bad login or password");
+    		            return false;
     		        }
     		    } else {
     		        return false;
     		    }
 		    } else {
-    	        return false;
+        	  Output::set_env("error", "Invalid request");
+            return false;
 		    }
 		}
 	}

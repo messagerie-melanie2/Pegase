@@ -112,7 +112,11 @@ class Show {
 	    // Ajoute le type de sondage
 	    o::set_env("poll_type", \Program\Data\Poll::get_current_poll()->type);
 	    // Est-ce que l'utilisateur est authentifié
-	    o::set_env("user_auth", \Program\Data\User::isset_current_user() && \Program\Data\User::get_current_user()->auth === 1);
+	    o::set_env("user_auth", \Program\Data\User::isset_current_user() && \Program\Data\User::get_current_user()->auth == 1);
+	    // L'application doit elle envoyer des emails
+	    o::set_env("send_mail", \Config\IHM::$SEND_MAIL);
+	    // L'application doit elle enregistrer les événements dans l'agenda
+	    o::set_env("add_to_calendar", \Config\IHM::$ADD_TO_CALENDAR);
 	    // Ajout des labels
 	    o::add_label(array(
 	       'Are you sure you want to delete the poll ?',
@@ -125,9 +129,12 @@ class Show {
 	       'Remove',
 	       'Do you want to send a message to the attendees ?',
 	       'Would you like to add responses to your calendar as tentative ?',
+	       'Username', 'Email address', 'Yes', 'No', 'If needed',
+	       'Adding prop to your calendar...',
 	    ));
 	    // Gestion du téléchargement de l'ICS
-	    if (o::get_env("action") == ACT_DOWNLOAD_ICS) {
+	    if (o::get_env("action") == ACT_DOWNLOAD_ICS
+	            && \Config\IHM::$ADD_TO_CALENDAR) {
 	        $csrf_token = trim(strtolower(Request::getInputValue("_t", POLL_INPUT_GET)));
 	        if (Session::validateCSRFToken($csrf_token)) {
     	    	self::$proposals = unserialize(\Program\Data\Poll::get_current_poll()->proposals);
@@ -206,7 +213,8 @@ class Show {
 	        } else {
 	            o::set_env("error", "Invalid request");
 	        }
-        } elseif (o::get_env("action") == ACT_ADD_CALENDAR) {
+        } elseif (o::get_env("action") == ACT_ADD_CALENDAR
+                && \Config\IHM::$ADD_TO_CALENDAR) {
         	self::$proposals = unserialize(\Program\Data\Poll::get_current_poll()->proposals);
         	$prop = Request::getInputValue("_prop", POLL_INPUT_GET);
         	if (isset(self::$proposals[$prop])) {
@@ -217,7 +225,7 @@ class Show {
         	} else {
 	    		o::set_env("error", "Error while saving the event in your calendar");
 	    	}
-	    } elseif (\Program\Data\Poll::get_current_poll()->locked === 0
+	    } elseif (\Program\Data\Poll::get_current_poll()->locked == 0
 	            && (isset($username) && $username != ""
 	                || isset($hidden_modify))) {
 	        $csrf_token = trim(strtolower(Request::getInputValue("csrf_token", POLL_INPUT_POST)));
@@ -251,6 +259,7 @@ class Show {
         	            Session::set("user_noauth_poll_id", \Program\Data\Poll::get_current_poll()->poll_id);
         	            Session::set("user_noauth_id", $user_id);
         	            Session::set("user_noauth_name", $username);
+        	            Session::set("user_noauth_email", $user_email);
         	            $user_name = $username;
         	        }
         	        // Parcourir les responses
@@ -336,6 +345,11 @@ class Show {
     	                    $new_responses[intval($keys[1])] = array();
     	                }
     	                $new_responses[intval($keys[1])]['username'] = Request::getInputValue($key, POLL_INPUT_POST);
+	                } elseif ($keys[0] == 'newemail') {
+	                    if (!is_array($new_responses[intval($keys[1])])) {
+	                        $new_responses[intval($keys[1])] = array();
+	                    }
+	                    $new_responses[intval($keys[1])]['email'] = Request::getInputValue($key, POLL_INPUT_POST);
     	            } elseif ($keys[0] == 'newcheck') {
     	                if (!is_array($new_responses[intval($keys[1])])) {
     	                    $new_responses[intval($keys[1])] = array();
@@ -344,6 +358,14 @@ class Show {
     	                    $new_responses[intval($keys[1])]['responses'] = array();
     	                }
     	                $new_responses[intval($keys[1])]['responses'][Request::getInputValue($key, POLL_INPUT_POST)] = true;
+	                } elseif ($keys[0] == 'newradio') {
+	                    if (!is_array($new_responses[intval($keys[1])])) {
+	                        $new_responses[intval($keys[1])] = array();
+	                    }
+	                    if (!is_array($new_responses[intval($keys[1])]['responses'])) {
+	                        $new_responses[intval($keys[1])]['responses'] = array();
+	                    }
+	                    $new_responses[intval($keys[1])]['responses'][Request::getInputValue($key, POLL_INPUT_POST)] = true;
     	            }
     	        }
         	    // Récupération des réponses du sondage
@@ -371,7 +393,7 @@ class Show {
     	                $user = new \Program\Data\User(array(
         	                "username" => $new_response['username'],
         	                "fullname" => "",
-        	                "email" => "",
+        	                "email" => isset($new_response['email']) ? $new_response['email'] : "",
         	                "auth" => 0,
         	            ));
         	            $user_id = \Program\Drivers\Driver::get_driver()->addUser($user);
@@ -433,9 +455,9 @@ class Show {
     	        foreach (self::$responses as $response) {
     	            if (\Program\Data\User::isset_current_user()
     	                    && $response->user_id == \Program\Data\User::get_current_user()->user_id
-    	                    && \Program\Data\Poll::get_current_poll()->locked === 0) {
-      	              // Afficher les freebusy de l'utilisateur
-      	              self::view_user_freebusy();
+    	                    && \Program\Data\Poll::get_current_poll()->locked == 0) {
+      	              	// Afficher les freebusy de l'utilisateur
+      	              	self::view_user_freebusy();
     	                // Réponse de l'utilisateur courant authentifié, si le sondage n'est pas locké
     	                self::view_current_user_unlock_response($response);
     	                break;
@@ -444,7 +466,7 @@ class Show {
         	                && Session::is_set("user_noauth_poll_id")
     	                    && Session::get("user_noauth_id") == $response->user_id
         	                && Session::get("user_noauth_poll_id") == \Program\Data\Poll::get_current_poll()->poll_id
-    	                    && \Program\Data\Poll::get_current_poll()->locked === 0) {
+    	                    && \Program\Data\Poll::get_current_poll()->locked == 0) {
     	                // Réponse de l'utilisateur courant non authentifié, si le sondage n'est pas locké
     	                self::view_unauthenticate_current_user_unlock_response($response);
     	                break;
@@ -463,7 +485,7 @@ class Show {
     	              break;
     	            }
     	        }
-    	        if (\Program\Data\Poll::get_current_poll()->locked === 1
+    	        if (\Program\Data\Poll::get_current_poll()->locked == 1
     	            || !\Program\Data\Poll::get_current_poll()->anonymous
     	            || \Program\Data\User::isset_current_user()
     	              && \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
@@ -487,7 +509,7 @@ class Show {
     	    }
 	        // Si l'utilisateur n'a pas répondu
 	        if (!self::$user_responded
-	                && \Program\Data\Poll::get_current_poll()->locked === 0
+	                && \Program\Data\Poll::get_current_poll()->locked == 0
 	                && o::get_env("action") != ACT_MODIFY_ALL
 	                && (!\Program\Data\Poll::get_current_poll()->auth_only
                             || \Program\Data\User::isset_current_user())) {
@@ -497,7 +519,7 @@ class Show {
 	            // Ajout des freebusy
 	            self::view_user_freebusy();
 	        }
-	        if (\Program\Data\Poll::get_current_poll()->locked === 1
+	        if (\Program\Data\Poll::get_current_poll()->locked == 1
 	            || !\Program\Data\Poll::get_current_poll()->anonymous
 	            || \Program\Data\User::isset_current_user()
     	              && \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
@@ -505,7 +527,7 @@ class Show {
   	        self::view_number_responses();
 	        }
 	        // Ajout des boutons de validation d'une date si le sondage est vérouillé qu'on est organisateur
-	        if (\Program\Data\Poll::get_current_poll()->locked === 1) {
+	        if (\Program\Data\Poll::get_current_poll()->locked == 1) {
 	            // Ajout des boutons de validation des propositions
 	            self::view_validation_buttons();
 	        }
@@ -515,7 +537,7 @@ class Show {
     	        $html = \Program\Lib\HTML\html::tag("form", array("id" => "proposals_form", "class" => "pure-form pure-form-aligned", "action" => o::url(null, null, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid), false)."#poll", "method" => "post"),
     	                    \Program\Lib\HTML\html::div(array("id" => "proposals_div"),self::$table->show()) .
     	                    $hidden_field_csrf_token->show() .
-    	                    (o::get_env("mobile") && \Program\Data\Poll::get_current_poll()->locked === 0 && (!\Program\Data\Poll::get_current_poll()->auth_only || \Program\Data\User::isset_current_user())? \Program\Lib\HTML\html::tag("input", array("class" => "pure-button pure-button-save", "id" => "proposals_form_submit", "form" => "proposals_form", "type" => "submit", "value" => Localization::g("Save"))) . " " . \Program\Lib\HTML\html::a(array("href" => o::url(null, ACT_DELETE_RESPONSE, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid, "t" => Session::getCSRFToken()), false), "id" => "button_delete_response", "data-role" => "button", "class" => "pure-button pure-button-save customtooltip_bottom", "title" => Localization::g("Clic to delete your response", false)), Localization::g("delete")) : "")
+    	                    (o::get_env("mobile") && \Program\Data\Poll::get_current_poll()->locked == 0 && (!\Program\Data\Poll::get_current_poll()->auth_only || \Program\Data\User::isset_current_user())? \Program\Lib\HTML\html::tag("input", array("class" => "pure-button pure-button-save", "id" => "proposals_form_submit", "form" => "proposals_form", "type" => "submit", "value" => Localization::g("Save"))) . " " . \Program\Lib\HTML\html::a(array("href" => o::url(null, ACT_DELETE_RESPONSE, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid, "t" => Session::getCSRFToken()), false), "id" => "button_delete_response", "data-role" => "button", "class" => "pure-button pure-button-save customtooltip_bottom", "title" => Localization::g("Clic to delete your response", false)), Localization::g("delete")) : "")
     	                );
 	        } else {
 	            $hidden_field_modify_all = new \Program\Lib\HTML\html_hiddenfield(array("name" => "hidden_modify_all", "value" => \Program\Data\Poll::get_current_poll()->poll_id));
@@ -543,7 +565,7 @@ class Show {
 	            && !\Program\Data\User::isset_current_user()) {
 	        return "";
 	    }
-	    return count(o::get_env("best_proposals")) === 1 ? Localization::g('Proposal with the most responses is ', $html) . implode(', ', o::get_env("best_proposals")) : Localization::g('Proposals with the most responses are ', $html) . implode(', ', o::get_env("best_proposals"));
+	    return count(o::get_env("best_proposals")) == 1 ? Localization::g('Proposal with the most responses is ', $html) . implode(', ', o::get_env("best_proposals")) : Localization::g('Proposals with the most responses are ', $html) . implode(', ', o::get_env("best_proposals"));
 	}
 	/**
 	 * Génération du text pour les propositions validées par l'organisateur
@@ -574,8 +596,8 @@ class Show {
 	        }
 	        $validate_proposals_text[] = $prop;
 	    }
-	    if (count($validate_proposals) === 0) return "";
-	    return count($validate_proposals) === 1 ? Localization::g('Proposal validate by the organizer is ', $html) . implode(', ', $validate_proposals_text) : Localization::g('Proposals validate by the organizer are ', $html) . implode(', ', $validate_proposals_text);
+	    if (count($validate_proposals) == 0) return "";
+	    return count($validate_proposals) == 1 ? Localization::g('Proposal validate by the organizer is ', $html) . implode(', ', $validate_proposals_text) : Localization::g('Proposals validate by the organizer are ', $html) . implode(', ', $validate_proposals_text);
 	}
 
 	/**
@@ -756,7 +778,7 @@ class Show {
 	        foreach (self::$proposals as $prop_key => $prop_value) {
 	            $class = "";
 	            if (isset(self::$validate_proposals[$prop_value])
-	                   && \Program\Data\Poll::get_current_poll()->locked === 1) {
+	                   && \Program\Data\Poll::get_current_poll()->locked == 1) {
 	                $class = "validate_prop_header";
 	            }
 	            $values = explode(' - ', $prop_value);
@@ -794,7 +816,7 @@ class Show {
 	    $name = isset($user->fullname) && $user->fullname != "" ? $user->fullname : $user->username;
 	    // Ajout de la nouvelle ligne
 	    self::$table->add_row(array("class" => "prop_row_elements"));
-	    self::$table->add(array("class" => "user_list_name user_list_name_connected first_col user_authenticate customtooltip_bottom", "title" => ($user->auth === 1 ? Localization::g("User authenticate", false) : Localization::g("User not authenticate", false)) . " : $name"), $name);
+	    self::$table->add(array("class" => "user_list_name user_list_name_connected first_col user_authenticate customtooltip_bottom", "title" => ($user->auth == 1 ? Localization::g("User authenticate", false) : Localization::g("User not authenticate", false)) . " : $name"), $name);
 	    // Unserialize les réponses de l'utilisateur
 	    $resp = unserialize($response->response);
 	    if (!is_array($resp)) $resp = array();
@@ -908,9 +930,11 @@ class Show {
 	 */
 	private static function view_unauthenticate_current_user_unlock_response($response) {
 	    self::$user_responded = true;
+	    // Classe email si un email est présent
+	    $class = Session::is_set('user_noauth_email') && Session::get('user_noauth_email') != "" ? " user_email" : "";
 	    // Ajout de la nouvelle ligne
 	    self::$table->add_row(array("class" => "prop_row_elements customtooltip_bottom"));
-	    self::$table->add(array("class" => "user_list_name user_list_name_connected first_col customtooltip_bottom", "title" => Localization::g("User not authenticate", false) . " : " . Session::get("user_noauth_name")), Session::get("user_noauth_name"));
+	    self::$table->add(array("class" => "user_list_name user_list_name_connected first_col customtooltip_bottom$class", "title" => Localization::g("User not authenticate", false) . " : " . Session::get("user_noauth_name")), Session::get("user_noauth_name"));
 	    // Unserialize les réponses de l'utilisateur
 	    $resp = unserialize($response->response);
 	    if (!is_array($resp)) $resp = array();
@@ -990,148 +1014,149 @@ class Show {
 	 * Génération de l'affichage des freebusy pour l'utilisateur courant
 	 */
 	private static function view_user_freebusy() {
-    if (!\Program\Data\User::isset_current_user()
-        || !\Program\Data\Poll::isset_current_poll()
-        || \Program\Data\Poll::get_current_poll()->type != "date") {
-      return;
-    }
-    try {
-      // Récupération du timezone depuis le Driver
-      $timezone = \Program\Lib\Event\Drivers\Driver::get_driver()->get_user_timezone();
-      // Parcourir les proposition pour trouver le start et end
-      foreach (self::$proposals as $prop_key => $prop_value) {
-        if (strpos($prop_value, ' - ')) {
-          $prop = explode(' - ', $prop_value, 2);
-          $prop_start = new \DateTime($prop[0], $timezone);
-          $prop_end = new \DateTime($prop[1], $timezone);
-        }
-        else {
-          $prop_start = new \DateTime($prop_value, $timezone);
-          $prop_end = clone $prop_start;
-          $prop_end->add(new \DateInterval('P1D'));
-        }
-        if (!isset($start)
-            && !isset($end)) {
-          // Positionnement de la date de début et de fin
-          $start = $prop_start;
-          $end = $prop_end;
-        }
-        else {
-          if ($prop_end > $end) {
-            // Si tmp est supérieur, on conserve comme fin
-            $end = $prop_end;
-          }
-          if ($prop_start < $start) {
-            // Si tmp est inférieur, on conserve comme début
-            $start = $prop_start;
-          }
-        }
-      }
-      // Récupération des événements depuis le Driver
-      $events = \Program\Lib\Event\Drivers\Driver::get_driver()->get_user_freebusy($start, $end);
-      // Ajout de la nouvelle ligne
-      self::$table->add_row(array("class" => "prop_row_freebusy"));
-      self::$table->add(
-          array(
-              "class" => "user_freebusy_first_col user_calendar first_col customtooltip_bottom",
-              "title" => Localization::g("Your freebusy title", false)
-          ), Localization::g("Your freebusy"));
-      // Parcour les événements
-      foreach ($events as $event) {
-        // Parcour les propositions pour la comparaison
-        foreach (self::$proposals as $prop_key => $prop_value) {
-          if (strpos($prop_value, ' - ')) {
-            $prop = explode(' - ', $prop_value, 2);
-            if ($event->allday) {
-              $prop_start = new \DateTime($prop[0], new \DateTimeZone('UTC'));
-              $prop_end = new \DateTime($prop[1], new \DateTimeZone('UTC'));
-            }
-            else {
-              $prop_start = new \DateTime($prop[0], $timezone);
-              $prop_end = new \DateTime($prop[1], $timezone);
-            }
+	    if (!\Program\Data\User::isset_current_user()
+	        || !\Program\Data\Poll::isset_current_poll()
+	        || \Program\Data\Poll::get_current_poll()->type != "date"
+	        || !\Config\IHM::$ADD_TO_CALENDAR) {
+	      return;
+	    }
+	    try {
+	      // Récupération du timezone depuis le Driver
+	      $timezone = \Program\Lib\Event\Drivers\Driver::get_driver()->get_user_timezone();
+	      // Parcourir les proposition pour trouver le start et end
+	      foreach (self::$proposals as $prop_key => $prop_value) {
+	        if (strpos($prop_value, ' - ')) {
+	          $prop = explode(' - ', $prop_value, 2);
+	          $prop_start = new \DateTime($prop[0], $timezone);
+	          $prop_end = new \DateTime($prop[1], $timezone);
+	        }
+	        else {
+	          $prop_start = new \DateTime($prop_value, $timezone);
+	          $prop_end = clone $prop_start;
+	        }
+	        $prop_end->add(new \DateInterval('P1D'));
+	        if (!isset($start)
+	            && !isset($end)) {
+	          // Positionnement de la date de début et de fin
+	          $start = $prop_start;
+	          $end = $prop_end;
+	        }
+	        else {
+	          if ($prop_end > $end) {
+	            // Si tmp est supérieur, on conserve comme fin
+	            $end = $prop_end;
+	          }
+	          if ($prop_start < $start) {
+	            // Si tmp est inférieur, on conserve comme début
+	            $start = $prop_start;
+	          }
+	        }
+	      }
+	      // Récupération des événements depuis le Driver
+	      $events = \Program\Lib\Event\Drivers\Driver::get_driver()->get_user_freebusy($start, $end);
+	      // Ajout de la nouvelle ligne
+	      self::$table->add_row(array("class" => "prop_row_freebusy"));
+	      self::$table->add(
+	          array(
+	              "class" => "user_freebusy_first_col user_calendar first_col customtooltip_bottom",
+	              "title" => Localization::g("Your freebusy title", false)
+	          ), Localization::g("Your freebusy"));
+	      // Parcour les événements
+	      foreach ($events as $event) {
+	        // Parcour les propositions pour la comparaison
+	        foreach (self::$proposals as $prop_key => $prop_value) {
+	          if (strpos($prop_value, ' - ')) {
+	            $prop = explode(' - ', $prop_value, 2);
+	            if ($event->allday) {
+	              $prop_start = new \DateTime($prop[0], new \DateTimeZone('UTC'));
+	              $prop_end = new \DateTime($prop[1], new \DateTimeZone('UTC'));
+	            }
+	            else {
+	              $prop_start = new \DateTime($prop[0], $timezone);
+	              $prop_end = new \DateTime($prop[1], $timezone);
+	            }
 
-          }
-          else {
-            if ($event->allday) {
-              $prop_start = new \DateTime($prop_value, new \DateTimeZone('UTC'));
-            }
-            else {
-              $prop_start = new \DateTime($prop_value, $timezone);
-            }
-            $prop_end = clone $prop_start;
-            $prop_end->add(new \DateInterval('P1D'));
-          }
-          if ($event->start <= $prop_start && $event->end > $prop_start
-              || $event->start < $prop_end && $event->end >= $prop_end
-              || $event->start >= $prop_start && $event->start < $prop_end
-              || $event->end > $prop_start && $event->end <= $prop_end) {
-            if (!isset($freebusy[$prop_key])) {
-              $freebusy[$prop_key] = array();
-            }
-            if (isset($event->status))
-              $status = ucfirst(strtolower($event->status));
-            else
-              $status = 'None';
-            if ($event->allday) {
-              $event_end_date = clone $event->end;
-              $event_end_date->sub(new \DateInterval('P1D'));
-              if ($event->start->format('d/m/Y') == $event_end_date->format('d/m/Y')) {
-                $date = $event->start->format('d/m/Y');
-              }
-              else {
-                $date = $event->start->format('d/m/Y') . ' - ' . $event_end_date->format('d/m/Y');
-              }
-            }
-            else {
-              if ($event->start->format('dmY') != $event->end->format('dmY')) {
-                $date = $event->start->format('d/m/Y H:i') . ' - ' . $event->end->format('d/m/Y H:i');
-              }
-              else {
-                $date = $event->start->format('H:i') . ' - ' . $event->end->format('H:i');
-              }
-            }
-            // Ajoute l'évènement à la liste des freebusy
-            $freebusy[$prop_key][] = array(
-                'status' => $status,
-                'title' => $event->title,
-                'date' => $date,
-            );
-          }
-        }
-      }
-      // Parcourir les propositions
-      foreach (self::$proposals as $prop_key => $prop_value) {
-        $status = 'None';
-        $title = '';
-        $count = '';
-        if (isset($freebusy[$prop_key])) {
-          foreach($freebusy[$prop_key] as $event) {
-            if ($status == 'None' || $event['status'] == 'Confirmed')
-              $status = $event['status'];
-            if ($title != "") $title .= " / ";
-            $title .= $event['date'] . " " . $event['title'];
-          }
-          $count = ' ('.count($freebusy[$prop_key]).')';
-          // Si c'est annulé, on le rend libre
-          if ($status == 'Cancelled') $status = 'None';
-        }
-        else {
-          $title = Localization::g($status);
-        }
-        // Ajoute le champ de status à la table
-        self::$table->add(
-            array(
-                "title" => $title,
-                "class" => "freebusy_".strtolower($status)." customtooltip_bottom",
-                "align" => "center"), Localization::g($status).$count);
-      }
-      // Ajout de la derniere colonne
-      self::$table->add(array("class" => "prop_cell_nobackground last_col"), " ");
-    }
-    catch(\Exception $ex) {
-      return;
-    }
+	          }
+	          else {
+	            if ($event->allday) {
+	              $prop_start = new \DateTime($prop_value, new \DateTimeZone('UTC'));
+	            }
+	            else {
+	              $prop_start = new \DateTime($prop_value, $timezone);
+	            }
+	            $prop_end = clone $prop_start;
+	            $prop_end->add(new \DateInterval('P1D'));
+	          }
+	          if ($event->start <= $prop_start && $event->end > $prop_start
+	              || $event->start < $prop_end && $event->end >= $prop_end
+	              || $event->start >= $prop_start && $event->start < $prop_end
+	              || $event->end > $prop_start && $event->end <= $prop_end) {
+	            if (!isset($freebusy[$prop_key])) {
+	              $freebusy[$prop_key] = array();
+	            }
+	            if (isset($event->status))
+	              $status = ucfirst(strtolower($event->status));
+	            else
+	              $status = 'None';
+	            if ($event->allday) {
+	              $event_end_date = clone $event->end;
+	              $event_end_date->sub(new \DateInterval('P1D'));
+	              if ($event->start->format('d/m/Y') == $event_end_date->format('d/m/Y')) {
+	                $date = $event->start->format('d/m/Y');
+	              }
+	              else {
+	                $date = $event->start->format('d/m/Y') . ' - ' . $event_end_date->format('d/m/Y');
+	              }
+	            }
+	            else {
+	              if ($event->start->format('dmY') != $event->end->format('dmY')) {
+	                $date = $event->start->format('d/m/Y H:i') . ' - ' . $event->end->format('d/m/Y H:i');
+	              }
+	              else {
+	                $date = $event->start->format('H:i') . ' - ' . $event->end->format('H:i');
+	              }
+	            }
+	            // Ajoute l'évènement à la liste des freebusy
+	            $freebusy[$prop_key][] = array(
+	                'status' => $status,
+	                'title' => $event->title,
+	                'date' => $date,
+	            );
+	          }
+	        }
+	      }
+	      // Parcourir les propositions
+	      foreach (self::$proposals as $prop_key => $prop_value) {
+	        $status = 'None';
+	        $title = '';
+	        $count = '';
+	        if (isset($freebusy[$prop_key])) {
+	          foreach($freebusy[$prop_key] as $event) {
+	            if ($status == 'None' || $event['status'] == 'Confirmed')
+	              $status = $event['status'];
+	            if ($title != "") $title .= " / ";
+	            $title .= $event['date'] . " " . $event['title'];
+	          }
+	          $count = ' ('.count($freebusy[$prop_key]).')';
+	          // Si c'est annulé, on le rend libre
+	          if ($status == 'Cancelled') $status = 'None';
+	        }
+	        else {
+	          $title = Localization::g($status);
+	        }
+	        // Ajoute le champ de status à la table
+	        self::$table->add(
+	            array(
+	                "title" => $title,
+	                "class" => "freebusy_".strtolower($status)." customtooltip_bottom",
+	                "align" => "center"), Localization::g($status).$count);
+	      }
+	      // Ajout de la derniere colonne
+	      self::$table->add(array("class" => "prop_cell_nobackground last_col"), " ");
+	    }
+	    catch(\Exception $ex) {
+	      return;
+	    }
 	}
 	/**
 	 * Génération de l'affichage pour un utilisateur qui a répondu
@@ -1150,16 +1175,16 @@ class Show {
 	    if (!\Program\Data\User::isset_current_user()) {
 	        $name = self::AnonymName($name, $user->auth);
 	    }
-	    $authenticate_class = $user->auth === 1 ? " user_authenticate" : (!empty($user->email) ? " user_email" : "");
+	    $authenticate_class = $user->auth == 1 ? " user_authenticate" : (!empty($user->email) ? " user_email" : "");
 	    if (\Program\Data\User::isset_current_user()
 	           && $response->user_id == \Program\Data\User::get_current_user()->user_id
 	        || Session::get("user_noauth_id") == $response->user_id) {
 	        // Ajout de la nouvelle ligne
 	        self::$table->add_row(array("class" => "prop_row_elements prop_current_user_elements"));
-	        self::$table->add(array("class" => "user_list_name user_list_name_connected first_col customtooltip_bottom$authenticate_class", "title" => ($user->auth === 1 ? Localization::g("User authenticate", false) : Localization::g("User not authenticate", false)) . " : $name"), $name);
+	        self::$table->add(array("class" => "user_list_name user_list_name_connected first_col customtooltip_bottom$authenticate_class", "title" => ($user->auth == 1 ? Localization::g("User authenticate", false) : Localization::g("User not authenticate", false)) . " : $name"), $name);
 	    } else {
 	        self::$table->add_row(array("class" => "prop_row_elements prop_others_users_elements"));
-	        self::$table->add(array("class" => "user_list_name first_col customtooltip_bottom$authenticate_class", "title" => ($user->auth === 1 ? Localization::g("User authenticate", false) : Localization::g("User not authenticate", false)) . " : $name"), $name);
+	        self::$table->add(array("class" => "user_list_name first_col customtooltip_bottom$authenticate_class", "title" => ($user->auth == 1 ? Localization::g("User authenticate", false) : Localization::g("User not authenticate", false)) . " : $name"), $name);
 	        self::$nb_others_responses++;
 	    }
 	    // Unserialize les réponses de l'utilisateur
@@ -1168,7 +1193,7 @@ class Show {
 	    foreach (self::$proposals as $prop_key => $prop_value) {
 	        $class = "";
 	        if (isset(self::$validate_proposals[$prop_value])
-                   && \Program\Data\Poll::get_current_poll()->locked === 1) {
+                   && \Program\Data\Poll::get_current_poll()->locked == 1) {
 	            $class = "validate_prop_td";
 	        }
 	        if (isset($resp[$prop_value])
@@ -1410,7 +1435,7 @@ class Show {
 	            self::$nb_resp[$prop_value] = 0;
 	        $class = "";
 	        if (isset(self::$validate_proposals[$prop_value])
-                   && \Program\Data\Poll::get_current_poll()->locked === 1) {
+                   && \Program\Data\Poll::get_current_poll()->locked == 1) {
 	            $class .= "validate_prop_td ";
 	        }
 	        if (self::$max == self::$nb_resp[$prop_value]
@@ -1481,7 +1506,7 @@ class Show {
 	        if (\Program\Data\Poll::get_current_poll()->type == "date") {
 	            if (\Program\Data\User::isset_current_user()
 	                   && \Config\IHM::$ADD_TO_CALENDAR) {
-	                if (!\Program\Lib\Event\Drivers\Driver::get_driver()->event_exists($prop_value, null, null, \Program\Data\Event::STATUS_CONFIRMED)) {
+	                if (!isset(self::$validate_proposals[$prop_value]) || !\Program\Lib\Event\Drivers\Driver::get_driver()->event_exists($prop_value, null, null, \Program\Data\Event::STATUS_CONFIRMED)) {
 	                   $html .= \Program\Lib\HTML\html::a(
 	                               array("onclick" => o::command("show_add_to_calendar", o::url("ajax", ACT_ADD_CALENDAR, null, false), ACT_ADD_CALENDAR, array("prop_key" => $prop_key, "poll_uid" => \Program\Data\Poll::get_current_poll()->poll_uid, "token" => Session::getCSRFToken())),
                                            "class" => "pure-button pure-button-calendar customtooltip_bottom",
@@ -1497,7 +1522,7 @@ class Show {
 	                            ),
 	                            "");
 	                }
-	            } else {
+	            } elseif (\Config\IHM::$ADD_TO_CALENDAR) {
 	                $html .= \Program\Lib\HTML\html::a(
 	                               array("target" => "_blank",
 	                                       "href" => o::url(null, ACT_DOWNLOAD_ICS, array("prop" => $prop_key, "u" => \Program\Data\Poll::get_current_poll()->poll_uid, "t" => Session::getCSRFToken()), false),

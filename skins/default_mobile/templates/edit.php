@@ -59,7 +59,7 @@ use Program\Lib\Request\Session as s;
             <ul data-role="listview">
             <li><a class="pure-button-see-poll" href="<?= o::url("show", null, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('See the poll') ?></a></li>
             <li><a class="pure-button-edit-poll" href="<?= o::url("edit_".p::get_current_poll()->type, ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('Modify propositions') ?></a></li>
-            <li><a class="pure-button-edit-poll" href="<?= o::url("edit", (p::get_current_poll()->locked === 0 ? ACT_LOCK : ACT_UNLOCK), array("u" => p::get_current_poll()->poll_uid, "t" => s::getCSRFToken())) ?>"><?= (p::get_current_poll()->locked === 0 ? l::g('Lock') : l::g('Unlock')) ?></a></li>
+            <li><a class="pure-button-edit-poll" href="<?= o::url("edit", (p::get_current_poll()->locked == 0 ? ACT_LOCK : ACT_UNLOCK), array("u" => p::get_current_poll()->poll_uid, "t" => s::getCSRFToken())) ?>"><?= (p::get_current_poll()->locked == 0 ? l::g('Lock') : l::g('Unlock')) ?></a></li>
             </ul>
           <?php }?>
     </div>

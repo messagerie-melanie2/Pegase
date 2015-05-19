@@ -35,92 +35,105 @@ class IHM {
      * Configuration de la localization par défaut
      */
     public static $DEFAULT_LOCALIZATION = "fr_FR";
-	/**
-	 * Configuration du nom de la skin à utiliser pour l'ihm
-	 */
-	public static $SKIN = 'default';
-	/**
-	 * Configuration du nom de l'application
-	 */
-	public static $TITLE = 'Pégase';
-	/**
-	 * Type de stockage pour les sessions, 'php' ou 'memcache'
-	 */
-	public static $SESSION_TYPE = 'memcache';
-	/**
-	 * Durée de vie des sessions en minutes
-	 */
-	public static $SESSION_LIFETIME = 4320;
-	/**
-	 * Clé de stockage du mot de passe en session
-	 */
-	public static $SESSION_PASSWORD = 'survpwdencr';
-	/**
-	 * Clé de stockage du login utilisateur en session
-	 */
-	public static $SESSION_USERNAME = 'username';
-	/**
-	 * Clé de stockage du token de validation session
-	 */
-	public static $SESSION_TOKEN = 'survtoken';
-	/**
-	 * Clé de stockage du token de validation session en cookie
-	 */
-	public static $COOKIE_TOKEN = 'survuniqid';
-	/**
-	 * Clé de stockage du token de validation CSRF en session
-	 */
-	public static $CSRF_TOKEN = 'survcsrf_token';
-	/**
-	 * Host du serveur dans le cas ou il n'est pas récupérable facilement
-	 * [Optionnel] Peut être mis à null
-	 */
-	public static $HOST = null;
-	/**
-	 * URL vers la page de login, peut être changée pour l'annuaire fédérateur
-	 * [Optionnel] Peut être mis à null
-	 */
-	public static $LOGIN_URL = null;
-	/**
-	 * Défini la valeur du champ get pour lui passer une url en redirection
-	 * [Optionnel] Peut être mis à null
-	 */
-	public static $GET_URL = null;
-	/**
-	 * Liste des types de sondage possible
-	 */
-	public static $POLL_TYPES = array("date", "prop");
-	/**
-	 * Configuration du ou des serveurs memcache
-	 */
-	public static $MEMCACHE_SERVER = array('localhost:11211');
+    /**
+     * Configuration de l'overlay pour la localization
+     */
+    public static $OVERLAY_LOCALIZATION = null;
+    /**
+     * Configuration du nom de la skin à utiliser pour l'ihm
+     */
+    public static $SKIN = 'default';
+    /**
+     * Configuration du nom de l'application
+     */
+    public static $TITLE = 'Pegase';
+    /**
+     * Permettre la création de l'utilisateur depuis l'interface
+     * Le driver doit prendre en compte la création de l'utilisateur avec un mot de passe crypté
+     */
+    public static $CREATE_USER = false;
+    /**
+     * Configuration du timezone par defaut pour l'application
+     */
+    public static $DEFAULT_TIMEZONE = 'Europe/Paris';
+    /**
+     * Type de stockage pour les sessions, 'php' ou 'memcache'
+     */
+    public static $SESSION_TYPE = 'php';
+    /**
+     * Durée de vie des sessions en minutes
+     */
+    public static $SESSION_LIFETIME = 4320;
+    /**
+     * Clé de stockage du mot de passe en session
+     */
+    public static $SESSION_PASSWORD = 'survpwdencr';
+    /**
+     * Clé de stockage du login utilisateur en session
+     */
+    public static $SESSION_USERNAME = 'username';
+    /**
+     * Clé de stockage du token de validation session
+     */
+    public static $SESSION_TOKEN = 'survtoken';
+    /**
+     * Clé de stockage du token de validation session en cookie
+     */
+    public static $COOKIE_TOKEN = 'survuniqid';
+    /**
+     * Clé de stockage du token de validation CSRF en session
+     */
+    public static $CSRF_TOKEN = 'survcsrf_token';
+    /**
+     * Host du serveur dans le cas ou il n'est pas récupérable facilement
+     * [Optionnel] Peut être mis à null
+     */
+    public static $HOST = null;
+    /**
+     * URL vers la page de login, peut être changée pour l'annuaire fédérateur
+     * [Optionnel] Peut être mis à null
+     */
+    public static $LOGIN_URL = null;
+    /**
+     * Défini la valeur du champ get pour lui passer une url en redirection
+     * [Optionnel] Peut être mis à null
+     */
+    public static $GET_URL = null;
+    /**
+     * Liste des types de sondage possible
+     */
+    public static $POLL_TYPES = array("date", "prop");
+    /**
+     * Configuration du ou des serveurs memcache
+     */
+    public static $MEMCACHE_SERVER = array();
 
-	/**
-	 * Défini si l'application propose aux utilisateurs d'ajouter la réponse à leur calendrier.
-	 */
-	public static $ADD_TO_CALENDAR = true;
-	/**
-	 * Valeur de header pour le Access-Control-Allow-Origin
-	 * Permet d'effectuer une authentification cross domain depuis Roundcube
-	 */
-	public static $ROUNDCUBE_CORS = "";
+    /**
+     * Défini si l'application propose aux utilisateurs d'ajouter la réponse à leur calendrier.
+     */
+    public static $ADD_TO_CALENDAR = false;
+    /**
+     * Valeur de header pour le Access-Control-Allow-Origin
+     * Permet d'effectuer une authentification cross domain depuis Roundcube
+     */
+    public static $ROUNDCUBE_CORS = "";
 
-	/**
-	 * Défini si l'application doit envoyer des mails
-	 * @var boolean
-	 */
-	public static $SEND_MAIL = true;
-	/**
-	 * Adresse mail utilisée pour envoyer les email de notification aux utilisateurs
-	 */
-	public static $FROM_MAIL = "";
+    /**
+     * Défini si l'application doit envoyer des mails
+     * @var boolean
+     */
+    public static $SEND_MAIL = false;
+    /**
+     * Adresse mail utilisée pour envoyer les email de notification aux utilisateurs
+     */
+    public static $FROM_MAIL = "";
 
-	/**
-	 * Clé DES utilisée pour l'encodage du mot de passe en session
-	 * this key is used to encrypt the users imap password which is stored
+    /**
+     * Clé DES utilisée pour l'encodage du mot de passe en session
+     * this key is used to encrypt the users imap password which is stored
      * in the session record (and the client cookie if remember password is enabled).
      * please provide a string of exactly 24 chars.
      * YOUR KEY MUST BE DIFFERENT THAN THE SAMPLE VALUE FOR SECURITY REASONS
-	 */
-	public static $DES_KEY = 'sKt99YRBZ49UNHCpXdOfGYxk';
+     */
+    public static $DES_KEY = 'sKt99YRBZ49UNHCpXdOfGYxk';
 }

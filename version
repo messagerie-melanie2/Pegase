@@ -1,15 +1,24 @@
-Pégase - Version 0.9
-Pégase - Build 1504161828
+Pégase - Version 0.9.1
+Pégase - Build 1505061856
 Pégase - Liste des changements
+
+Pégase - 0.9.1 (Publiée 06/05/2015) [ Afficher les bogues ]
+===================================
+- 0003852: [General] Création d'un événement dans l'agenda (thomas.payen) - résolu.
+- 0003853: [General] Montrer mon agenda - Positionnement des RDV en GMT et non heures locales (thomas.payen) - résolu.
+- 0003863: [General] Page de stats (thomas.payen) - résolu.
+
+[3 bogues]
 
 Pégase - 0.9 (Publiée 16/04/2015) [ Afficher les bogues ]
 =================================
+- 0003841: [General] Pouvoir ajouter l'adresse mail lorsque l'on ajoute une réponse en tant qu'organisateur (thomas.payen) - résolu.
 - 0003819: [General] Possibilité de créer automatiquement les évènements dans l'agenda M2 (thomas.payen) - résolu.
 - 0003827: [General] Amélioration du mail d'avis de création pour l'utiliser pour inviter les gens à répondre (thomas.payen) - résolu.
 - 0003828: [General] Pemettre d'indentifier simplement les gens ayant répondu sans adresses (thomas.payen) - résolu.
 - 0003818: [General] Mise en place d'un "driver" pour la gestion des agendas depuis Pégase (thomas.payen) - résolu.
 
-[4 bogues]
+[5 bogues]
 
 Pégase - 0.8 (Publiée 27/03/2015) [ Afficher les bogues ]
 =================================
@@ -23,12 +32,12 @@ Pégase - 0.8 (Publiée 27/03/2015) [ Afficher les bogues ]
 
 Pégase - 0.7 (Publiée 24/03/2015) [ Afficher les bogues ]
 =================================
-- 0003811: [General] Perte du texte saisi après une double cote (thomas.payen) - résolu.
-- 0003805: [General] Informations d'un sondage - Zones obligatoires (thomas.payen) - résolu.
-- 0003804: [General] Sondage libre - Perte de libellé de proposition (thomas.payen) - résolu.
 - 0003783: [General] Mise en place d'une skin courrielleur (thomas.payen) - résolu.
-- 0003775: [General] Fautes à corriger (thomas.payen) - résolu.
 - 0003670: [General] Externaliser la configuration (thomas.payen) - résolu.
+- 0003805: [General] Informations d'un sondage - Zones obligatoires (thomas.payen) - fermé.
+- 0003804: [General] Sondage libre - Perte de libellé de proposition (thomas.payen) - fermé.
+- 0003775: [General] Fautes à corriger (thomas.payen) - fermé.
+- 0003811: [General] Perte du texte saisi après une double cote (thomas.payen) - fermé.
 
 [6 bogues]
 

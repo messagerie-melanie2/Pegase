@@ -1,0 +1,62 @@
+div.secOutFra{
+	color:#a08a1a
+}
+div.secOutFra ol{
+	margin: 0px;
+	background-repeat: no-repeat;
+	background-position: left bottom;
+	background-image:url("../img/out/secOut_bt.gif");
+	padding-bottom: 10px;
+	padding-left: 32px;
+	padding-right: 5px;
+	padding-top: 5px;
+	list-style-position: outside;
+	width: 323px;
+}
+div.secOutFra ul{
+	margin: 0px;
+	padding: 0px 0px 0px 30px;
+	list-style-type: none;
+}
+div.secOutFra li{
+	margin: 0px;
+	padding: 0px;
+}
+div.secOutFra li.loDepth_1{
+
+}
+div.secOutFra a{
+	text-decoration: none;
+	color:#a08a1a
+}
+div.secOutFra a:hover{
+	text-decoration: underline;
+}
+div.secOutUi{
+	background-repeat: repeat-y;
+	background-position: left;
+	background-image:url("../img/out/secOut_b.gif");
+}
+div.secOutTi a{
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 2px 0px 1px 23px;
+	font-weight: bold;
+}
+a.secOut_op{
+	display:block;
+	background:url("../img/out/secOut_op.gif") no-repeat;
+	width:361px;
+	height:20px
+}
+a.secOut_cl{
+	background-image:url("../img/out/secOut_cl.gif");
+	display:block;
+	width:361px;
+	height:30px
+}
+.secOutTi a span{
+	display:block;
+	margin-left:8px;
+	margin-top:7px
+}

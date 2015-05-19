@@ -50,7 +50,7 @@ use Program\Data\User as u;
                     <a id="button_edit_poll" title="<?= l::g("Clic to edit the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url("edit", ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="Modify" src="skins/<?= o::get_env("skin") ?>/images/1395932254_gear-01_white.png" height="12px"/> <?= l::g('Modify poll') ?></a>
                     <a id="button_edit_prop_poll" title="<?= l::g("Clic to change poll proposals", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url("edit_".p::get_current_poll()->type, ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="List" src="skins/<?= o::get_env("skin") ?>/images/1395932290_list-01_white.png" height="12px"/> <?= l::g('Modify propositions') ?></a>
                     <a id="button_modify_responses_poll" title="<?= l::g("Clic to change everybody responses", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url(null, ACT_MODIFY_ALL, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="Responses" src="skins/<?= o::get_env("skin") ?>/images/1395932292_grid-01_white.png" height="12px"/> <?= l::g('Modify responses') ?></a>
-                    <a id="button_lock_poll" title="<?= l::g("Clic to lock the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url(null, (p::get_current_poll()->locked === 0 ? ACT_LOCK : ACT_UNLOCK), array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><img alt="Lock" src="skins/<?= o::get_env("skin") ?>/images/1395932256_link-01_white.png" height="12px"/> <?= (p::get_current_poll()->locked === 0 ? l::g('Lock') : l::g('Unlock')) ?></a>
+                    <a id="button_lock_poll" title="<?= l::g("Clic to lock the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url(null, (p::get_current_poll()->locked == 0 ? ACT_LOCK : ACT_UNLOCK), array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><img alt="Lock" src="skins/<?= o::get_env("skin") ?>/images/1395932256_link-01_white.png" height="12px"/> <?= (p::get_current_poll()->locked == 0 ? l::g('Lock') : l::g('Unlock')) ?></a>
                     <a id="button_delete_poll" title="<?= l::g("Clic to delete the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url("main", ACT_DELETE, array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><img alt="Delete" src="skins/<?= o::get_env("skin") ?>/images/1395836978_remove-01_white.png" height="12px"/> <?= l::g('Delete poll') ?></a>
                     <br><br>
             <?php } elseif (!u::isset_current_user()) { ?>
@@ -116,7 +116,7 @@ use Program\Data\User as u;
                     <div id="poll">
                         <?= s::GenerateProposalsTable() ?>
                     </div>
-                    <?php if (p::get_current_poll()->locked === 1) { ?>
+                    <?php if (p::get_current_poll()->locked == 1) { ?>
                         <br>
                         <div><?= l::g('Poll is locked, you can not respond') ?></div>
                         <?php if (count(o::get_env("best_proposals")) > 0) { ?>

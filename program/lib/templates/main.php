@@ -99,7 +99,7 @@ class Main {
 	    $html = "";
 	    $polls = \Program\Drivers\Driver::get_driver()->listUserPolls(\Program\Data\User::get_current_user()->user_id);
 	    if (count($polls) == 0) {
-	        $html = l::g('No poll');
+	        $html = \Program\Lib\HTML\HTML::div(array("class" => "nopoll"), l::g('No poll'));
 	    } else {
 	        if (!Output::get_env("mobile"))
 	            $table = new \Program\Lib\HTML\html_table(array("id" => "polls_table"));
@@ -113,13 +113,13 @@ class Main {
 
         	        $table->add(array("style" => "padding-right: 10px;"), \Program\Lib\HTML\HTML::a(array("class" => "pure-button pure-button-modify-poll button_edit_poll customtooltip_bottom", "title" => l::g('Clic to edit the poll', false), "href" => Output::url("edit", ACT_MODIFY, array("u" => $poll->poll_uid), false)), \Program\Lib\HTML\HTML::img(array("alt" => "Modify", "src" => "skins/".Output::get_env("skin")."/images/1395932254_gear-01_white.png", "height" => "12px")) . " " . l::g('Modify poll')));
         	        $table->add(array("style" => "padding-right: 10px;"), \Program\Lib\HTML\HTML::a(array("class" => "pure-button pure-button-modify-poll button_delete_poll customtooltip_bottom", "title" => l::g('Clic to delete the poll', false), "href" => Output::url("main", ACT_DELETE, array("u" => $poll->poll_uid, "t" => Session::getCSRFToken()), false)), \Program\Lib\HTML\HTML::img(array("alt" => "Delete", "src" => "skins/".Output::get_env("skin")."/images/1395836978_remove-01_white.png", "height" => "12px")) . " " . l::g('Delete poll')));
-        	        $table->add(array(), $poll->locked === 1 ? " (" . l::g('Locked') .")" : "");
+        	        $table->add(array(), $poll->locked == 1 ? " (" . l::g('Locked') .")" : "");
     	        } else {
     	            $html .= \Program\Lib\HTML\HTML::div(array("class" => "poll__list_element"),
     	                    \Program\Lib\HTML\HTML::a(array("title" => l::g('Clic to view the poll (Number of responses)', false), "href" => Output::url(null, null, array("u" => $poll->poll_uid), false)), $poll->title
     	                            . " (" . $poll->count_responses . ")"
     	                    ) .
-	                        ($poll->locked === 1 ? " (" . l::g('Locked') .")" : "")
+	                        ($poll->locked == 1 ? " (" . l::g('Locked') .")" : "")
     	            );
     	        }
     	    }
@@ -139,7 +139,7 @@ class Main {
             if ($poll->organizer_id != \Program\Data\User::get_current_user()->user_id) {
 	            $html .= \Program\Lib\HTML\HTML::div(array("class" => "poll__list_element"),
 	                    \Program\Lib\HTML\HTML::a(array("class" => "customtooltip_bottom", "title" => l::g('Clic to view the poll (Number of responses)', false), "href" => Output::url(null, null, array("u" => $poll->poll_uid), false)), $poll->title . " (" . $poll->count_responses . ")" ) .
-	                    ($poll->locked === 1 ? " (" . l::g('Locked') .')' : "")
+	                    ($poll->locked == 1 ? " (" . l::g('Locked') .')' : "")
 	            );
             }
         }

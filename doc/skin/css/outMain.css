@@ -1,0 +1,70 @@
+ul.sw_outMain_navList{
+	list-style: none;
+	list-style-image:none;
+	margin: 0px;
+	padding: 0px;
+	display: inline;
+}
+ul.sw_outMain_navList li{
+	margin: 0px;
+	padding: 0px;
+	float: left;
+	height:30px;
+	color: #696989;
+	background-repeat: repeat-x;
+}
+ul.sw_outMain_navList li.mainSel_yes{
+	background-image:url("../img/tpl/tplh_bh.gif");
+}
+ul.sw_outMain_navList a{
+	color:white;
+}
+ul.sw_outMain_navList a:hover{
+	background:url("../img/tpl/tplh_bo.gif") right;
+}
+ul.sw_outMain_navList .mainElt_entry{
+	height:16px;
+	display: block;
+	padding: 7px 10px;
+	font-weight: bold;
+	background-image:url("../img/tpl/tplh_s.gif");
+	background-repeat: no-repeat;
+	background-position: top right;
+}
+
+/* entry icos */
+ul.sw_outMain_navList .mainElt_entry span {
+	background-repeat: no-repeat;
+	background-position: left;
+	padding-left: 20px;
+}
+ul.sw_outMain_navList li.toolGloss .mainElt_entry span{
+	background-image:url("../img/tpl/toolSel_no.gif");
+}
+ul.sw_outMain_navList li.outMap .mainElt_entry span{
+	background-image:url("../img/tpl/guideMap.gif");
+}
+ul.sw_outMain_navList li.outMap span.mainSel_yes span{
+	background-image:url("../img/tpl/guideMap_yes.gif");
+}
+ul.sw_outMain_navList li.outRoot .mainElt_entry span{
+	background-image:url("../img/tpl/guideHome_no.gif");
+	padding-left: 28px;
+}
+div.tplPage ul.sw_outMain_navList li.outRoot{
+	background-image:url("../img/tpl/tplh_bh.gif");
+}
+div.tplPage ul.sw_outMain_navList a{
+	color: #696989;
+}
+div.tplPage ul.sw_outMain_navList li.outRoot .mainElt_entry span{
+	background-image:url("../img/tpl/guideHome.gif");
+	padding-left: 28px;
+}
+ul.sw_outMain_navList li.outRoot .mainElt_entry span.tplGuideRet{
+	background-image:url("../img/tpl/guideRet.gif");
+}
+ul.sw_outMain_navList li.outRoot span.mainSel_yes span{
+	background-image:url("../img/tpl/guideHome.gif");
+	padding-left: 28px;
+}

@@ -32,6 +32,7 @@ CREATE SEQUENCE users_seq
 CREATE TABLE users (
 	user_id integer DEFAULT nextval('users_seq'::text) PRIMARY KEY,
 	username varchar(255) DEFAULT '' NOT NULL,
+  password varchar(255),
 	email varchar(255),
 	fullname text,
 	created timestamp with time zone DEFAULT now() NOT NULL,
@@ -130,8 +131,3 @@ CREATE INDEX responses_poll_id_idx
   ON public.responses
   USING btree
   (poll_id);
-
-
-
-
-

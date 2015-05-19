@@ -3,28 +3,24 @@ PEGASE
 
 Développé par le PNE Annuaire et Messagerie/MEDDE
 
-ATTENTION
----------
-
-La version de Pegase sur git est une version en développement, elle ne doit pas être utilisée en production. Pour récupérer les versions de production veuillez vous adresser au PNE Annuaire et Messagerie du MEDDE.
-
 Introduction
 ------------
 
-Pegase est une application en PHP5 de type doodle. Elle permet de créer des sondages de date ou des sondages libres. Les utilisateurs pourront alors répondre au sondage avec des choix de type Oui/Non et optionnellement Possible.  
-Les données de sondage sont stockées dans une base de données PostgreSQL et l'authentification s'effectue sur un annuaire LDAP. La personnalisation du driver permet de choisir une autre base de données et un autre type d'authentification (qui ne sont pas implémentés par défaut). D'autres drivers de type sqlite et MySQL seront bientôt proposés
+Pegase est une application en PHP5 de type doodle type. Elle permet de créer des sondages de date ou libre. Les utilisateurs pourront alors répondre au sondage avec des choix de type Oui/Non.  
+Les données de sondage sont stockées dans une base de données PostgreSQL et l'authentification s'effectue sur un annuaire LDAP. La personnalisation du driver permet de choisir une autre base de données et un autre type d'authentification (qui ne sont pas implémentés par défaut).
 
 Version
 -------
 
-Version 0.9
-Build 1504161828
+Version 0.9.1
+Build 1505061856
+https://github.com/messagerie-melanie2/Pegase/releases/tag/v0.9.1
 
 Pré-requis
 ------------
 
 Un serveur Web (Apache ou autre)
-PHP 5.3 ou supérieur
+PHP 5.3 ou suppérieur
 php5-memcache
 php5-pgsql
 php5-ldap
@@ -36,7 +32,7 @@ Configuration
 Configuration de l'application dans config/default/ihm.php
 Configuration du serveur LDAP dans config/default/ldap.php
 Configuration du serveur SQL dans config/default/sql.php
-Configuration des logs dans config/default/log.php
+Configuration des logs dans config/default/sql.php
 
 Si driver personnalisé, configuration du driver dans config/default/driver.php
 

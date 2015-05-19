@@ -116,6 +116,16 @@ $(document).ready(function() {
 			day: poll.labels.Day
 		},
 		
+		loading: function (is_loading) { 
+			  if (is_loading) {
+				  poll.show_loading(poll.labels['Loading your events...']);
+			  }
+			  else {
+				  poll.hide_loading();
+			  }
+		},
+
+		
 //		// Liste les évènements
 //		events: getAllEvents()
 		eventSources: [
@@ -137,40 +147,42 @@ $(document).ready(function() {
 		$('#calendar').fullCalendar('gotoDate', dateForm(date[0]));
 	}
 	// Ajout du bouton de masquage des agendas
-	$('#calendar td.fc-header-right').append('<span style="-moz-user-select: none;" unselectable="on" class="fc-button fc-button-hide-calendar fc-state-default fc-corner-right">'+poll.labels['show calendar']+'</span>');
-	$('#calendar td.fc-header-right').append('<span class="fc-header-legend" style="display: none;"><span class="fc-header-legend-name">'+poll.labels['Your freebusy']+':</span><span class="fc-header-legend-confirmed">'+poll.labels['Confirmed']+'</span><span class="fc-header-legend-tentative">'+poll.labels['Tentative']+'</span><span class="fc-header-legend-none">'+poll.labels['None']+'</span></span>');
-	$('#calendar td.fc-header-right span.fc-button-next').removeClass('fc-corner-right');
-	$( "#calendar td.fc-header-right span.fc-button-hide-calendar" ).hover(
-    function() {
-	    $(this).addClass('fc-state-hover');
-    }, function() {
-      $(this).removeClass('fc-state-hover');
-    }
-  );
-	$( "#calendar td.fc-header-right span.fc-button-hide-calendar" ).click(function() {
-    if ($(this).hasClass('hide-calendar')) {
-      $(this).removeClass('hide-calendar');
-      $(this).removeClass('fc-state-active');
-      $('#calendar span.fc-header-legend').hide();
-      calendar.fullCalendar('removeEventSource',
-          getM2EventSource()
-        );
-    }
-    else {
-      $(this).addClass('hide-calendar');      
-      $(this).addClass('fc-state-active');
-      $('#calendar span.fc-header-legend').show();
-      calendar.fullCalendar('addEventSource',
-          getM2EventSource()
-        );
-    }
-  });
+	if (poll.env.add_to_calendar) {
+	  $('#calendar td.fc-header-right').append('<span style="-moz-user-select: none;" unselectable="on" class="fc-button fc-button-hide-calendar fc-state-default fc-corner-right">'+poll.labels['show calendar']+'</span>');
+	  $('#calendar td.fc-header-right').append('<span class="fc-header-legend" style="display: none;"><span class="fc-header-legend-name">'+poll.labels['Your freebusy']+':</span><span class="fc-header-legend-confirmed">'+poll.labels['Confirmed']+'</span><span class="fc-header-legend-tentative">'+poll.labels['Tentative']+'</span><span class="fc-header-legend-none">'+poll.labels['None']+'</span></span>');
+	  $('#calendar td.fc-header-right span.fc-button-next').removeClass('fc-corner-right');
+	  $( "#calendar td.fc-header-right span.fc-button-hide-calendar" ).hover(
+	    function() {
+	      $(this).addClass('fc-state-hover');
+	    }, function() {
+	      $(this).removeClass('fc-state-hover');
+	    }
+	  );
+	  $( "#calendar td.fc-header-right span.fc-button-hide-calendar" ).click(function() {
+	    if ($(this).hasClass('hide-calendar')) {
+	      $(this).removeClass('hide-calendar');
+	      $(this).removeClass('fc-state-active');
+	      $('#calendar span.fc-header-legend').hide();
+	      calendar.fullCalendar('removeEventSource',
+	      getExternEventSource()
+	        );
+	    }
+	    else {
+	      $(this).addClass('hide-calendar');      
+	      $(this).addClass('fc-state-active');
+	      $('#calendar span.fc-header-legend').show();
+	      calendar.fullCalendar('addEventSource',
+	      getExternEventSource()
+	        );
+	    }
+	  });
+	}
 });
 /**
  * Retourne la source vers l'agenda Melanie2
  * @returns json
  */
-function getM2EventSource() {
+function getExternEventSource() {
   return {
     url: './?_p=ajax&_a=get_user_events_json',
     type: 'POST',

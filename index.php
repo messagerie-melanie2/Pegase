@@ -8,7 +8,7 @@
  *
  * @author Thomas Payen
  * @author PNE Annuaire et Messagerie
- * @version 0.9-1504161828
+ * @version 0.9.1-1505061856
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,11 +24,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 // Utilisation des namespaces
-use
-    Program\Lib\Request\Template as t,
-    Program\Lib\Request\Request as r,
-    Program\Lib\Request\Output as o,
-    Program\Lib\Request\Localization as l;
+use Program\Lib\Request\Template as t;
+use Program\Lib\Request\Request as r;
+use Program\Lib\Request\Output as o;
+use Program\Lib\Request\Localization as l;
 
 // Inclusion
 include 'program/include/includes.php';
@@ -44,25 +43,26 @@ if (!o::isset_env("page")) {
 // Traitement particulier pour le login et le logout
 if (o::get_env("page") != "login"
 		&& o::get_env("page") != "external_login"
+        && o::get_env("page") != "register"
         && o::get_env("page") != "show"
         && o::get_env("page") != "ajax") {
     if (!Program\Lib\Request\Session::validateSession()) {
-        if (isset(Config\IHM::$LOGIN_URL)) {
-            // Redirection vers la connexion
-            header('Location: ' . \Config\IHM::$LOGIN_URL);
-            exit();
-        } else {
-            o::set_env("page", "login");
-            if (Program\Lib\Request\Session::is_set("user_id"))
-                o::set_env("error", "Auth error, please re-login");
-            // MANTIS 3759: Déconnexion Mon compte RC
-            // Si on est sur le Courrielleur, rediriger vers la page de login pour l'authentification automatique
-            if (r::isCourrielleur() && isset(Config\IHM::$LOGIN_URL)) {
-              // Redirection vers la connexion
-              header('Location: ' . \Config\IHM::$LOGIN_URL);
-              exit();
-            }
-        }
+    	// Utilisation du SSO
+    	if (isset(Config\IHM::$USE_SSO)
+    	        && Config\IHM::$USE_SSO) {
+    		Api\SSO\SSO::get_sso()->process();
+    	}
+    	else {
+    		if (isset(Config\IHM::$LOGIN_URL)) {
+    			// Redirection vers la connexion
+    			header('Location: ' . \Config\IHM::$LOGIN_URL);
+    			exit();
+    		} else {
+    			o::set_env("page", "login");
+    			if (Program\Lib\Request\Session::is_set("user_id"))
+    				o::set_env("error", "Auth error, please re-login");
+    		}
+    	}
     } else {
         if (Program\Data\Poll::isset_current_poll()
                 && Program\Data\User::isset_current_user()
@@ -83,13 +83,17 @@ if (o::get_env("page") != "login"
         } elseif (isset($_POST['username'])) {
             o::set_env("error", "Auth error, bad login or password");
         }
+    } elseif(o::get_env("page") == "register") {
+    	if (Program\Lib\Templates\Register::Process()) {
+    		o::set_env("page", "main");
+    	}
     } elseif(o::get_env("page") == "external_login") {
     	if (!Program\Lib\Templates\External_Login::Process()
                 && isset($_POST['username'])) {
     		o::set_env("error", "Auth error, bad login or password");
     	}
     } elseif (o::get_env("page") == "show") {
-        if (!Program\Lib\Request\Session::validateSession() && r::isCourrielleur()) {
+    	if (!Program\Lib\Request\Session::validateSession() && r::isCourrielleur()) {
           if (isset(Config\IHM::$LOGIN_URL)) {
             // Redirection vers la connexion
             header('Location: ' . \Config\IHM::$LOGIN_URL);

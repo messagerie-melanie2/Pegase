@@ -93,13 +93,15 @@ $(document).ready(function() {
 	$("#proposals_form").submit(function(event) {
 	  if (poll.env.poll_type == 'date'
 	      && poll.env.user_auth
-	      && !$("input[name='hidden_modify_all']").length 
-	      && confirm(poll.labels['Would you like to add responses to your calendar as tentative ?'])) {	    
+	      && !$("input[name='hidden_modify_all']").length
+	      && poll.env.add_to_calendar
+	      && confirm(poll.labels['Would you like to add responses to your calendar as tentative ?'])) {
+		poll.show_loading(poll.labels['Adding prop to your calendar...']);
 	    event.preventDefault();
 	    var prop_keys = [];
 	    if (poll.env.poll_if_needed) {
 	      $("#proposals_form input:radio").each(function() {
-          if ($(this).attr('checked') 
+          if ($(this).prop('checked') 
               && $(this).attr('value') != '') {
             prop_keys.push($(this).attr('name').replace('check_', ''));
           }
@@ -123,9 +125,11 @@ $(document).ready(function() {
         },
         success: function(data) {
           _this.unbind('submit').submit();
+          poll.hide_loading();
         },
         error: function(o, status, err) {
           _this.unbind('submit').submit();
+          poll.hide_loading();
         }
       });
 	  }
@@ -138,7 +142,7 @@ function show_validate_prop(args)
 {	
 	$(document).ready(function() {
 		if (args.action == "validate_prop") {
-			args.params.send_mail = confirm(poll.labels['Do you want to send a message to the attendees ?']);
+			args.params.send_mail = poll.env.send_mail && confirm(poll.labels['Do you want to send a message to the attendees ?']);
 		}
 		var html = $("#proposals_table #validate_prop_" + args.params.prop_key).html();
 		$("#proposals_table #validate_prop_" + args.params.prop_key).html("");
@@ -188,6 +192,7 @@ function show_validate_prop(args)
 //Utilise de l'ajax via jquery
 function show_add_to_calendar(args)
 {	
+	poll.show_loading(poll.labels['Adding prop to your calendar...']);
 	$(document).ready(function() {
 		var html = $("#proposals_table #validate_prop_" + args.params.prop_key).html();
 		$("#proposals_table #validate_prop_" + args.params.prop_key).html("");
@@ -195,6 +200,7 @@ function show_add_to_calendar(args)
 		return $.ajax({
 	      type: 'POST', url: args.url, data: args.params,
 	      success: function(data) {
+	    	  poll.hide_loading();
 	    	  $("#proposals_table #validate_prop_" + args.params.prop_key).html(html);
 	    	  $("#proposals_table #validate_prop_" + args.params.prop_key).removeClass("wait");
 	    	  if (data.success == true) {
@@ -205,6 +211,7 @@ function show_add_to_calendar(args)
 	    	  }
 	 	  },
 	      error: function(o, status, err) {
+	    	  poll.hide_loading();
 	    	  $("#proposals_table #validate_prop_" + args.params.prop_key).html(html);
 	    	  $("#proposals_table #validate_prop_" + args.params.prop_key).removeClass("wait");
 	    	  poll.show_message(err, "error"); 
@@ -267,11 +274,25 @@ function add_attendee(args) {
 		var td = '';		
 		$('#proposals_table thead td.prop_header').each(function() {
 			var prop = $(this).attr('id').replace('prop_header_', '');
-			td += '<td class="prop_not_responded" align="center"><input id="newcheck--' + nb_new_attendee + '--' + prop + '" name="newcheck--' + nb_new_attendee + '--' + prop + '" value="' + poll.env.proposals[prop] + '" type="checkbox"></td>';
+			if (poll.env.poll_if_needed) {
+			  td += '<td class="prop_not_responded" align="center">';
+			  td += '<input id="newradio--' + nb_new_attendee + '--' + prop + '" name="newradio--' + nb_new_attendee + '--' + prop + '" value="' + poll.env.proposals[prop] + '" type="radio">';
+			  td += '<label for="newradio--' + nb_new_attendee + '--' + prop + '">' + poll.labels['Yes'] + '</label>';
+			  td += '<br>';
+			  td += '<input id="newradio--if_needed' + nb_new_attendee + '--' + prop + '" name="newradio--' + nb_new_attendee + '--' + prop + '" value="' + poll.env.proposals[prop] + ':if_needed" type="radio">';
+        td += '<label for="newradio--if_needed' + nb_new_attendee + '--' + prop + '">' + poll.labels['If needed'] + '</label>';
+        td += '<br>';
+        td += '<input id="newradio--declined' + nb_new_attendee + '--' + prop + '" name="newradio--' + nb_new_attendee + '--' + prop + '" value="" type="radio">';
+        td += '<label for="newradio--declined' + nb_new_attendee + '--' + prop + '">' + poll.labels['No'] + '</label>';
+			  td += '</td>'; 
+			}
+			else {
+			  td += '<td class="prop_not_responded" align="center"><input id="newcheck--' + nb_new_attendee + '--' + prop + '" name="newcheck--' + nb_new_attendee + '--' + prop + '" value="' + poll.env.proposals[prop] + '" type="checkbox"></td>';  
+			}			
 		});
-		var first_col = '<td class="first_col"><input style="width: 100%;" id="newuser--' + nb_new_attendee + '" name="newuser--' + nb_new_attendee + '" required="required" type="text"></td>';
+		var first_col = '<td class="first_col"><input style="width: 100%;" class="newuser" id="newuser--' + nb_new_attendee + '" name="newuser--' + nb_new_attendee + '" placeholder="' + poll.labels['Username'] + '" required="required" type="text"><input style="width: 100%;" id="newemail--' + nb_new_attendee + '" class="newemail" name="newemail--' + nb_new_attendee + '" placeholder="' + poll.labels['Email address'] + '" type="text"></td>';
 		var last_col = '<td class="prop_cell_nobackground last_col" align="center"><a onclick="poll.command(remove_attendee, {_this: this});" class="remove_attendee_button customtooltip_bottom tooltipstered">' + poll.labels['Remove'] + '</a></td>';
-		var insert = '<tr>' + first_col + td + last_col + '</tr>';
+		var insert = '<tr class="prop_new_element">' + first_col + td + last_col + '</tr>';
 		
 		$('#proposals_table tr.prop_row_nb_props').before(insert);
 	});

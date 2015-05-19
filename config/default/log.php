@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -27,7 +27,7 @@ namespace Config;
 
 /**
  * Classe de configuration des logs
- * 
+ *
  * @package Config
  */
 class Log {
@@ -60,9 +60,9 @@ class Log {
 	 * le format de la date est configuré en dessous
 	 * Le fichier doit être dans un répertoire avec des droits d'écriture
 	 */
-	public static $file_errors_log = "/var/log/doodle_like/pegase_errors_{date}.log";
+	public static $file_errors_log = "/var/log/pegase/pegase_errors_{date}.log";
 	/**
-	 * Définition du format de date a ajouter éventuellement au nom du fichier 
+	 * Définition du format de date a ajouter éventuellement au nom du fichier
 	 */
 	public static $date_format = "Ymd";
 }

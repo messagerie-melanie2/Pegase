@@ -43,6 +43,7 @@ define('TYPE_INTERNAL_PEGASE', 'internal');
  * La configuration TYPE_EXTERNAL va les lire les données dans un répertoire configuré dans CONFIGURATION_PATH_LIBM2
  */
 define('CONFIGURATION_TYPE_PEGASE', TYPE_EXTERNAL_PEGASE);
+//define('CONFIGURATION_TYPE_PEGASE', TYPE_INTERNAL_PEGASE);
 
 
 /***** CONFIGURATION EXTERNE *******/

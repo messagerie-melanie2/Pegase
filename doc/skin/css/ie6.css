@@ -1,0 +1,110 @@
+div#tplc,
+div#tplcx{
+	height:395px;
+}
+ul.tpl_main_navList a,
+ul.sw_outMain_navList a,
+ul.sw_outMain_navList span.mainSel_yes,
+ul.sw_outMainML_navList a,
+ul.sw_outMainML_navList span.mainSel_yes {
+	float: left;
+}
+ul.sw_outLang_navList a {
+	border-color: #dedee7;
+}
+div#tplx{
+	height: 200px;
+}
+div.secOutTi a{
+	display: block;
+	padding-bottom: 0px;
+	padding-top: 1px;
+}
+div.secOutTi span{
+	margin-top: 6px;
+}
+.caption {
+}
+div.imgzFra{
+	position: static !important;
+}
+
+div#tplo{
+	position: absolute;
+	height: 380px !important;
+}
+#mnuScroll {
+	height: 350px;
+}
+ul.sw_outLeft_navList a,
+ul.sw_outLeftML_navList a{
+	padding-top: 3px;
+	padding-bottom: 1px;
+	height:16px;
+}
+ul.sw_outLeft_navList span.outLeftSel_yes,
+ul.sw_outLeftML_navList span.outLeftSel_yes{
+	padding-top: 3px;
+	padding-bottom: 1px;
+	height:16px;
+}
+ul.sw_outIdx_navList a,
+ul.sw_outIdxML_navList a{
+	height:16px;
+}
+#mnuFrmUp,
+#mnuFrmDown{
+	font-size:1px;
+}
+
+#mnuFrmUpCenter,
+#mnuFrmDownCenter {
+	width:183px;
+	top:0px;
+}
+#mnuFrmUpRight,
+#mnuFrmDownRight{
+	right:-1px;
+}
+ul.seeAlsoLnks li{
+	height:16px;
+}
+
+ul.sw_outMap_navList a,
+ul.sw_outMapML_navList a{
+	padding-top:3px;
+	padding-bottom:3px
+}
+
+.stepListIntro2, .step2, .stepListComment2, .stepListAlt2{
+	border: 1px solid white;
+	border-left: 0px
+	/* comportement étrange de IE6, si on ne fait pas ce qui est ci-dessus, il se mélange les pinceaux (images de bordures qui dépassent sans raison ou qui disparaissent)*/
+}
+
+.stepListConstruction5{
+	height:140px;
+}
+
+.step_ti p{
+	padding-left: 10px;
+}
+
+.dk_text_tt_def,
+.dk_text_tt_ref,
+.dk_text_tt_doc{
+	background:#fdf9e7;
+	border: 2px solid #debf20
+}
+
+.dk_text_tt_def_co,
+.dk_text_tt_ref_co,
+.dk_text_tt_doc_co{
+	background-image: none;
+}
+
+.dk_text_tt_def_ti, 
+.dk_text_tt_ref_ti , 
+.dk_text_tt_doc_ti{
+	background:#DEDBD3;
+}

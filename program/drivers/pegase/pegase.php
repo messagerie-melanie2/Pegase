@@ -457,4 +457,49 @@ class Pegase extends \Program\Drivers\Driver {
         // Execution de la requête
         return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params);
     }
+
+    /***** STATISTIQUES *******/
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre d'utilisateur authentifié qui se sont connecté entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre d'utilisateurs connectés
+     */
+    function countAuthUsers($start, $end) {
+        return null;
+    }
+
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre d'utilisateur non authentifié qui ont été créé entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre d'utilisateurs non authentifié
+    */
+    function countNoauthUsers($start, $end) {
+        return null;
+    }
+
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre de sondages qui ont été créé entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de sondages créés
+    */
+    function countPolls($start, $end) {
+        return null;
+    }
+
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre de réponses qui ont été faites entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de réponses faites
+    */
+    function countResponses($start, $end) {
+        return null;
+    }
 }

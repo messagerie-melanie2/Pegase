@@ -43,8 +43,7 @@ class Session {
 	 */
 	public static function validateSession() {
 		// Gestion de la session
-		if (!self::is_setUsername()
-		        || !self::is_setPassword()) return false;
+		if (!self::is_setUsername()) return false;
 		
 		if (self::genToken(Cookie::getCookie(\Config\IHM::$COOKIE_TOKEN)) == self::get(\Config\IHM::$SESSION_TOKEN)
 		        && \Program\Drivers\Driver::get_driver()->authenticate(self::getUsername(), self::getPassword())) {

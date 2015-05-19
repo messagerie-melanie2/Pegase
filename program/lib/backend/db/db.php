@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -64,7 +64,7 @@ class DB {
 	 * @var bool
 	 */
 	private $persistent;
-	
+
 	/************** SINGLETON ***/
 	/**
 	 * Récupèration de l'instance lié au serveur
@@ -82,22 +82,27 @@ class DB {
 	    }
 	    return self::$instances[$server];
 	}
-	
+
 	/**
 	 * Constructor SQL
-	 * 
+	 *
 	 * @param array $db configuration vers la base de données
      * @access public
 	 */
 	public function __construct($db) {
 		Log::l(Log::DEBUG, "DB->__construct()");
-		$this->cnxstring = "pgsql:dbname=$db[database];host=$db[hostspec];port=$db[port]";
+		if (isset($db["dsn"])) {
+		  $this->cnxstring = $db["dsn"];
+		}
+		else {
+		  $this->cnxstring = "$db[phptype]:dbname=$db[database];host=$db[hostspec];port=$db[port]";
+		}
 		$this->username = $db['username'];
 		$this->password = $db['password'];
 		$this->persistent = $db['persistent'];
-		$this->getConnection();	
+		$this->getConnection();
 	}
-	
+
 	/**
 	 * Destructor SQL
 	 *
@@ -107,17 +112,17 @@ class DB {
 		Log::l(Log::DEBUG, "DB->__destruct()");
 		$this->disconnect();
 	}
-	
+
 	/**
 	 * Connect to sql database
-	 * 
+	 *
 	 * @access private
 	 * @return boolean true if connect OK
 	 */
 	private function connect() {
 		Log::l(Log::DEBUG, "DB->connect()");
 		// Connexion persistante ?
-		$driver = array(\PDO::ATTR_PERSISTENT => ($this->persistent == 'true'), 
+		$driver = array(\PDO::ATTR_PERSISTENT => ($this->persistent == 'true'),
 					\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
 		try {
 			$this->connection = new \PDO($this->cnxstring, $this->username, $this->password, $driver);
@@ -126,13 +131,13 @@ class DB {
 			Log::l(Log::ERROR, "DB->connect(): Erreur de connexion à la base de données\n" . $e->getMessage());
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Disconnect from SQL database
-	 * 
+	 *
 	 * @access public
 	 */
 	public function disconnect() {
@@ -145,25 +150,25 @@ class DB {
 
 	/**
 	 * Get the active connection to the sql database
-	 * 
+	 *
 	 * @access private
 	 */
 	public function getConnection() {
 		// Si la connexion n'existe pas, on se connecte
 		if (is_null($this->connection)) $this->connect();
 	}
-	
+
 	/**
 	 * Execute a sql query to the active database connection in PDO
-	 * 
+	 *
 	 * If query start by SELECT
 	 * return an array of array of data
-	 * 
+	 *
 	 * @param string $query
 	 * @param array $params
 	 * @param string $class
 	 * @return mixed
-	 * 
+	 *
 	 * @access public
 	 */
 	public function executeQuery($query, $params = null, $class = null) {
@@ -184,7 +189,7 @@ class DB {
 
 		// Tableau de stockage des données sql
 		$arrayData = Array();
-		
+
 		// Si la requête demarre par SELECT on retourne les resultats
 		// Sinon on retourne true (UPDATE/DELETE pas de resultat)
 		if (strpos($query, "SELECT") === 0) {
@@ -198,11 +203,11 @@ class DB {
 		} else {
 			return true;
 		}
-		
+
 		// Retourne false, pas de resultat
 		return false;
 	}
-	
+
 	/**
 	 * Execute a sql query to the active database connection in PDO
 	 *
@@ -229,7 +234,7 @@ class DB {
 			Log::l(Log::DEBUG, "DB->executeQueryToObject(): Exception $ex");
 			return false;
 		}
-	
+
 		// Si la requête demarre par SELECT on retourne les resultats
 		// Sinon on retourne null (UPDATE/DELETE pas de resultat)
 		if (strpos($query, "SELECT") == 0) {
@@ -244,7 +249,7 @@ class DB {
 		// Retourne false, pas de resultat
 		return false;
 	}
-	
+
 	/**
 	 * Begin a PDO transaction
 	 */
@@ -252,7 +257,7 @@ class DB {
 		Log::l(Log::DEBUG, "DB->beginTransaction()");
 		return $this->connection->beginTransaction();
 	}
-	
+
 	/**
 	 * Commit a PDO transaction
 	 */
@@ -260,7 +265,7 @@ class DB {
 		Log::l(Log::DEBUG, "DB->commit()");
 		return $this->connection->commit();
 	}
-	
+
 	/**
 	 * Rollback a PDO transaction
 	 */
@@ -268,10 +273,10 @@ class DB {
 		Log::l(Log::DEBUG, "DB->rollBack()");
 		return $this->connection->rollBack();
 	}
-	
+
 	/**
 	 * Returns the ID of the last inserted row or sequence value
-	 * 
+	 *
 	 * @param $name Name of the sequence object from which the ID should be returned.
 	 */
 	public function lastInsertId($name = null) {
