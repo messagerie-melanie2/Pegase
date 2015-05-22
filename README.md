@@ -6,8 +6,8 @@ Développé par le PNE Annuaire et Messagerie/MEDDE
 Introduction
 ------------
 
-Pegase est une application en PHP5 de type doodle type. Elle permet de créer des sondages de date ou libre. Les utilisateurs pourront alors répondre au sondage avec des choix de type Oui/Non.  
-Les données de sondage sont stockées dans une base de données PostgreSQL et l'authentification s'effectue sur un annuaire LDAP. La personnalisation du driver permet de choisir une autre base de données et un autre type d'authentification (qui ne sont pas implémentés par défaut).
+Pegase est une application en PHP5 de type doodle. Elle permet de créer des sondages de date ou libre. Les utilisateurs pourront alors répondre au sondage avec des choix de type Oui/Non (et Possible en option).  
+Les données de sondage sont stockées dans une base de données PostgreSQL, MySQL ou SQLite et l'authentification s'effectue sur un annuaire LDAP (par défaut). La personnalisation du driver permet de choisir une autre base de données et un autre type d'authentification.
 
 Version
 -------
