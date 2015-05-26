@@ -16,6 +16,15 @@ Les modules PHP nécessaire sont :
 L'application doit être installée dans un dossier public du serveur Web supportant PHP. Le point d'entrée de l'application est le fichier index.php.
 
 
+BASE DE DONNEES
+---------------
+
+L'application Pégase est compatible avec les base de données MySQL, SQLite et PostgreSQL.
+Le schéma de la base de données se trouve dans le dossier "SQL/" dans le fichier <type_base>.init.sql
+La base de données doit être créée via un client SQL classique, puis le schéma doit lui être appliqué.
+Pour les mises à jour de base de données, les fichiers "update" se trouve dans les répertoires liés au type de base de données.
+
+
 CONFIGURATION
 -------------
 
