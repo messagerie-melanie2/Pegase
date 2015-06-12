@@ -154,6 +154,21 @@ h1 {
 	padding: 5px 20px 5px 20px;
 	margin: 0px;
 }
+#login_content .loading,
+#content .loading {
+	display: none;
+	position: fixed;
+	bottom: 20px;
+	right: 30px;
+	top: auto;
+	left: auto;
+	border-radius: 2px;
+	padding: 12px 10px 10px 36px;
+	color: #E6E6E6;
+	background: url('../../images/ajax-loader.gif') 2px center no-repeat #2E2E2E;
+	box-shadow: 0px 0px 9px rgba(0,0,0,0.50);
+	z-index: 300000;
+}
 #warning_change_poll_type {
 	width: 570px;
 	color: red;
@@ -240,6 +255,7 @@ h1 {
 	background-color: #B8C4D7;
 	border-radius: 2px;
 }
+#add_to_calendar_popup .valide_date,
 #proposals_table .validate_prop {
 	height: 25px;
 	border: 1px solid green;
@@ -288,7 +304,9 @@ h1 {
     padding-left: 20px;
     width: 205px;
 }
+#add_to_calendar_popup .wait,
 #proposals_table .wait {
+	height: 25px;
 	background: url("../../images/wait-big.gif") center center no-repeat;
 }
 #proposals_table .user_authenticate {
@@ -427,6 +445,7 @@ h1 {
 .remove_attendee_button,
 .check_all_button,
 .uncheck_all_button,
+.check_freebusy_button,
 .yes_to_all_button,
 .if_needed_to_all_button,
 .no_to_all_button,
@@ -453,4 +472,173 @@ h1 {
 }
 .hidden {
 	display: none;
+}
+.dialog_popup {
+	display: none;
+}
+.dialog_popup_content div {
+  padding-bottom: 5px;
+}
+.dialog_popup_content_separator {
+	margin-top: 10px;
+	border-top: 1px solid grey;
+	width: 100%;
+}
+#calendars-list {
+	position: absolute;
+	margin-top: 0px;
+	right: 84px;
+	width: 170px;
+}
+#calendars-list .calendars-list-header {
+	color: #4B6184;
+	font-weight: bold;
+	font-size: 120%;
+}
+#calendars-list #calendars-list-searchbox-input {
+	width: 170px;
+	margin: 10px 0;
+	font-size: 80%;
+}
+#calendars-list ul
+{
+  margin: 0;
+  padding: 5px 0 0 0;
+  list-style-type: none;
+  max-height: 480px;
+  overflow-y: auto;
+  overflow-x: visible;
+  width: 190px;
+}
+
+#calendars-list ul li.calendars-list-item
+{
+  font-size: 70%;
+  margin-bottom: 10px;
+  padding: 5px;
+  border-radius: 5px; 
+  border: 1px solid #D8D8D8; 
+  width: 154px;
+}
+
+#calendars-list ul li.calendars-list-item span.calendars-list-item-delete
+{
+  color: #2E2E2E;
+  background-color: #FFF;
+  border: 1px solid #424242;
+  border-radius: 10px;
+  padding: 0 4px;
+  float: right;
+  position: relative;
+	right: -10px;
+  top: -10px;
+  z-index: 200;
+  cursor: pointer;  
+}
+
+#calendars-list ul li.calendars-list-item span.calendars-list-item-informations {
+	display: none;
+}
+
+form.autocomplete .autocomplete-results {
+	border: 1px solid #129FEA;
+	border-radius: 5px;
+  z-index: 400;
+  position: absolute;
+  background-color: #FFF;
+  margin-top: -11px;
+  opacity: 0.9;
+  border-radius: 4px 2px 2px;
+  box-shadow: 0px 0px 9px rgba(0, 0, 0, 0.15);
+  display: none;
+}
+form.autocomplete .autocomplete-results:hover {
+  opacity: 1;
+}
+
+form.autocomplete .autocomplete-results .autocomplete-results-item {
+	border-bottom: 1px solid #E6E6E6;
+	font-size: 75%;
+	padding: 3px 5px;
+}
+form.autocomplete .autocomplete-results .autocomplete-results-item.autocomplete-results-item-hover {
+  background-color: #81BEF7;
+  color: white;
+  cursor: pointer;
+}
+
+form.autocomplete .autocomplete-results .autocomplete-results-item .autocomplete-results-item-name {
+  font-weight: bold;
+}
+
+#attendees-list #attendees-list-searchbox-input {
+  margin: 10px 0;
+  font-size: 80%;
+  width: 300px;
+}
+
+#attendees-list ul
+{
+  margin: 0;
+  padding: 5px 0 0 0;
+  list-style-type: none;
+  max-height: 480px;
+  overflow-y: auto;
+  overflow-x: visible;
+}
+
+#attendees-list ul li.attendees-list-item
+{
+  font-size: 70%;
+  margin-bottom: 10px;
+  padding: 5px;
+  border-radius: 5px; 
+  border: 1px solid #D8D8D8;
+  width: 335px;
+  background-color: #FFF;
+}
+
+#attendees-list ul li.attendees-list-item span.attendees-list-item-delete
+{
+  color: #2E2E2E;
+  background-color: #FFF;
+  border: 1px solid #424242;
+  border-radius: 10px;
+  padding: 0 4px;
+  float: right;
+  position: relative;
+  right: -10px;
+  top: -10px;
+  z-index: 200;
+  cursor: pointer;  
+}
+
+#attendees-list ul li.attendees-list-item div.attendees-list-item-fullname
+{
+  font-weight: bold;
+}
+
+#notify_attendees {
+	background-color: #FAFAFA;
+	padding: 20px;
+}
+
+#notify_attendees .button-send-invitation.wait {
+  height: 35px;
+  width: 100px;
+  background: url("../../images/wait-big.gif") center center no-repeat;
+  text-indent: -9999px;
+  white-space: nowrap;
+}
+#notify_attendees.success {
+  background: url("../../images/1395859186_Symbol_-_Check_small.png") 3px center no-repeat #FAFAFA;
+  border-radius: 3px;
+  border: 1px solid #9FC3A1;
+  font-weight: bold;
+  color: #298A08;
+  padding: 20px 30px;
+}
+a.showmore {
+	font-size: 70%;
+	margin-top: 10px;
 }

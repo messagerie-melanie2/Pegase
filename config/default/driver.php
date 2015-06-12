@@ -39,5 +39,5 @@ class Driver {
     /**
      * Configuration du ou des driver(s) à utiliser pour la gestion des évènements
      */
-    public static $Drivers_event = "";
+    public static $Drivers_event = "Pegase";
 }

@@ -50,6 +50,11 @@ class Event extends Object {
     const STATUS_CANCELLED = 'CANCELLED';
     const STATUS_NONE = 'NONE';
 
+    // PARTICIPANT STATUS Fields
+    const PARTSTAT_ACCEPTED = 'ACCEPTED';
+    const PARTSTAT_DECLINED = 'DECLINED';
+    const PARTSTAT_TENTATIVE = 'TENTATIVE';
+
     /******* METHODES *******/
     /**
      * Constructeur par défaut de la classe Poll

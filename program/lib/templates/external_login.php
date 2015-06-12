@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
  * Cette application est un doodle-like permettant aux utilisateurs
@@ -26,51 +27,49 @@
 namespace Program\Lib\Templates;
 
 // Utilisation des namespaces
-use
-    Program\Lib\Request\Session as Session,
-    Program\Lib\Request\Request as Request,
-    Program\Lib\Request\Output as Output;
+use Program\Lib\Request\Session as Session;
+use Program\Lib\Request\Request as Request;
+use Program\Lib\Request\Output as Output;
 
 /**
  * Classe de gestion du login utilisateur pour l'application de sondage
  *
- * @package    Lib
- * @subpackage Request
+ * @package Lib
+ * @subpackage Templates
  */
-class External_Login {
-	/**
-	 *  Constructeur privé pour ne pas instancier la classe
-	 */
-	private function __construct() { }
+class External_Login extends Template {
 
-	/**
-	 * Execution de la requête d'authentification
-	 * @return multitype:string
-	 */
-	public static function Process() {
-	    // Passage en version mobile
-	    Main::MobileVersion();
-   		$username = trim(strtolower(Request::getInputValue("username", POLL_INPUT_GPC)));
-   		$password = Request::getInputValue("password", POLL_INPUT_GPC);
-   		if (isset($username)
-   		       && isset($password)) {
-   		    if (\Program\Drivers\Driver::get_driver()->authenticate($username, $password)) {
-   		        Session::setUsername($username);
-   		        Session::setPassword($password);
-   		        Session::setToken();
-   		        \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "External_Login::Process() Login for user $username");
-   		        $poll_uid = Request::getInputValue("_poll", POLL_INPUT_GET);
-   		        if (!empty($poll_uid)) {
-   		          header("Location: " . Output::get_poll_url(new \Program\Data\Poll(["poll_uid" => $poll_uid])));
-   		          exit();
-   		        }
-   		        return true;
-   		    } else {
-   		        \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "External_Login::Process() Bad login for user $username");
-   		        return false;
-   		    }
-		} else {
-    	    return false;
-		}
-	}
+  /**
+   * Execution de la requête d'authentification
+   *
+   * @return multitype:string
+   */
+  public static function Process() {
+    // Passage en version mobile
+    Main::MobileVersion();
+    $username = trim(strtolower(Request::getInputValue("username", POLL_INPUT_GPC)));
+    $password = Request::getInputValue("password", POLL_INPUT_GPC);
+    if (isset($username) && isset($password)) {
+      if (\Program\Drivers\Driver::get_driver()->authenticate($username, $password)) {
+        Session::setUsername($username);
+        Session::setPassword($password);
+        Session::setToken();
+        \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "External_Login::Process() Login for user $username");
+        $poll_uid = Request::getInputValue("_poll", POLL_INPUT_GET);
+        if (! empty($poll_uid)) {
+          header("Location: " . Output::get_poll_url(new \Program\Data\Poll([
+                  "poll_uid" => $poll_uid])));
+          exit();
+        }
+        return true;
+      }
+      else {
+        \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "External_Login::Process() Bad login for user $username");
+        return false;
+      }
+    }
+    else {
+      return false;
+    }
+  }
 }

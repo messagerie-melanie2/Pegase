@@ -30,3 +30,9 @@ use Program\Lib\Request\Localization as l;
     <div class="error"><?= l::g(o::get_env("error")) ?></div>
 <?php } ?>
 </div>
+
+<div class="loading">
+	<div class="loading_message">
+		Loading...
+	</div>
+</div>

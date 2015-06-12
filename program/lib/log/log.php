@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -67,7 +67,7 @@ class Log {
 	 * @var int (binaire)
 	 */
 	const ALL = 62;
-	
+
 	/**
 	 * Static log class
 	 * @var Logging $log
@@ -87,8 +87,8 @@ class Log {
 	/**
 	 * Fichier de log
 	 */
-	private static $log_file = ""; 
-	
+	private static $log_file = "";
+
 	/**
 	 * Fonction de log
 	 *
@@ -118,7 +118,7 @@ class Log {
 			self::$errorlog_file = str_replace("{date}", $date, \Config\Log::$file_errors_log);
 		}
 		// Récupèration de l'adresse IP
-		$addrip = self::get_address_ip();
+		$addrip = \Program\Lib\Request\Request::get_ip_address();
 		// Récupération du process ID
 		$procid = getmypid();
 		// Ecriture des logs dans le/les fichier(s) en fonction du niveau de log configuré
@@ -152,21 +152,5 @@ class Log {
 			elseif ($level === self::WARN) self::$log->lwrite("$addrip [$procid] [WARN] $message");
 			self::$log->lclose();
 		}
-	}
-	
-	/**
-	 * Retourne l'adresse ip
-	 * @return string
-	 * @private
-	 */
-	private static function get_address_ip() {
-		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-			$ip = $_SERVER['HTTP_CLIENT_IP'];
-		} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		} else {
-			$ip = $_SERVER['REMOTE_ADDR'];
-		}
-		return $ip;
 	}
 }

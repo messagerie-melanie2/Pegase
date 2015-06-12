@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 /* Récupération de la version depuis le fichier */
-define('VERSION', '0.9.1');
-define('BUILD', '1505061856');
+define('VERSION', '1.1');
+define('BUILD', '1506121725');
 
 // framework constants
 define('POLL_CHARSET', 'UTF-8');
@@ -28,42 +28,38 @@ define('POLL_CHARSET', 'UTF-8');
 /*
  * Variables pour l'environnement
  */
-define('FEDERATEUR','af');
-define('DEVELOPPEMENT_FEDERATEUR','afida');
-define('DEVELOPPEMENT','ida');
-define('DEVELOPPEMENT_ROUNDCUBE', 'ida_roundcube');
-define('PRODUCTION', 'ac_prod');
-define('PREPRODUCTION', 'ac_preprod');
 
 /*
  * Définitions des inputs
  */
-define('POLL_INPUT_GET','input_get');
-define('POLL_INPUT_POST','input_post');
-define('POLL_INPUT_GPC','input_gpc');
-
-/*
- * Liste des tasks accessibles par défaut
- */
-define('TASK_MAIN','main');
-define('TASK_CREATE','create');
+define('POLL_INPUT_GET', 'input_get');
+define('POLL_INPUT_POST', 'input_post');
+define('POLL_INPUT_GPC', 'input_gpc');
 
 /*
  * Liste des actions possibles
  */
-define('ACT_NEW','new');
-define('ACT_MODIFY','modify');
-define('ACT_MODIFY_ALL','modify_all');
-define('ACT_LOCK','lock');
-define('ACT_UNLOCK','unlock');
-define('ACT_DELETE','delete');
-define('ACT_DELETE_RESPONSE','delete_response');
-define('ACT_MOBILE','mobile');
-define('ACT_DESKTOP','desktop');
-define('ACT_DOWNLOAD_ICS','download_ics');
-define('ACT_ADD_CALENDAR','add_calendar');
-define('ACT_ADD_TENTATIVE_CALENDAR','add_tentative_calendar');
-define('ACT_VALIDATE_PROP','validate_prop');
-define('ACT_UNVALIDATE_PROP','unvalidate_prop');
-define('ACT_GET_VALID_PROPOSALS','get_valid_proposals_text');
-define('ACT_GET_USER_EVENTS','get_user_events_json');
+define('ACT_NEW', 'new');
+define('ACT_MODIFY', 'modify');
+define('ACT_MODIFY_ALL', 'modify_all');
+define('ACT_LOCK', 'lock');
+define('ACT_UNLOCK', 'unlock');
+define('ACT_DELETE', 'delete');
+define('ACT_DELETE_RESPONSE', 'delete_response');
+define('ACT_MOBILE', 'mobile');
+define('ACT_DESKTOP', 'desktop');
+define('ACT_DOWNLOAD_ICS', 'download_ics');
+define('ACT_ADD_CALENDAR', 'add_calendar');
+define('ACT_ADD_TENTATIVE_CALENDAR', 'add_tentative_calendar');
+define('ACT_VALIDATE_PROP', 'validate_prop');
+define('ACT_UNVALIDATE_PROP', 'unvalidate_prop');
+define('ACT_GET_VALID_PROPOSALS', 'get_valid_proposals_text');
+define('ACT_GET_USER_EVENTS', 'get_user_events_json');
+define('ACT_GET_USER_FREEBUSY', 'get_user_freebusy');
+define('ACT_DELETE_TENTATIVES', 'delete_tentatives');
+define('ACT_DATE_ACCEPTED', 'date_accepted');
+define('ACT_DATE_DECLINED', 'date_declined');
+define('ACT_AUTOCOMPLETE_SEARCH', 'autocomplete_search');
+define('ACT_ADD_ATTENDEE', 'add_attendee');
+define('ACT_REMOVE_ATTENDEE', 'remove_attendee');
+define('ACT_SEND_INVITATION', 'send_invitation');

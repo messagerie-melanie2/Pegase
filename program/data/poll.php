@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
  * Cette application est un doodle-like permettant aux utilisateurs
@@ -48,215 +49,364 @@ use Program\Lib\Request\Output as o;
  * @property boolean $auth_only Si le sondage est réservé aux utilisateurs authentifiés
  * @property boolean $if_needed Si le sondage propose aux répondeurs un "si besoin"
  * @property boolean $anonymous Si le sondage est en mode anonyme, les utilisateurs ne voient pas les réponses des autres
+ * @property boolean $invit_sent Si l'invitation a déjà été envoyée
  * @property array $validate_proposals Liste des propositions validées par l'organisateur du sondage
- *
+ * @property date $date_start Première date de proposition pour le sondage (sondage de dates)
+ * @property date $date_end Dernière date de proposition pour le sondage (sondage de dates)
+ * @property date $deadline Date butoir avant la fermeture des votes du sondage
+ * @property string $attendees Listes des invités au sondage par l'organisateur
  * @package Data
  */
 class Poll extends Object {
-    /***** PRIVATE ****/
-    /**
-     * Variable static pour le sondage courant
-     * @var \Program\Data\Poll
-     */
-    private static $current_poll;
-    /**
-     * Savoir si le sondage courant a déjà été chargé depuis la base de données
-     * @var bool
-     */
-    private static $current_poll_loaded = false;
+  /**
+   * *** PRIVATE ***
+   */
+  /**
+   * Variable static pour le sondage courant
+   *
+   * @var \Program\Data\Poll
+   */
+  private static $current_poll;
+  /**
+   * Savoir si le sondage courant a déjà été chargé depuis la base de données
+   *
+   * @var bool
+   */
+  private static $current_poll_loaded = false;
 
-    /******* METHODES *******/
-    /**
-     * Constructeur par défaut de la classe Poll
-     * @param array $data Données à charger dans l'objet
-     */
-    public function __construct($data = null) {
-        if (isset($data)
-                && is_array($data)) {
-            foreach ($data as $key => $value) {
-                $key = strtolower($key);
-                $this->$key = $value;
+  /**
+   * ***** METHODES ******
+   */
+  /**
+   * Constructeur par défaut de la classe Poll
+   *
+   * @param array $data Données à charger dans l'objet
+   */
+  public function __construct($data = null) {
+    if (isset($data) && is_array($data)) {
+      foreach ($data as $key => $value) {
+        $key = strtolower($key);
+        $this->$key = $value;
+      }
+    }
+  }
+  /**
+   * Permet de récupérer le sondage courant
+   *
+   * @return \Program\Data\Poll
+   */
+  public static function get_current_poll() {
+    self::load_current_poll();
+    return self::$current_poll;
+  }
+  /**
+   * Permet de définir le sondage courant
+   *
+   * @param \Program\Data\Poll $poll
+   */
+  public static function set_current_poll($poll) {
+    self::$current_poll = $poll;
+  }
+  /**
+   * Permet de savoir si le current poll est défini
+   *
+   * @return bool
+   */
+  public static function isset_current_poll() {
+    self::load_current_poll();
+    return isset(self::$current_poll);
+  }
+  /**
+   * Méthode pour générer un identifiant unique pour le sondage
+   *
+   * @return string
+   */
+  public static function generation_uid() {
+    $count = 0;
+    $uid = null;
+    do {
+      $uid = self::random_string();
+      $count ++;
+      if ($count == 5)
+        break;
+    } while (\Program\Drivers\Driver::get_driver()->isPollUidExists($uid));
+    return $uid;
+  }
+  /**
+   * Génération d'une chaine de caractères aléatoire
+   *
+   * @return string
+   */
+  private static function random_string() {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $randstring = '';
+    for ($i = 0; $i < 20; $i ++) {
+      $randstring .= $characters[rand(0, strlen($characters) - 1)];
+    }
+    return $randstring;
+  }
+  /**
+   * Charge le current poll depuis la base de données si ce n'est pas déjà fait
+   */
+  private static function load_current_poll() {
+    if (! isset(self::$current_poll) && ! self::$current_poll_loaded) {
+      if (o::isset_env("poll_uid")) {
+        self::$current_poll = \Program\Drivers\Driver::get_driver()->getPollByUid(o::get_env("poll_uid"));
+        if (! isset(self::$current_poll->poll_id))
+          self::$current_poll = null;
+      }
+      self::$current_poll_loaded = true;
+    }
+  }
+  /**
+   * Positionne la valeur de paramètre $auth_only depuis les settings du sondage
+   *
+   * @param boolean $auth_only
+   * @return boolean
+   */
+  protected function __set_auth_only($auth_only) {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    $settings['auth_only'] = $auth_only;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $auth_only depuis les settings du sondage
+   *
+   * @return boolean
+   */
+  protected function __get_auth_only() {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['auth_only']))
+      return $settings['auth_only'];
+    else
+      // Valeur par défaut
+      return false;
+  }
+  /**
+   * Positionne la valeur de paramètre $validate_proposals depuis les settings du sondage
+   *
+   * @param array $validate_proposals Liste des propositions validées
+   * @return boolean
+   */
+  protected function __set_validate_proposals($validate_proposals) {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    $settings['validate_proposals'] = $validate_proposals;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $validate_proposals depuis les settings du sondage
+   *
+   * @return array
+   */
+  protected function __get_validate_proposals() {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['validate_proposals']))
+      return $settings['validate_proposals'];
+    else
+      // Valeur par défaut
+      return array();
+  }
+  /**
+   * Positionne la valeur de paramètre $if_needed depuis les settings du sondage
+   *
+   * @param boolean $if_needed
+   * @return boolean
+   */
+  protected function __set_if_needed($if_needed) {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    $settings['if_needed'] = $if_needed;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $if_needed depuis les settings du sondage
+   *
+   * @return boolean
+   */
+  protected function __get_if_needed() {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['if_needed']))
+      return $settings['if_needed'];
+    else
+      // Valeur par défaut
+      return false;
+  }
+  /**
+   * Positionne la valeur de paramètre $anonymous depuis les settings du sondage
+   *
+   * @param boolean $anonymous
+   * @return boolean
+   */
+  protected function __set_anonymous($anonymous) {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    $settings['anonymous'] = $anonymous;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $anonymous depuis les settings du sondage
+   *
+   * @return boolean
+   */
+  protected function __get_anonymous() {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['anonymous']))
+      return $settings['anonymous'];
+    else
+      // Valeur par défaut
+      return false;
+  }
+
+  /**
+   * Positionne la valeur de paramètre $invit_sent depuis les settings du sondage
+   *
+   * @param boolean $invit_sent
+   * @return boolean
+   */
+  protected function __set_invit_sent($invit_sent) {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    $settings['invit_sent'] = $invit_sent;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $invit_sent depuis les settings du sondage
+   *
+   * @return boolean
+   */
+  protected function __get_invit_sent() {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['invit_sent']))
+      return $settings['invit_sent'];
+    else
+      // Valeur par défaut
+      return false;
+  }
+
+  /**
+   * Retourne la valeur du champ date_start
+   * Si le date start n'existe pas dans le sondage, il est calculé en fonction des propositions
+   *
+   * @return date
+   */
+  protected function __get_date_start() {
+    if ($this->type != "date") {
+      return null;
+    }
+    if (! isset($this->date_start) && isset($this->proposals) && ! empty($this->proposals)) {
+      $proposals = unserialize($this->proposals);
+      if ($proposals !== false && is_array($proposals) && count($proposals) > 0) {
+        // Parcourir les proposition pour trouver le start et end
+        foreach ($proposals as $prop_key => $prop_value) {
+          if (strpos($prop_value, ' - ')) {
+            $prop = explode(' - ', $prop_value, 2);
+            $prop_start = new \DateTime($prop[0]);
+            $prop_end = new \DateTime($prop[1]);
+          }
+          else {
+            $prop_start = new \DateTime($prop_value);
+            $prop_end = clone $prop_start;
+          }
+          $prop_end->add(new \DateInterval('P1D'));
+          if (! isset($start) && ! isset($end)) {
+            // Positionnement de la date de début et de fin
+            $start = $prop_start;
+            $end = $prop_end;
+          }
+          else {
+            if ($prop_end > $end) {
+              // Si tmp est supérieur, on conserve comme fin
+              $end = $prop_end;
             }
-        }
-    }
-    /**
-     * Permet de récupérer le sondage courant
-     * @return \Program\Data\Poll
-     */
-    public static function get_current_poll() {
-        self::load_current_poll();
-        return self::$current_poll;
-    }
-    /**
-     * Permet de définir le sondage courant
-     * @param \Program\Data\Poll $poll
-     */
-    public static function set_current_poll($poll) {
-        self::$current_poll = $poll;
-    }
-    /**
-     * Permet de savoir si le current poll est défini
-     * @return bool
-     */
-    public static function isset_current_poll() {
-        self::load_current_poll();
-        return isset(self::$current_poll);
-    }
-    /**
-     * Méthode pour générer un identifiant unique pour le sondage
-     * @return string
-     */
-    public static function generation_uid() {
-        $count = 0;
-        $uid = null;
-        do {
-            $uid = self::random_string();
-            $count++;
-            if ($count == 5) break;
-        } while(\Program\Drivers\Driver::get_driver()->isPollUidExists($uid));
-        return $uid;
-    }
-    /**
-     * Génération d'une chaine de caractères aléatoire
-     * @return string
-     */
-    private static function random_string()
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $randstring = '';
-        for ($i = 0; $i < 20; $i++) {
-            $randstring .= $characters[rand(0, strlen($characters) - 1)];
-        }
-        return $randstring;
-    }
-    /**
-     * Charge le current poll depuis la base de données si ce n'est pas déjà fait
-     */
-    private static function load_current_poll() {
-        if (!isset(self::$current_poll)
-                && !self::$current_poll_loaded) {
-            if (o::isset_env("poll_uid")) {
-                self::$current_poll = \Program\Drivers\Driver::get_driver()->getPollByUid(o::get_env("poll_uid"));
-                if (!isset(self::$current_poll->poll_id))
-                        self::$current_poll = null;
+            if ($prop_start < $start) {
+              // Si tmp est inférieur, on conserve comme début
+              $start = $prop_start;
             }
-            self::$current_poll_loaded = true;
+          }
         }
-    }
-    /**
-     * Positionne la valeur de paramètre $auth_only depuis les settings du sondage
-     * @param boolean $auth_only
-     * @return boolean
-     */
-    protected function __set_auth_only($auth_only) {
-        $settings = unserialize($this->settings);
-        if ($settings === false) {
-            $settings = array();
-        }
-        $settings['auth_only'] = $auth_only;
-        $this->settings = serialize($settings);
-        return true;
-    }
-    /**
-     * Retourne la valeur de paramètre $auth_only depuis les settings du sondage
-     * @return boolean
-     */
-    protected function __get_auth_only() {
-        $settings = unserialize($this->settings);
-        if ($settings === false) {
-            $settings = array();
-        }
-        if (isset($settings['auth_only']))
-            return $settings['auth_only'];
-        else
-            // Valeur par défaut
-            return false;
-    }
-    /**
-     * Positionne la valeur de paramètre $validate_proposals depuis les settings du sondage
-     * @param array $validate_proposals Liste des propositions validées
-     * @return boolean
-     */
-    protected function __set_validate_proposals($validate_proposals) {
-        $settings = unserialize($this->settings);
-        if ($settings === false) {
-            $settings = array();
-        }
-        $settings['validate_proposals'] = $validate_proposals;
-        $this->settings = serialize($settings);
-        return true;
-    }
-    /**
-     * Retourne la valeur de paramètre $validate_proposals depuis les settings du sondage
-     * @return array
-     */
-    protected function __get_validate_proposals() {
-        $settings = unserialize($this->settings);
-        if ($settings === false) {
-            $settings = array();
-        }
-        if (isset($settings['validate_proposals']))
-            return $settings['validate_proposals'];
-        else
-            // Valeur par défaut
-            return array();
-    }
-    /**
-     * Positionne la valeur de paramètre $if_needed depuis les settings du sondage
-     * @param boolean $if_needed
-     * @return boolean
-     */
-    protected function __set_if_needed($if_needed) {
-      $settings = unserialize($this->settings);
-      if ($settings === false) {
-        $settings = array();
+        $this->date_start = $start->format('Y-m-d H:i:s');
+        $this->date_end = $end->format('Y-m-d H:i:s');
       }
-      $settings['if_needed'] = $if_needed;
-      $this->settings = serialize($settings);
-      return true;
     }
-    /**
-     * Retourne la valeur de paramètre $if_needed depuis les settings du sondage
-     * @return boolean
-     */
-    protected function __get_if_needed() {
-      $settings = unserialize($this->settings);
-      if ($settings === false) {
-        $settings = array();
+    return $this->data['date_start'];
+  }
+  /**
+   * Retourne la valeur du champ date_end
+   * Si le date end n'existe pas dans le sondage, il est calculé en fonction des propositions
+   *
+   * @return date
+   */
+  protected function __get_date_end() {
+    if ($this->type != "date") {
+      return null;
+    }
+    if (! isset($this->date_end) && isset($this->proposals) && ! empty($this->proposals)) {
+      $proposals = unserialize($this->proposals);
+      if ($proposals !== false && is_array($proposals) && count($proposals) > 0) {
+        // Parcourir les proposition pour trouver le start et end
+        foreach ($proposals as $prop_key => $prop_value) {
+          if (strpos($prop_value, ' - ')) {
+            $prop = explode(' - ', $prop_value, 2);
+            $prop_start = new \DateTime($prop[0]);
+            $prop_end = new \DateTime($prop[1]);
+          }
+          else {
+            $prop_start = new \DateTime($prop_value);
+            $prop_end = clone $prop_start;
+          }
+          $prop_end->add(new \DateInterval('P1D'));
+          if (! isset($start) && ! isset($end)) {
+            // Positionnement de la date de début et de fin
+            $start = $prop_start;
+            $end = $prop_end;
+          }
+          else {
+            if ($prop_end > $end) {
+              // Si tmp est supérieur, on conserve comme fin
+              $end = $prop_end;
+            }
+            if ($prop_start < $start) {
+              // Si tmp est inférieur, on conserve comme début
+              $start = $prop_start;
+            }
+          }
+        }
+        $this->date_start = $start->format('Y-m-d H:i:s');
+        $this->date_end = $end->format('Y-m-d H:i:s');
       }
-      if (isset($settings['if_needed']))
-        return $settings['if_needed'];
-      else
-        // Valeur par défaut
-        return false;
     }
-    /**
-     * Positionne la valeur de paramètre $anonymous depuis les settings du sondage
-     * @param boolean $anonymous
-     * @return boolean
-     */
-    protected function __set_anonymous($anonymous) {
-      $settings = unserialize($this->settings);
-      if ($settings === false) {
-        $settings = array();
-      }
-      $settings['anonymous'] = $anonymous;
-      $this->settings = serialize($settings);
-      return true;
-    }
-    /**
-     * Retourne la valeur de paramètre $anonymous depuis les settings du sondage
-     * @return boolean
-     */
-    protected function __get_anonymous() {
-      $settings = unserialize($this->settings);
-      if ($settings === false) {
-        $settings = array();
-      }
-      if (isset($settings['anonymous']))
-        return $settings['anonymous'];
-      else
-        // Valeur par défaut
-        return false;
-    }
+    return $this->data['date_end'];
+  }
 }

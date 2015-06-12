@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
  * Cette application est un doodle-like permettant aux utilisateurs
@@ -26,81 +27,73 @@
 namespace Program\Lib\Templates;
 
 // Utilisation des namespaces
-use Program\Lib\Request\Session as Session,
-	Program\Lib\Request\Request as Request,
-	Program\Lib\Request\Output as Output;
+use Program\Lib\Request\Session as Session;
+use Program\Lib\Request\Request as Request;
+use Program\Lib\Request\Output as Output;
 
 /**
  * Classe de creation de l'utilisateur depuis l'interface
  *
- * @package    Lib
- * @subpackage Request
+ * @package Lib
+ * @subpackage Templates
  */
-class Register {
-    /**
-     *  Constructeur privé pour ne pas instancier la classe
-     */
-    private function __construct() { }
+class Register extends Template {
 
-    /**
-     * Execution de la requête
-     */
-    public static function Process() {
-        // Session instanciée
-        if (Session::is_setUsername()
-            && Session::is_setPassword()) {
-            // Instancie l'objet
-            return Session::validateSession();
-        } else {
-            $csrf_token = trim(strtolower(Request::getInputValue("csrf_token", POLL_INPUT_POST)));
-            if (Session::validateCSRFToken($csrf_token)) {
-            	if (!isset($_POST['username'])) {
-            		// Pas de donnée POST
-            		return false;
-            	}
-                $username = trim(strtolower(Request::getInputValue("username", POLL_INPUT_POST)));
-                $fullname = trim(strtolower(Request::getInputValue("fullname", POLL_INPUT_POST)));
-                $email = trim(strtolower(Request::getInputValue("email", POLL_INPUT_POST)));
-                $password = Request::getInputValue("password", POLL_INPUT_POST);
-                if (isset($username)
-                        && isset($password)
-                        && isset($fullname)
-                        && isset($email)) {
-                    $user = new \Program\Data\User([
-                        "auth" => 1,
-                        "fullname" => $fullname,
-                        "username" => $username,
-                        "email" => $email,
-                        "password" => $password,
-                        "last_login" => date("Y-m-d H:i:s"),
-                        "language" => \Config\IHM::$DEFAULT_LOCALIZATION,
-                    ]);
-                    $find_user = \Program\Drivers\Driver::get_driver()->getAuthUser($username);
-                    if (isset($find_user)) {
-                    	Output::set_env("error", "Username already exists");
-                    	return false;
-                    }
-                    if (\Program\Drivers\Driver::get_driver()->addUser($user)) {
-                        Session::setUsername($username);
-                        Session::setPassword($password);
-                        Session::setToken();
-                        \Program\Data\User::set_current_user($user);
-                        \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "Register::Process() Register for user $username");
-                        Output::set_env("message", "You are now created, you can start use the app");
-                        return true;
-                    } else {
-                        \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "Register::Process() Register error for user $username");
-                        Output::set_env("error", "Error when register the data");
-                        return false;
-                    }
-                } else {
-                	Output::set_env("error", "Error, you have to put all the information");
-                    return false;
-                }
-            } else {
-            	Output::set_env("error", "Invalid request");
-                return false;
-            }
-        }
+  /**
+   * Execution de la requête
+   */
+  public static function Process() {
+    // Session instanciée
+    if (Session::is_setUsername() && Session::is_setPassword()) {
+      // Instancie l'objet
+      return Session::validateSession();
     }
+    else {
+      $csrf_token = trim(strtolower(Request::getInputValue("csrf_token", POLL_INPUT_POST)));
+      if (Session::validateCSRFToken($csrf_token)) {
+        if (! isset($_POST['username'])) {
+          // Pas de donnée POST
+          return false;
+        }
+        $username = trim(strtolower(Request::getInputValue("username", POLL_INPUT_POST)));
+        $fullname = trim(strtolower(Request::getInputValue("fullname", POLL_INPUT_POST)));
+        $email = trim(strtolower(Request::getInputValue("email", POLL_INPUT_POST)));
+        $password = Request::getInputValue("password", POLL_INPUT_POST);
+        if (isset($username) && isset($password) && isset($fullname) && isset($email)) {
+          $user = new \Program\Data\User(["auth" => 1,
+                  "fullname" => $fullname,"username" => $username,
+                  "email" => $email,"password" => $password,
+                  "last_login" => date("Y-m-d H:i:s"),
+                  "language" => \Config\IHM::$DEFAULT_LOCALIZATION]);
+          $find_user = \Program\Drivers\Driver::get_driver()->getAuthUser($username);
+          if (isset($find_user)) {
+            Output::set_env("error", "Username already exists");
+            return false;
+          }
+          if (\Program\Drivers\Driver::get_driver()->addUser($user)) {
+            Session::setUsername($username);
+            Session::setPassword($password);
+            Session::setToken();
+            \Program\Data\User::set_current_user($user);
+            \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "Register::Process() Register for user $username");
+            Output::set_env("message", "You are now created, you can start use the app");
+            return true;
+          }
+          else {
+            \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "Register::Process() Register error for user $username");
+            Output::set_env("error", "Error when register the data");
+            return false;
+          }
+        }
+        else {
+          Output::set_env("error", "Error, you have to put all the information");
+          return false;
+        }
+      }
+      else {
+        Output::set_env("error", "Invalid request");
+        return false;
+      }
+    }
+  }
 }

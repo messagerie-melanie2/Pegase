@@ -35,7 +35,8 @@
  */
 function pollautoload($pClassName) {
     if (strpos($pClassName, 'LibMelanie') === 0
-    		|| strpos($pClassName, 'Composer') === 0)
+    		|| strpos($pClassName, 'Composer') === 0
+    		|| strpos($pClassName, 'Sabre') === 0)
     	return;
     // Définition du nom du fichier et du chemin
     $dir_class = $pClassName . '.php';

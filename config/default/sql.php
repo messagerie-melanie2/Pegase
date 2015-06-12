@@ -54,40 +54,18 @@ class Sql {
           		'persistent' => 'true',
               /**
                * Le Data Source Name (DSN) de PDO
+               * Voir http://php.net/manual/en/ref.pdo-mysql.connection.php
+               * Ex: mysql:host=localhost;dbname=testdb
                */
-              'dsn' => null,
-          		/**
-          		 * Hostname ou IP vers le serveur SGBD
-          		 */
-          		'hostspec' => 'sgbd.server',
+              'dsn' => "sqlite:/home/user/data/database.sqlite",
               /**
                * Utilisateur pour la connexion à la base
                */
-              'username' => 'poll',
+              'username' => '',
           		/**
           		 * Mot de passe pour l'utilisateur
           		 */
-          		'password' => 'poll',
-          		/**
-          		 * Base de données Mélanie
-          		 */
-          		'database' => 'poll',
-          		/**
-          		 * Port de connexion
-          		 */
-          		'port' => 5432,
-          		/**
-          		 * Protocole de connexion
-          		 */
-          		'protocol' => 'tcp',
-          		/**
-          		 * Encodage de la base de données
-          		 */
-          		'charset' =>  'utf-8',
-          		/**
-          		 * Type de base : pgsql, mysql, sqlite
-          		 */
-          		'phptype' => 'pgsql'
+          		'password' => '',
         )
 	  );
 }

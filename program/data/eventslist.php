@@ -33,11 +33,24 @@ namespace Program\Data;
  * @property string $events Liste d'uid des événements de l'utilisateur pour le sondage, sérialisées
  * @property string $events_status Status des événements (Provisoire, Confirme ou Libre)
  * @property string $settings Paramètres pour la gestion des événements
+ * @property array $events_part_status Liste des part_status associés aux events
  * @property int $modified_time timestamp pour la modification
  *
  * @package Data
  */
 class EventsList extends Object {
+		/***** PRIVATE ****/
+		/**
+		 * Variable static pour le EventsList courant
+		 * @var \Program\Data\EventsList
+		 */
+		private static $current_eventslist;
+		/**
+		 * Savoir si le EventsList courant a déjà été chargé depuis la base de données
+		 * @var bool
+		 */
+		private static $current_eventslist_loaded = false;
+
     /******* METHODES *******/
     /**
      * Constructeur par défaut de la classe Response
@@ -51,5 +64,72 @@ class EventsList extends Object {
                 $this->$key = $value;
             }
         }
+    }
+    /**
+     * Permet de récupérer le EventsList courant
+     * @return \Program\Data\EventsList
+     */
+    public static function get_current_eventslist() {
+    	self::load_current_eventslist();
+    	return self::$current_eventslist;
+    }
+    /**
+     * Permet de définir le EventsList courant
+     * @param \Program\Data\EventsList $eventslist
+     */
+    public static function set_current_eventslist($eventslist) {
+    	self::$current_eventslist = $eventslist;
+    }
+    /**
+     * Permet de savoir si le current EventsList est défini
+     * @return bool
+     */
+    public static function isset_current_eventslist() {
+    	self::load_current_eventslist();
+    	return isset(self::$current_eventslist);
+    }
+    /**
+     * Charge le current EventsList depuis la base de données si ce n'est pas déjà fait
+     */
+    private static function load_current_eventslist() {
+    	if (!isset(self::$current_eventslist)
+    			&& !self::$current_eventslist_loaded) {
+    		if (Poll::isset_current_poll()
+    				&& User::isset_current_user()) {
+					self::$current_eventslist = \Program\Drivers\Driver::get_driver()->getPollUserEventsList(User::get_current_user()->user_id, Poll::get_current_poll()->poll_id);
+					if (!isset(self::$current_eventslist->poll_id))
+						self::$current_eventslist = null;
+    		}
+    		self::$current_eventslist_loaded = true;
+    	}
+    }
+    /**
+     * Positionne la valeur de paramètre $events_part_status depuis les settings du eventslist
+     * @param array $events_part_status Liste des part_status associés aux events
+     * @return boolean
+     */
+    protected function __set_events_part_status($events_part_status) {
+    	$settings = unserialize($this->settings);
+    	if ($settings === false) {
+    		$settings = array();
+    	}
+    	$settings['events_part_status'] = $events_part_status;
+    	$this->settings = serialize($settings);
+    	return true;
+    }
+    /**
+     * Retourne la valeur de paramètre $events_part_status depuis les settings du eventslist
+     * @return array
+     */
+    protected function __get_events_part_status() {
+    	$settings = unserialize($this->settings);
+    	if ($settings === false) {
+    		$settings = array();
+    	}
+    	if (isset($settings['events_part_status']))
+    		return $settings['events_part_status'];
+    	else
+    		// Valeur par défaut
+    		return array();
     }
 }

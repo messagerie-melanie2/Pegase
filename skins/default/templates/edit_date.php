@@ -25,55 +25,102 @@ use Program\Lib\Request\Template as t;
 use Program\Lib\Request\Request as r;
 use Program\Lib\Templates\Edit_date as e;
 use Program\Data\Poll as p;
+use Program\Data\User as u;
 use Program\Lib\Request\Session as s;
 ?>
-<?php t::inc('head') ?>
+<?php t::inc('head')?>
 <body>
-<div id="prevcontent">
-    <div id="content">
-        <?php t::inc('message') ?>	
-        <?php t::inc('connected') ?>
+	<div id="prevcontent">
+		<div id="content">
+        <?php t::inc('message')?>
+        <?php t::inc('connected')?>
         <br>
-        <div id="title">
+			<div id="title">
             <?php if (o::get_env("action") == ACT_NEW) { ?>
                 <h1><?= l::g('Create poll page, modify the dates') ?></h1>
-            <?php } else {
-            ?>
+            <?php
+            }
+            else {
+              ?>
                 <h1><?= l::g('Modification poll page, change the dates') ?></h1>
             <?php }?>
         </div>
-        <a class="pure-button pure-button-edit-poll customtooltip_bottom" title="<?= l::g("Clic to get back to the poll modification", false) ?>" style="width: 25%;" href="<?= o::url("edit", ACT_MODIFY, array('u' => p::get_current_poll()->poll_uid)) ?>"><img alt="Modify" src="skins/<?= o::get_env("skin") ?>/images/1395932254_gear-01_white.png" height="12px"/> <?= l::g('Return to the edit page of poll') ?></a>
-        <?php if (p::isset_current_poll()
-                    && o::get_env("action") != ACT_NEW) { ?>
-                <a class="pure-button pure-button-see-poll customtooltip_bottom" title="<?= l::g("Clic to view the poll", false) ?>" style="width: 25%;" href="<?= o::url(null, null, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="See" src="skins/<?= o::get_env("skin") ?>/images/1395933052_message-01_white.png" height="12px"/> <?= l::g('See the poll') ?></a>
+			<a class="pure-button pure-button-edit-poll customtooltip_bottom"
+				title="<?= l::g("Clic to get back to the poll modification", false) ?>"
+				style="width: 25%;"
+				href="<?= o::url("edit", ACT_MODIFY, array('u' => p::get_current_poll()->poll_uid)) ?>"><img
+				alt="Modify"
+				src="skins/<?= o::get_env("skin") ?>/images/1395932254_gear-01_white.png"
+				height="12px" /> <?= l::g('Return to the edit page of poll') ?></a>
+        <?php if (p::isset_current_poll () && o::get_env ( "action" ) != ACT_NEW) { ?>
+                <a
+				class="pure-button pure-button-see-poll customtooltip_bottom"
+				title="<?= l::g("Clic to view the poll", false) ?>"
+				style="width: 25%;"
+				href="<?= o::url(null, null, array("u" => p::get_current_poll()->poll_uid)) ?>"><img
+				alt="See"
+				src="skins/<?= o::get_env("skin") ?>/images/1395933052_message-01_white.png"
+				height="12px" /> <?= l::g('See the poll') ?></a>
         <?php }?>
-        <br><br>
-        <div class="pure-control-group">
-        	<label style="width: 35%;"><i><?= l::g('Poll name') ?> : </i></label>
-        	<span id="poll_title"><?= o::tohtml(p::get_current_poll()->title) ?></span>
-        </div>
-        <div class="pure-control-group">
-        	<label style="width: 35%;"><?= l::g('Last modification time') ?> </label> <?= o::date_format(strtotime(p::get_current_poll()->modified)) ?>
-        </div>
-        <br>
-        <div id="calendar" title="<?= l::g('Select dates by clicking in the calendar') ?>" style="width: 90%; margin-left: 5%;" class="customtooltip_top"></div>
-        <div id="edit">
-    		<form action="<?= o::url("edit_end", o::get_env("action"), array('u' => p::get_current_poll()->poll_uid)) ?>" method="post" class="pure-form pure-form-aligned">
-    			<fieldset>
-    			    <div class="pure-controls" style="margin-left: 40%;">
-    		        	<button type="submit" class="pure-button pure-button-submit customtooltip_bottom" title="<?= l::g('Clic to save the proposals of the poll') ?>"><?= l::g('Save the poll') ?></button>
-    		        </div>
-    		        <br>
-    			    <div id="props_list">
-    			        <label style="margin-left: 35%;"><?= l::g("Selected date list") ?></label>
-    		            <?= e::ShowProps() ?>
-    		        </div>
-    		        <input type="hidden" name="csrf_token" value="<?= s::getCSRFToken() ?>"/>
-    			</fieldset>
-    		</form>
-    	</div>
-    </div>
-<?php t::inc('copyright') ?>
+        <br> <br>
+			<div class="pure-control-group">
+				<label style="width: 35%;"><i><?= l::g('Poll name') ?> : </i></label>
+				<span id="poll_title"><?= o::tohtml(p::get_current_poll()->title) ?></span>
+			</div>
+			<div class="pure-control-group">
+				<label style="width: 35%;"><?= l::g('Last modification time') ?> </label> <?= o::date_format(strtotime(p::get_current_poll()->modified))?>
+      </div>
+			<br>
+			<?php if (\Program\Lib\Event\Drivers\Driver::get_driver()->CAN_GET_FREEBUSY) { ?>
+  			<div id="calendars-list">
+  				<div class="calendars-list-header">
+                  <?= l::g('Freebusy')?>
+              </div>
+  				<div class="calendars-list-searchbox">
+  					<form class="pure-form autocomplete" action="#" autocomplete="off">
+  						<input id="calendars-list-searchbox-input" type="text"
+  							name="calendars-list-searchbox-input" value=""
+  							class="customtooltip_right autocomplete"
+  							title="<?= l::g('Add calendars freebusy tooltip') ?>"
+  							placeholder="<?= l::g('Add calendars freebusy') ?>" />
+  						<div class="autocomplete-results"></div>
+  					</form>
+  				</div>
+  				<div class="calendars-list-items">
+  					<ul>
+  					</ul>
+  				</div>
+  			</div>
+  			<div id="calendar"
+  				title="<?= l::g('Select dates by clicking in the calendar') ?>"
+  				style="margin-right: 180px;" class="customtooltip_top"></div>
+			<?php } else { ?>
+  			<div id="calendar"
+  				title="<?= l::g('Select dates by clicking in the calendar') ?>"
+  				class="customtooltip_top"></div>
+			<?php } ?>
+			<div id="edit">
+				<form
+					action="<?= o::url("edit_end", o::get_env("action"), array('u' => p::get_current_poll()->poll_uid)) ?>"
+					method="post" class="pure-form pure-form-aligned">
+					<fieldset>
+						<div class="pure-controls" style="margin-left: 40%;">
+							<button type="submit"
+								class="pure-button pure-button-submit customtooltip_bottom"
+								title="<?= l::g('Clic to save the proposals of the poll') ?>"><?= l::g('Save the poll') ?></button>
+						</div>
+						<br>
+						<div id="props_list">
+							<label style="margin-left: 35%;"><?= l::g("Selected date list") ?></label>
+    		            <?= e::ShowProps()?>
+		        </div>
+						<input type="hidden" name="csrf_token"
+							value="<?= s::getCSRFToken() ?>" />
+					</fieldset>
+				</form>
+			</div>
+		</div>
+<?php t::inc('copyright')?>
 </div>
 </body>
 <?php t::inc('foot') ?>

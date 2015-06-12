@@ -151,4 +151,19 @@ class Request {
 	    $useragent = $_SERVER['HTTP_USER_AGENT'];
 	    return preg_match('/(Thunderbird|Lightning)/i', $useragent);
 	}
+
+	/**
+	 * Retourne l'adresse ip
+	 * @return string
+	 */
+	public static function get_ip_address() {
+	  if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+	    $ip = $_SERVER['HTTP_CLIENT_IP'];
+	  } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+	    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+	  } else {
+	    $ip = $_SERVER['REMOTE_ADDR'];
+	  }
+	  return $ip;
+	}
 }

@@ -66,15 +66,20 @@ class Ldap {
 					"version" => 3,
 					/* Connexion TLS */
 					"tls" => false,
-					// Configuration des attributs et filtres de recherche
-					// Filtre de recherche pour la méthode get user infos
-					"get_user_infos_filter" => "(uid=%%username%%)",
-					// Liste des attributs à récupérer pour la méthode get user infos
-    			"get_user_infos_attributes" => array('cn','mail','uid','departmentnumber','info'),
-    			// Filtre de recherche pour la méthode get user infos from email
-    			"get_user_infos_from_email_filter" => "(mail=%%email%%)",
-    			// Liste des attributs à récupérer pour la méthode get user infos from email
-    			"get_user_infos_from_email_attributes" => array('cn','mail','uid','departmentnumber','info'),
+					/* Champ LDAP utilisé pour l'authentification, peut être dans mapping ou non */
+					"authenticate_field" => "dn",
+					/* Filtre complémentaire pour la recherche d'utilisateur */
+					"user_filter" => "(mineqTypeentree=BALI)",
+					/**
+					 * Mapping des champs utilisateurs
+					 * Champs à mapper : username, fullname, mail
+					 */
+					"mapping" => [
+					    'username' => 'uid',
+					    'fullname' => 'cn',
+					    'email' => 'mail',
+							'freebusy_url' => 'fburl',
+					],
 			),
 	);
 }
