@@ -292,7 +292,7 @@ class Mail {
     // Replace elements
     $subject = str_replace("%%app_name%%", \Config\IHM::$TITLE, $subject);
     $subject = str_replace("%%poll_title%%", $poll->title, $subject);
-    $subject = str_replace("%%validate_proposal%%", Output::format_prop_poll($poll, $proposals[$prop_key]), $subject);
+    $subject = str_replace("%%validate_proposal%%", Output::format_prop_poll($poll, $proposals[$prop_key], false), $subject);
     $body = str_replace("%%app_name%%", \Config\IHM::$TITLE, $body);
     $body = str_replace("%%app_url%%", Output::get_main_url(), $body);
     $body = str_replace("%%poll_title%%", $poll->title, $body);
@@ -393,7 +393,7 @@ class Mail {
     // Replace elements
     $subject = str_replace("%%app_name%%", \Config\IHM::$TITLE, $subject);
     $subject = str_replace("%%poll_title%%", $poll->title, $subject);
-    $subject = str_replace("%%validate_proposal%%", Output::format_prop_poll($poll, $proposals[$prop_key]), $subject);
+    $subject = str_replace("%%validate_proposal%%", Output::format_prop_poll($poll, $proposals[$prop_key], false), $subject);
     $body = str_replace("%%app_name%%", \Config\IHM::$TITLE, $body);
     $body = str_replace("%%app_url%%", Output::get_main_url(), $body);
     $body = str_replace("%%poll_title%%", $poll->title, $body);
@@ -731,7 +731,7 @@ class Mail {
     // Replace elements
     $subject = str_replace("%%app_name%%", \Config\IHM::$TITLE, $subject);
     $subject = str_replace("%%poll_title%%", $poll->title, $subject);
-    $subject = str_replace("%%validate_proposal%%", Output::format_prop_poll($poll, $proposals[$prop_key]), $subject);
+    $subject = str_replace("%%validate_proposal%%", Output::format_prop_poll($poll, $proposals[$prop_key], false), $subject);
     $body = str_replace("%%app_name%%", \Config\IHM::$TITLE, $body);
     $body = str_replace("%%app_url%%", Output::get_main_url(), $body);
     $body = str_replace("%%poll_title%%", $poll->title, $body);

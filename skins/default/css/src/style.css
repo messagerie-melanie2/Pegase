@@ -41,8 +41,13 @@ h1 {
   box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
   position: relative;
   width: 600px;
-  margin: 10ex auto 2ex;
+  margin: 0ex auto 2ex;
   border: 1px solid rgb(188, 188, 188);
+}
+#login-logo {
+  position: relative;
+  width: 580px;
+  margin: 2ex auto;
 }
 #copyright {
   color: #808080;
@@ -376,6 +381,61 @@ h1 {
 }
 #proposals_table tr.prop_new_element .newemail {
   margin-top: 4px;
+}
+#proposals_table input[type=radio] {
+    display: none;
+}
+#proposals_table .radio_label {
+  cursor: pointer;
+  color: black;
+  padding: 2px 4px;
+  display: block;
+  margin:0;
+  background-color: #FFF;
+  font-size: 90%;
+  width: 60px;
+  height: 20px;
+}
+
+#proposals_table .radio_label.label_yes {
+  border-top: 1px solid grey;
+  border-right: 1px solid grey;
+  border-left: 1px solid grey;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  margin-top: 4px
+}
+#proposals_table input[type="radio"]:checked + label.radio_label.label_yes,
+#proposals_table .radio_label.label_yes:hover {
+  color: #008000;
+  font-weight: bold;
+  background-color: #B9E6C7;
+}
+#proposals_table .radio_label.label_if_needed {
+  border-top: 1px solid grey;
+  border-right: 1px solid grey;
+  border-left: 1px solid grey;
+}
+#proposals_table input[type="radio"]:checked + label.radio_label.label_if_needed,
+#proposals_table .radio_label.label_if_needed:hover {
+  color: #61380B;
+  font-weight: bold;
+  background-color: #F5DBC0;
+}
+#proposals_table .radio_label.label_no {
+  border-top: 1px solid grey;
+  border-right: 1px solid grey;
+  border-left: 1px solid grey;
+  border-bottom: 1px solid grey;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+  margin-bottom: 4px
+}
+#proposals_table input[type="radio"]:checked + label.radio_label.label_no,
+#proposals_table .radio_label.label_no:hover {
+  color: #F00;
+  font-weight: bold;
+  background-color: #F5CFD4;
 }
 #calendar .fc-border-separate {
 	border-radius: 2px;

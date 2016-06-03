@@ -8,7 +8,7 @@
  *
  * @author Thomas Payen
  * @author PNE Annuaire et Messagerie
- * @version 1.1-1506121725
+ * @version 1.1-1606031654
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as

@@ -28,6 +28,8 @@ use Program\Lib\Request\Session as s;
 <?php t::inc('head') ?>
 <body>
 <div id="prevcontent">
+    <div id="login-logo">
+    </div>
     <div id="login_content">
         <?php t::inc('message') ?>
         <div id="title">
@@ -42,10 +44,10 @@ use Program\Lib\Request\Session as s;
     		        	<input style="width: 250px;" id="username" type="text" name="username"
     		        	        value="<?= r::getInputValue('username', POLL_INPUT_POST) ?>"
     		        			placeholder="<?= l::g('Username') ?>" required x-moz-errormessage="<?= l::g('You have to put your username') ?>" autofocus/>
-    		        </div>				        
+    		        </div>
     		        <div class="pure-control-group">
     		        	<label style="width: 250px;" for="password"><?= l::g('Password') ?><span style="color: red;">*</span></label>
-    		        	<input style="width: 250px;" id="password" type="password" name="password" 
+    		        	<input style="width: 250px;" id="password" type="password" name="password"
     		        			placeholder="<?= l::g('Password') ?>" x-moz-errormessage="<?= l::g('You have to put your password') ?>" required />
     		        </div>
     		        <input type="hidden" name="csrf_token" value="<?= s::getCSRFToken() ?>"/>

@@ -478,14 +478,15 @@ class Output {
 	 * Format la proposition de date en quelque de plus lisible
 	 * @param \Program\Data\Poll $poll sondage lié à la proposition
 	 * @param string $prop_value proposition à formatter
+	 * @param bool $tohtml Convertir le texte en html ?
 	 * @return string
 	 */
-	public static function format_prop_poll(\Program\Data\Poll $poll, $prop_value) {
+	public static function format_prop_poll(\Program\Data\Poll $poll, $prop_value, $tohtml = true) {
 		if ($poll->type == "date") {
 			$values = explode ( ' - ', $prop_value );
 			$time = strtotime ( $values [0] );
-			$month = Localization::g ( date ( "F", $time ) );
-			$day = Localization::g ( date ( "l", $time ) );
+			$month = Localization::g ( date ( "F", $time ), $tohtml );
+			$day = Localization::g ( date ( "l", $time ), $tohtml );
 			$d = date ( "d", $time );
 			$year = date ( "Y", $time );
 			$hour = date ( "H", $time );

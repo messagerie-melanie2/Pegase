@@ -128,6 +128,8 @@ $labels['Congratulation, your poll is now created'] = 'Félicitations, votre son
 $labels['You can now share this url with your friend'] = 'Vous pouvez désormais partager l\'url ci-dessous avec vos contacts : ';
 $labels['You can modify the poll by clicking '] = 'Vous pouvez modifier le sondage en cliquant ';
 $labels['You can see the poll by clicking '] = 'Vous pouvez voir le sondage en cliquant ';
+$labels['Attention, you have not respond to the poll '] = 'Attention, vous n\'avez pas encore répondu au sondage ';
+$labels['clic here to respond'] = 'cliquez ici pour répondre';
 $labels['You have to put a title for the poll'] = 'Vous devez saisir un titre pour le sondage';
 $labels['here'] = 'ici';
 $labels['See the poll'] = 'Voir le sondage';
@@ -256,7 +258,7 @@ $labels['This proposals is already in your calendar'] = "Cette proposition est d
 $labels['Your email'] = "Votre adresse e-mail";
 $labels['Email address'] = "Adresse e-mail";
 $labels['Put your email if you want to received notifications'] = "Saisissez votre adresse email si vous souhaitez recevoir les notifications";
-$labels['Do you want to send a message to the attendees ?'] = "Souhaitez-vous envoyer un message de notification aux participants du sondage ?";
+$labels['Do you want to send a message to the attendees ?'] = "Souhaitez-vous envoyer un message de notification aux participants du sondage ? <br><br>Attention : pensez à renvoyer votre message d'invitation aux personnes n'ayant pas répondu à ce sondage pour les avertir de la date retenue.";
 $labels['Your freebusy'] = "Vos disponibilités";
 $labels['Your freebusy title'] = "Liste de vos disponibilités basées sur votre agenda personnel";
 $labels['None'] = "Libre";
@@ -285,6 +287,9 @@ $labels['Validate your presence'] = "Confirmez votre présence";
 $labels['Organizer has validate one or more date, you can now say if you be there or not'] = "L'organisateur du sondage a validé une ou plusieurs date(s). Vous pouvez désormais confirmer ou non votre présence pour cette/ces date(s) :";
 $labels['I\'ll be there'] = "Je serai présent";
 $labels['I\'ll not be there'] = "Je ne serai pas présent";
+$labels['Choose the calendar to use'] = "Choisissez quel agenda utiliser pour la réponse";
+$labels['created by'] = 'créé par';
+$labels['Keep date'] = 'Date retenue';
 // Date information
 $labels['Start'] = 'Début';
 $labels['End'] = 'Fin';
@@ -339,7 +344,7 @@ $labels['Load freebusy...'] = 'Chargement de vos disponibilités';
 $labels['Loading your events...'] = 'Chargement des événements de votre agenda...';
 $labels['Deleting tentatives...'] = "Suppression des provisoires...";
 // Copyright
-$labels['copyright'] = 'METL/MEDDE PNE annuaire et messagerie';
+$labels['copyright'] = 'MEEM/MLHD - PNE annuaire et messagerie';
 // Mail
 $labels['Mail sent by a robot'] = "Ne répondez pas à ce message, il est envoyé automatiquement par un robot.\r\nSi vous avez des difficultés d'utilisation de l'application, vous pouvez vous rapprocher de votre cellule informatique.";
 $labels['Create poll mail subject'] = "%%app_name%% : Le sondage « %%poll_title%% » vient d'être créé";

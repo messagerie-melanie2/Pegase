@@ -120,7 +120,7 @@ class Edit_end extends Template {
       }
       elseif (o::get_env("action") != ACT_NEW) {
         // Envoi du message de notification
-        if ($send_notification) {
+        if (isset($send_notification) && $send_notification) {
           \Program\Lib\Mail\Mail::SendModifyProposalsNotificationMail(\Program\Data\Poll::get_current_poll(), $new_proposals, $deleted_proposals);
         }
         // Suppression des tentatives pour un sondage de date

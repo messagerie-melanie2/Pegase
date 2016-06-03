@@ -409,8 +409,13 @@ class Pegase extends \Program\Drivers\Driver {
    * @return true si ok, false sinon
    */
   function addPollUserResponse(\Program\Data\Response $response) {
-    $query = "INSERT INTO responses (user_id, poll_id, response) VALUES (:user_id, :poll_id, :response);";
-    $params = ["user_id" => $response->user_id,"poll_id" => $response->poll_id,"response" => $response->response];
+    $query = "INSERT INTO responses (user_id, poll_id, response, settings) VALUES (:user_id, :poll_id, :response, :settings);";
+    $params = [
+            "user_id" => $response->user_id,
+            "poll_id" => $response->poll_id,
+            "response" => $response->response,
+            "settings" => isset($response->settings) ? $response->settings : "",
+    ];
     // Execution de la requête
     return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params);
   }

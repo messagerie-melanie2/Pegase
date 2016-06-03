@@ -712,12 +712,8 @@ class Show extends Template {
           $value = false;
           $class = "prop_refused";
         }
-        // Gestion de la vue mobile
-        if (o::get_env("mobile"))
-          $br = '';
-        else
-          $br = \Program\Lib\HTML\html::tag('br');
-        self::$table->add(array("title" => $prop_value,"class" => "$class prop_change customtooltip_bottom","align" => "center"), $checkbox->show($value, ['value' => $prop_value,'id' => "id$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "id$prop_value"], Localization::g('Yes')) . $br . $checkbox->show($value, ['value' => "$prop_value:if_needed",'id' => "idif_needed$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed$prop_value"], Localization::g('If needed')) . $br . $checkbox->show($value, ['value' => false,'id' => "iddeclined$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined$prop_value"], Localization::g('No')));
+        $br = '';
+        self::$table->add(array("title" => $prop_value,"class" => "$class prop_change customtooltip_bottom","align" => "center"), $checkbox->show($value, ['value' => $prop_value,'id' => "id$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "id$prop_value", 'class' => 'radio_label label_yes'], Localization::g('Yes')) . $br . $checkbox->show($value, ['value' => "$prop_value:if_needed",'id' => "idif_needed$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed$prop_value", 'class' => 'radio_label label_if_needed'], Localization::g('If needed')) . $br . $checkbox->show($value, ['value' => false,'id' => "iddeclined$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined$prop_value", 'class' => 'radio_label label_no'], Localization::g('No')));
       }
       else {
         $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check_$prop_key","name" => "check_$prop_key","value" => "$prop_value"));
@@ -799,13 +795,9 @@ class Show extends Template {
           $value = false;
           $class = "prop_refused";
         }
-        // Gestion de la vue mobile
-        if (o::get_env("mobile"))
-          $br = '';
-        else
-          $br = \Program\Lib\HTML\html::tag('br');
-          // Ajout des boutons radio
-        self::$table->add(array("title" => $prop_value,"class" => "$class prop_change customtooltip_bottom","align" => "center"), $checkbox->show($value, ['value' => $prop_value,'id' => "id$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "id$prop_value"], Localization::g('Yes')) . $br . $checkbox->show($value, ['value' => "$prop_value:if_needed",'id' => "idif_needed$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed$prop_value"], Localization::g('If needed')) . $br . $checkbox->show($value, ['value' => false,'id' => "iddeclined$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined$prop_value"], Localization::g('No')));
+        $br = '';
+        // Ajout des boutons radio
+        self::$table->add(array("title" => $prop_value,"class" => "$class prop_change customtooltip_bottom","align" => "center"), $checkbox->show($value, ['value' => $prop_value,'id' => "id$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "id$prop_value", 'class' => 'radio_label label_yes'], Localization::g('Yes')) . $br . $checkbox->show($value, ['value' => "$prop_value:if_needed",'id' => "idif_needed$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed$prop_value", 'class' => 'radio_label label_if_needed'], Localization::g('If needed')) . $br . $checkbox->show($value, ['value' => false,'id' => "iddeclined$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined$prop_value", 'class' => 'radio_label label_no'], Localization::g('No')));
       }
       else {
         $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check_$prop_key","name" => "check_$prop_key","value" => "$prop_value"));
@@ -989,13 +981,9 @@ class Show extends Template {
           $value = false;
           $class = "prop_refused";
         }
-        // Gestion de la vue mobile
-        if (o::get_env("mobile"))
-          $br = '';
-        else
-          $br = \Program\Lib\HTML\html::tag('br');
-          // Ajout des boutons radio
-        self::$table->add(array("title" => $prop_value,"class" => "$class","align" => "center"), $checkbox->show($value, ['value' => $prop_value,'id' => "id" . $response->user_id . "--$prop_key"]) . \Program\Lib\HTML\html::label(['for' => "id" . $response->user_id . "--$prop_key"], Localization::g('Yes')) . $br . $checkbox->show($value, ['value' => "$prop_value:if_needed",'id' => "idif_needed" . $response->user_id . "--$prop_key"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed" . $response->user_id . "--$prop_key"], Localization::g('If needed')) . $br . $checkbox->show($value, ['value' => false,'id' => "iddeclined" . $response->user_id . "--$prop_key"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined" . $response->user_id . "--$prop_key"], Localization::g('No')));
+        $br = '';
+        // Ajout des boutons radio
+        self::$table->add(array("title" => $prop_value,"class" => "$class","align" => "center"), $checkbox->show($value, ['value' => $prop_value,'id' => "id" . $response->user_id . "--$prop_key"]) . \Program\Lib\HTML\html::label(['for' => "id" . $response->user_id . "--$prop_key", 'class' => 'radio_label label_yes'], Localization::g('Yes')) . $br . $checkbox->show($value, ['value' => "$prop_value:if_needed",'id' => "idif_needed" . $response->user_id . "--$prop_key"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed" . $response->user_id . "--$prop_key", 'class' => 'radio_label label_if_needed'], Localization::g('If needed')) . $br . $checkbox->show($value, ['value' => false,'id' => "iddeclined" . $response->user_id . "--$prop_key"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined" . $response->user_id . "--$prop_key", 'class' => 'radio_label label_no'], Localization::g('No')));
       }
       else {
         $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check--" . $response->user_id . "--$prop_key","name" => "check--" . $response->user_id . "--$prop_key","value" => "$prop_value"));
@@ -1033,13 +1021,9 @@ class Show extends Template {
     foreach (self::$proposals as $prop_key => $prop_value) {
       if (\Program\Data\Poll::get_current_poll()->if_needed) {
         $checkbox = new \Program\Lib\HTML\html_radiobutton(array("id" => "check_$prop_key","name" => "check_$prop_key"));
-        // Gestion de la vue mobile
-        if (o::get_env("mobile"))
-          $br = '';
-        else
-          $br = \Program\Lib\HTML\html::tag('br');
-          // Ajout des boutons radio
-        self::$table->add(array("title" => $prop_value,"class" => "prop_not_responded prop_change customtooltip_bottom","align" => "center"), $checkbox->show('', ['value' => $prop_value,'id' => "id$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "id$prop_value"], Localization::g('Yes')) . $br . $checkbox->show('', ['value' => "$prop_value:if_needed",'id' => "idif_needed$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed$prop_value"], Localization::g('If needed')) . $br . $checkbox->show('', ['value' => false,'id' => "iddeclined$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined$prop_value"], Localization::g('No')));
+        $br = '';
+        // Ajout des boutons radio
+        self::$table->add(array("title" => $prop_value,"class" => "prop_not_responded prop_change customtooltip_bottom","align" => "center"), $checkbox->show('', ['value' => $prop_value,'id' => "id$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "id$prop_value", 'class' => 'radio_label label_yes'], Localization::g('Yes')) . $br . $checkbox->show('', ['value' => "$prop_value:if_needed",'id' => "idif_needed$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed$prop_value", 'class' => 'radio_label label_if_needed'], Localization::g('If needed')) . $br . $checkbox->show('', ['value' => false,'id' => "iddeclined$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined$prop_value", 'class' => 'radio_label label_no'], Localization::g('No')));
       }
       else {
         $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check_$prop_key","name" => "check_$prop_key","value" => "$prop_value"));

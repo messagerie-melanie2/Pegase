@@ -659,9 +659,14 @@ function save_from_freebusy(args) {
           $(this).attr('checked', 'checked');
           $(this).parent().css('background-color', '#E4EBF5');
         }
+        else {
+          $(this).attr('checked', false);
+          $(this).parent().css('background-color', '#FFF');
+        }
       });
     }
-    tr.html(tr.html());
+    refresh_tr_html(tr);
+    // Ne pas valider automatiquement le formulaire
     //$("#proposals_form").submit();
   });
 }
@@ -778,7 +783,7 @@ function check_all(args) {
     if (tr.hasClass('prop_row_new_response')) {
       tr.find('td.prop_not_responded').css('background-color', '#E4EBF5');
     }
-    tr.html(tr.html());
+    refresh_tr_html(tr);
   });
 }
 /**
@@ -791,7 +796,7 @@ function uncheck_all(args) {
     if (tr.hasClass('prop_row_new_response')) {
       tr.find('td.prop_not_responded').css('background-color', '#ffffff');
     }
-    tr.html(tr.html());
+    refresh_tr_html(tr);
   });
 }
 /**
@@ -809,7 +814,7 @@ function yes_to_all(args) {
         $(this).attr('checked', false);
       }
     });
-    tr.html(tr.html());
+    refresh_tr_html(tr);
   });
 }
 /**
@@ -827,7 +832,7 @@ function if_needed_to_all(args) {
         $(this).attr('checked', false);
       }
     });
-    tr.html(tr.html());
+    refresh_tr_html(tr);
   });
 }
 /**
@@ -844,6 +849,12 @@ function no_to_all(args) {
         $(this).attr('checked', false);
       }
     });
-    tr.html(tr.html());
+    refresh_tr_html(tr);
   });
+}
+
+function refresh_tr_html(tr) {
+  var val = tr.find("#select_calendar_new_response").val();
+  tr.html(tr.html());
+  tr.find("#select_calendar_new_response").val(val);
 }

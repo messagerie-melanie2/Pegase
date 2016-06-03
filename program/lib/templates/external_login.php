@@ -47,8 +47,8 @@ class External_Login extends Template {
   public static function Process() {
     // Passage en version mobile
     Main::MobileVersion();
-    $username = trim(strtolower(Request::getInputValue("username", POLL_INPUT_GPC)));
-    $password = Request::getInputValue("password", POLL_INPUT_GPC);
+    $username = trim(strtolower(Request::getInputValue("username", POLL_INPUT_GPC, true)));
+    $password = Request::getInputValue("password", POLL_INPUT_GPC, true);
     if (isset($username) && isset($password)) {
       if (\Program\Drivers\Driver::get_driver()->authenticate($username, $password)) {
         Session::setUsername($username);
@@ -65,6 +65,7 @@ class External_Login extends Template {
       }
       else {
         \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "External_Login::Process() Bad login for user $username");
+        sleep(5);
         return false;
       }
     }

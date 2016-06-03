@@ -37,7 +37,7 @@ use Program\Data\Poll as p;
         <div><?= l::g('You can now share this url with your friend') ?></div>
         <?= e::GetPublicUrl() ?>
         <br><br>
-        <div><?= l::g('You can see the poll by clicking ') ?><a href="<?= o::url(null, null, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('here') ?></a></div>
+        <div><?= l::g('Attention, you have not respond to the poll ') ?><a href="<?= o::url(null, null, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('clic here to respond') ?></a></div>
         <div><?= l::g('You can modify the poll by clicking ') ?><a href="<?= o::url("edit", ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('here') ?></a></div>
         <br>
         <div id="notify_attendees">
