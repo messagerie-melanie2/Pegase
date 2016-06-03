@@ -12,27 +12,29 @@ Les données de sondage sont stockées dans une base de données PostgreSQL et l
 Version
 -------
 
-Version 0.9.1
-Build 1505061856
-https://github.com/messagerie-melanie2/Pegase/releases/tag/v0.9.1
+Version 1.1
+Build 1606031654
 
 Pré-requis
 ------------
 
-Un serveur Web (Apache ou autre)
-PHP 5.3 ou suppérieur
-php5-memcache
-php5-pgsql
-php5-ldap
-php5-mcrypt
+- Un serveur Web (Apache ou autre)
+- PHP 5.4 ou supérieur
+- php5-memcache
+- php5-pgsql ou php5-mysql ou php5-sqlite
+- php5-ldap (si auth LDAP)
+- php5-mcrypt
 
 Configuration
 -------------
 
-Configuration de l'application dans config/default/ihm.php
-Configuration du serveur LDAP dans config/default/ldap.php
-Configuration du serveur SQL dans config/default/sql.php
-Configuration des logs dans config/default/sql.php
+La configuration se trouve dans le dossier config/.
+Par défault, Pégase utilise les fichiers 'default' de cette configuration. Pour modifier le choix de la configuration (possibilité d'avoir plusieurs configurations prod, preprod, dev, ...) il faut éditer le fichier config/env.php. Il est possible d'externaliser la configuration (ex dans /etc/pegase) en modifiant la valeur de CONFIGURATION_TYPE_PEGASE à TYPE_EXTERNAL_PEGASE.
+
+- Configuration de l'application dans config/default/ihm.php
+- Configuration du serveur LDAP dans config/default/ldap.php
+- Configuration du serveur SQL dans config/default/sql.php
+- Configuration des logs dans config/default/sql.php
 
 Si driver personnalisé, configuration du driver dans config/default/driver.php
 
