@@ -57,6 +57,10 @@ use Program\Data\User as u;
             <h4><?= l::g('List of polls you have responded') ?></h4>
             <?= m::GetUserRespondedPolls() ?>
         </div>
+        <div id="listyourdeletedpolls">
+            <h3><?= l::g('List of your deleted polls') ?></h3>
+            <?= m::GetUserDeletedPolls() ?>
+        </div>
         <br>
     </div>
 <?php t::inc('copyright') ?>

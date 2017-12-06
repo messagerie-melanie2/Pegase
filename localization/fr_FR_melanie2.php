@@ -29,7 +29,7 @@ $labels['Log-in to create new poll and list all your polls'] = 'Connectez-vous a
 
 $labels['Select dates by clicking in the calendar'] = 'Sélectionnez des dates en cliquant dans le calendrier ci-dessous. Vous pouvez les créer sur plusieurs jours en vue Mois ou sur une plage horaire en vue Semaine/Jour. Chaque date peut être déplacée en glissant/déposant et supprimée en cliquant sur la croix blanche. Cliquez sur "Afficher votre agenda" pour visualiser votre agenda Mélanie2 par défaut.';
 
-$labels['Login, to respond with your account'] = 'Connectez-vous pour répondre avec votre compte Mélanie2';
+$labels['Login, to respond with your account'] = 'Répondez avec votre compte Mélanie2';
 
 $labels['Clic to connect and respond with your account'] = 'Cliquez ici pour vous connecter et répondre au sondage avec votre compte Mélanie2';
 

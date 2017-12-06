@@ -50,8 +50,8 @@ use Program\Data\User as u;
                     	<label style="width: 35%;"><?= l::g('URL to the poll') ?> : </label>
                     	<?= e::GetPublicUrl(true) ?>
                     </div>
-                    <?php if (\Program\Data\Poll::get_current_poll()->auth_only
-	                            && !\Program\Data\User::isset_current_user()) { ?>
+                    <?php if (p::get_current_poll()->auth_only
+	                            && !u::isset_current_user()) { ?>
                         <div class="pure-control-group">
                             <label style="width: 35%;"> <?= l::g('Last modification time') ?> </label> <?= o::date_format(strtotime(p::get_current_poll()->modified)) ?>
                         </div>
@@ -61,7 +61,7 @@ use Program\Data\User as u;
                         	<?php if (u::isset_current_user() && o::get_env("poll_organizer")->user_id == u::get_current_user()->user_id) {?>
                         	    <b><?= o::tohtml(l::g('You')) ?></b>
                         	<?php } else {?>
-                        	    <?php if (!\Program\Data\User::isset_current_user()) { ?>
+                        	    <?php if (!u::isset_current_user()) { ?>
                         	        <b><?= o::tohtml(s::AnonymName(o::get_env("poll_organizer")->fullname)) ?></b>
                         	    <?php } else { ?>
                         	        <b><?= o::tohtml(o::get_env("poll_organizer")->fullname) ?></b>
@@ -81,10 +81,16 @@ use Program\Data\User as u;
                         	<label style="width: 35%;"><?= l::g('This poll is anonyme, user cannot see others responses until the poll is lock') ?></label>
                         </div>
                     <?php } ?>
+                    <?php if (p::get_current_poll()->deleted) { ?>
+                        <div class="pure-control-group">
+                        	<label style="width: 35%;"><?= l::g('This poll is deleted') ?></label>
+                        </div>
+                    <?php } ?>
                     <br>
                 </div>
-                <?php if (!\Program\Data\Poll::get_current_poll()->auth_only
-	                            || \Program\Data\User::isset_current_user()) { ?>
+                <?php if ((!p::get_current_poll()->auth_only
+	                            || u::isset_current_user())
+                          && !p::get_current_poll()->deleted) { ?>
                     <?php if (!empty(p::get_current_poll()->location)) {?>
                     <div class="pure-control-group">
                     	<label style="width: 35%;"><b><?= l::g('Edit location') ?> : </b></label>
@@ -121,7 +127,7 @@ use Program\Data\User as u;
 <div class="dialog_popup" id="lock_poll_popup" title="<?= l::g('Lock the poll') ?>">
 	<div class="dialog_popup_content">
 		<div><?= l::g('Remember to lock the poll when it\'s finished') ?></div>
-		<?php if (\Program\Data\Poll::get_current_poll()->type == 'date') { ?>
+		<?php if (p::get_current_poll()->type == 'date') { ?>
 			<div><?= l::g('So you can create the meeting') ?></div>
 		<?php } ?>
 		<div><a title="<?= l::g("Clic here to lock the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" href="<?= o::url(null, ACT_LOCK, array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><img alt="Lock" src="skins/<?= o::get_env("skin") ?>/images/1395932256_link-01_white.png" height="12px"/> <?= l::g('Clic here to lock the poll') ?></a></div>

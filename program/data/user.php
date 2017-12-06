@@ -43,6 +43,7 @@ use \Program\Lib\Request\Session as Session;
  * @property string $preferences Préférences de l'utilisateur sérialisées
  * @property int $auth Est-ce que l'utilisateur est authentifié ou non
  * @property string $freebusy_url URL de freebusy de l'utilisateur
+ * @property boolean $is_cerbere Est-ce que cet utilisateur a été créé par Cerbère
  *
  * @package Data
  */
@@ -106,30 +107,59 @@ class User extends Object {
         return isset(self::$current_user);
     }
     /**
-     * Positionne la valeur de paramètre $freebusy_url depuis les settings de l'utilisateur
+     * Positionne la valeur de paramètre $freebusy_url depuis les preferences de l'utilisateur
      * @param string $freebusy_url
      * @return boolean
      */
     protected function __set_freebusy_url($freebusy_url) {
-      $settings = unserialize($this->settings);
-      if ($settings === false) {
-        $settings = array();
+      $preferences = unserialize($this->preferences);
+      if ($preferences === false) {
+        $preferences = array();
       }
-      $settings['freebusy_url'] = $freebusy_url;
-      $this->settings = serialize($settings);
+      $preferences['freebusy_url'] = $freebusy_url;
+      $this->preferences = serialize($preferences);
       return true;
     }
     /**
-     * Retourne la valeur de paramètre $freebusy_url depuis les settings de l'utilisateur
+     * Retourne la valeur de paramètre $freebusy_url depuis les preferences de l'utilisateur
      * @return string
      */
-    protected function __get_auth_only() {
-      $settings = unserialize($this->settings);
-      if ($settings === false) {
-        $settings = array();
+    protected function __get_freebusy_url() {
+      $preferences = unserialize($this->preferences);
+      if ($preferences === false) {
+        $preferences = array();
       }
-      if (isset($settings['freebusy_url']))
-        return $settings['freebusy_url'];
+      if (isset($preferences['freebusy_url']))
+        return $preferences['freebusy_url'];
+      else
+        // Valeur par défaut
+        return null;
+    }
+    /**
+     * Positionne la valeur de paramètre $is_cerbere depuis les preferences de l'utilisateur
+     * @param boolean $is_cerbere
+     * @return boolean
+     */
+    protected function __set_is_cerbere($is_cerbere) {
+      $preferences = unserialize($this->preferences);
+      if ($preferences === false) {
+        $preferences = array();
+      }
+      $preferences['is_cerbere'] = $is_cerbere;
+      $this->preferences = serialize($preferences);
+      return true;
+    }
+    /**
+     * Retourne la valeur de paramètre $is_cerbere depuis les preferences de l'utilisateur
+     * @return boolean
+     */
+    protected function __get_is_cerbere() {
+      $preferences = unserialize($this->preferences);
+      if ($preferences === false) {
+        $preferences = array();
+      }
+      if (isset($preferences['is_cerbere']))
+        return $preferences['is_cerbere'];
       else
         // Valeur par défaut
         return false;

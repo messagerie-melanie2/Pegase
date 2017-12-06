@@ -5,7 +5,8 @@
 	.pure-button-unvalidate-prop, .pure-button-edit-poll,
 	.pure-button-see-poll, .pure-button-new-poll, .pure-button-modify-poll,
 	.pure-button-light-red, .pure-button-delete, .pure-button-delete-date,
-	.pure-button-poll, .pure-button-connect-with-account, .pure-button-help,
+	.pure-button-poll, .pure-button-connect-with-account, .pure-button-connect-with-cerbere, 
+	.pure-button-help,
 	.pure-button-calendar-accept-text, .pure-button-calendar-decline-text {
 	color: white !important;
 	border-radius: 2px;
@@ -40,6 +41,11 @@
 	background: #336699; /* this is a  blue */
 }
 
+.pure-button-connect-with-cerbere {
+	background: #476583; /* this is a  blue */
+}
+
+.pure-button-connect-with-cerbere img,
 .pure-button-connect-with-account img {
 	margin-right: 5px;
 	float: left;

@@ -556,3 +556,7 @@ h1 {
 	font-size: 12px;
 	color: #333;
 }
+a.showmore {
+	font-size: 70%;
+	margin-top: 10px;
+}

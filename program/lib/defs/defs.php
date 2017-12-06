@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 /* Récupération de la version depuis le fichier */
-define('VERSION', '1.0.5');
-define('BUILD', '1702131754');
+define('VERSION', '1.0.6');
+define('BUILD', '170523165754');
 
 // framework constants
 define('POLL_CHARSET', 'UTF-8');
@@ -57,10 +57,13 @@ define('ACT_MODIFY_ALL','modify_all');
 define('ACT_LOCK','lock');
 define('ACT_UNLOCK','unlock');
 define('ACT_DELETE','delete');
+define('ACT_ERASE','erase');
+define('ACT_RESTORE','restore');
 define('ACT_DELETE_RESPONSE','delete_response');
 define('ACT_MOBILE','mobile');
 define('ACT_DESKTOP','desktop');
 define('ACT_DOWNLOAD_ICS','download_ics');
+define('ACT_DOWNLOAD_CSV','download_csv');
 define('ACT_ADD_CALENDAR','add_calendar');
 define('ACT_ADD_TENTATIVE_CALENDAR','add_tentative_calendar');
 define('ACT_VALIDATE_PROP','validate_prop');

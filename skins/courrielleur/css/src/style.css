@@ -483,6 +483,9 @@ h1 {
 	background: url("../../images/buttons.png") no-repeat scroll -100px 0px transparent;
     background-position: center -690px;
 }
+.toolbar a.button.exportpoll {
+    background: url("../../images/exportpoll.png") no-repeat scroll center -3px transparent;
+}
 .poll__list_element {
 	margin-top: 10px;
 }
@@ -545,4 +548,8 @@ h1 {
   font-family: "Lucida Grande",Verdana,Arial,Helvetica,sans-serif;
   font-size: 12px;
   color: #333;
+}
+a.showmore {
+	font-size: 70%;
+	margin-top: 10px;
 }

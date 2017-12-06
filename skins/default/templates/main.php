@@ -49,6 +49,10 @@ use Program\Lib\Templates\Main as m;
             <h3><?= l::g('List of polls you have responded') ?></h3>
             <?= m::GetUserRespondedPolls() ?>
         </div>
+        <div id="listyourdeletedpolls">
+            <h3><?= l::g('List of your deleted polls') ?></h3>
+            <?= m::GetUserDeletedPolls() ?>
+        </div>
         <br>
     </div>
     <?php t::inc('copyright') ?>

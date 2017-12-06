@@ -43,11 +43,25 @@ class Logout {
 	 */
 	public static function Process() {
 	  $username = \Program\Lib\Request\Session::getUsername();
-	    // Destruction de la session
-		\Program\Lib\Request\Session::destroy();
-		// Redirection vers la connexion
-		header('Location: ' . (isset(\Config\IHM::$LOGIN_URL) ? \Config\IHM::$LOGIN_URL : '?_p=login'));
-		\Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "Logout::Process() Logout for user $username");
-		exit();
+	    
+	  if (\Config\IHM::$USE_CERBERE && \Program\Lib\Request\Session::get('SSO') == 'Cerbere') {
+		  // Destruction de la session
+		  \Program\Lib\Request\Session::destroy();
+		  
+		  // Redirection vers la deconnexion Cerbere
+		  header('Location: ' . \Api\SSO\SSO::get_sso('Cerbere')->getLogoutUrl());
+		  \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "Logout::Process() Logout from Cerbere for user $username");
+		  exit();
+		}
+		else {
+		  // Destruction de la session
+		  \Program\Lib\Request\Session::destroy();
+		  
+		  // Redirection vers la connexion
+		  header('Location: ' . (isset(\Config\IHM::$LOGIN_URL) ? \Config\IHM::$LOGIN_URL : '?_p=login'));
+		  \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "Logout::Process() Logout for user $username");
+		  exit();
+		}
+		
 	}
 }

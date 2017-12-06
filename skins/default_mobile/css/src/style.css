@@ -278,4 +278,7 @@ h3 {
 .hidden {
     display: none;
 }
-
+a.showmore {
+	font-size: 70%;
+	margin-top: 10px;
+}

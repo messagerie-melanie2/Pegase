@@ -21,14 +21,10 @@
  */
 namespace Program\Lib\Event\Drivers\Melanie2;
 
-// Configuration du nom de l'application pour l'ORM
-if (! defined('CONFIGURATION_APP_LIBM2')) {
-  define('CONFIGURATION_APP_LIBM2', 'roundcube');
-}
-// Inclusion de l'ORM
-include_once 'includes/libm2.php';
-
-use LibMelanie\Api as Api, Program\Lib\Request\Output as Output, Program\Lib\Request\Request as Request, Program\Lib\Request\Localization as Localization;
+use LibMelanie\Api as Api, 
+  Program\Lib\Request\Output as Output, 
+  Program\Lib\Request\Request as Request, 
+  Program\Lib\Request\Localization as Localization;
 
 /**
  * Classe pour le driver de gestion des évènements
@@ -118,6 +114,10 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver {
       else {
         return [];
       }
+    }
+    // Utilisateur Cerbère
+    if ($user->is_cerbere) {
+      return parent::get_user_freebusy($start, $end, $user, $calendar);
     }
 
     if (! isset(self::$user) || self::$user->uid != $user->username) {

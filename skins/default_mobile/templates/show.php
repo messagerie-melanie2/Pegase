@@ -41,7 +41,8 @@ use Program\Data\User as u;
       <h6> </h6>
       <?php if (p::isset_current_poll()
                     && u::isset_current_user()
-                    && p::get_current_poll()->organizer_id == u::get_current_user()->user_id) { ?>
+                    && p::get_current_poll()->organizer_id == u::get_current_user()->user_id
+                    && !p::get_current_poll()->deleted) { ?>
   		  <a href="#manage-poll-left-panel" data-icon="gear" class="ui-mini ui-btn-left">Menu</a>
   		<?php } ?>
       <?php if (u::isset_current_user()) { ?>
@@ -57,7 +58,8 @@ use Program\Data\User as u;
   	<div data-role="panel" data-position-fixed="true" data-display="push" data-theme="b" id="manage-poll-left-panel">
          <?php if (p::isset_current_poll()
                     && u::isset_current_user()
-                    && p::get_current_poll()->organizer_id == u::get_current_user()->user_id) { ?>
+                    && p::get_current_poll()->organizer_id == u::get_current_user()->user_id
+                    && !p::get_current_poll()->deleted) { ?>
               <h2>Menu</h2>
               <ul data-role="listview">
                 <li><a id="button_edit_poll" title="<?= l::g("Clic to edit the poll", false) ?>" class="pure-button-edit-poll" href="<?= o::url("edit", ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('Modify poll') ?></a></li>
@@ -84,13 +86,13 @@ use Program\Data\User as u;
                 <br>
               	<label><?= l::g('URL to the poll') ?> : <?= e::GetPublicUrl() ?></label>
               	<br>
-                <?php if (!\Program\Data\Poll::get_current_poll()->auth_only
-	                            || \Program\Data\User::isset_current_user()) { ?>
+                <?php if (!p::get_current_poll()->auth_only
+	                            || u::isset_current_user()) { ?>
                   	<label><?= l::g('Created by') ?>
                     	<?php if (u::isset_current_user() && o::get_env("poll_organizer")->user_id == u::get_current_user()->user_id) {?>
                     	    <b><?= o::tohtml(l::g('You')) ?></b>
                     	<?php } else {?>
-                    	    <?php if (!\Program\Data\User::isset_current_user()) { ?>
+                    	    <?php if (!u::isset_current_user()) { ?>
                     	        <b><?= o::tohtml(s::AnonymName(o::get_env("poll_organizer")->fullname)) ?></b>
                     	    <?php } else { ?>
                     	        <b><?= o::tohtml(o::get_env("poll_organizer")->fullname) ?></b>
@@ -106,8 +108,12 @@ use Program\Data\User as u;
                 <?php if (p::get_current_poll()->anonymous) { ?>
                   <label><i><?= l::g('This poll is anonyme, user cannot see others responses until the poll is lock') ?></i></label>
                 <?php } ?>
-                <?php if (!\Program\Data\Poll::get_current_poll()->auth_only
-	                            || \Program\Data\User::isset_current_user()) { ?>
+                <?php if (p::get_current_poll()->deleted) { ?>
+                  <label><i><?= l::g('This poll is deleted') ?></i></label>
+                <?php } ?>
+                <?php if ((!p::get_current_poll()->auth_only
+	                            || u::isset_current_user())
+                          && !p::get_current_poll()->deleted) { ?>
                     <?php if (!empty(p::get_current_poll()->location)) {?>
                       <br>
                     	<label><i><?= l::g('Edit location') ?> : </i></label>

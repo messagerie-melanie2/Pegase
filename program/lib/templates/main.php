@@ -73,10 +73,46 @@ class Main {
 				Output::set_env("error", "Invalid request");
 			}
 		}
+		elseif (Output::get_env("action") == ACT_ERASE
+		    && \Program\Data\Poll::isset_current_poll()
+		    && \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
+      $csrf_token = trim(strtolower(Request::getInputValue("_t", POLL_INPUT_GET)));
+      if (Session::validateCSRFToken($csrf_token)) {
+        if (\Program\Drivers\Driver::get_driver()->erasePoll(\Program\Data\Poll::get_current_poll()->poll_id)) {
+          Output::set_env("message", "Poll has been erased");
+        } else {
+          Output::set_env("error", "Error while erasing the poll");
+        }
+      } else {
+        Output::set_env("error", "Invalid request");
+      }
+		}
+		elseif (Output::get_env("action") == ACT_RESTORE
+		    && \Program\Data\Poll::isset_current_poll()
+		    && \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
+      $csrf_token = trim(strtolower(Request::getInputValue("_t", POLL_INPUT_GET)));
+      if (Session::validateCSRFToken($csrf_token)) {
+        if (\Program\Drivers\Driver::get_driver()->restorePoll(\Program\Data\Poll::get_current_poll()->poll_id)) {
+          Output::set_env("message", "Poll has been restored");
+        } else {
+          Output::set_env("error", "Error while restoring the poll");
+        }
+      } else {
+        Output::set_env("error", "Invalid request");
+      }
+		}
     // Ajout des labels
     Output::add_label(array(
         'Are you sure you want to delete the poll ?', 'Yes', 'No', 'Notify attendees',
+        'Are you sure you want to restore the poll ?', 'Are you sure you want to erase the poll ?',
+        'Show more...',
+        'Your X last polls', 'Last X polls that you have responded', 'Your X last deleted polls',
+        'All your polls', 'All your responded polls', 'Hide polls', 'All your deleted polls',
     ));
+    // Limite d'affichage du nombre de sondages
+    Output::set_env('max_own_polls', isset(\Config\IHM::$MAX_SHOW_OWN_POLLS) ? \Config\IHM::$MAX_SHOW_OWN_POLLS : 5);
+    Output::set_env('max_deleted_polls', isset(\Config\IHM::$MAX_SHOW_DELETED_POLLS) ? \Config\IHM::$MAX_SHOW_DELETED_POLLS: 2);
+    Output::set_env('max_resp_polls', isset(\Config\IHM::$MAX_SHOW_RESP_POLLS) ? \Config\IHM::$MAX_SHOW_RESP_POLLS : 10);
     self::MobileVersion();
 	}
 	/**
@@ -115,7 +151,7 @@ class Main {
 	        // Liste les sondages et génération des liens
     	    foreach($polls as $poll) {
     	        if (!Output::get_env("mobile")) {
-    	            $table->add_row();
+    	            $table->add_row(array("class" => "poll__list_element"));
     	            $table->add(array("style" => "padding-right: 10px;"), \Program\Lib\HTML\HTML::a(array("class" => "customtooltip_bottom", "title" => l::g('Clic to view the poll (Number of responses)', false), "href" => Output::url(null, null, array("u" => $poll->poll_uid), false)), $poll->title
     	                                . " (" . $poll->count_responses . ")"
     	                    ));
@@ -136,6 +172,42 @@ class Main {
     	        $html = $table->show();
 	    }
 	    return $html;
+	}
+	/**
+	 * Génération de la liste HTML permettant d'afficher les sondages supprimés de l'utilisateur
+	 * @return string
+	 */
+	public static function GetUserDeletedPolls() {
+	  $html = "";
+	  $polls = \Program\Drivers\Driver::get_driver()->listUserDeletedPolls(\Program\Data\User::get_current_user()->user_id);
+	  if (count($polls) == 0) {
+	    $html = \Program\Lib\HTML\HTML::div(array("class" => "nopoll"), l::g('No poll'));
+	  } else {
+	    if (!Output::get_env("mobile"))
+	      $table = new \Program\Lib\HTML\html_table(array("id" => "polls_table"));
+      // Liste les sondages et génération des liens
+      foreach($polls as $poll) {
+        if (!Output::get_env("mobile")) {
+          $table->add_row(array("class" => "poll__list_element"));
+          $table->add(array("style" => "padding-right: 10px;"), \Program\Lib\HTML\HTML::a(array("class" => "customtooltip_bottom", "title" => l::g('Clic to view the poll (Number of responses)', false), "href" => Output::url(null, null, array("u" => $poll->poll_uid), false)), $poll->title
+              . " (" . $poll->count_responses . ")"
+              ));
+          
+          $table->add(array("style" => "padding-right: 10px;"), \Program\Lib\HTML\HTML::a(array("class" => "pure-button pure-button-modify-poll button_restore_poll customtooltip_bottom", "title" => l::g('Clic to restore the poll', false), "href" => Output::url("main", ACT_RESTORE, array("u" => $poll->poll_uid, "t" => Session::getCSRFToken()), false)), \Program\Lib\HTML\HTML::img(array("alt" => "Restore", "src" => "skins/".Output::get_env("skin")."/images/1395836978_add_new_poll.png", "height" => "12px")) . " " . l::g('Restore poll')));
+          $table->add(array("style" => "padding-right: 10px;"), \Program\Lib\HTML\HTML::a(array("class" => "pure-button pure-button-modify-poll button_erase_poll customtooltip_bottom", "title" => l::g('Clic to erase the poll', false), "href" => Output::url("main", ACT_ERASE, array("u" => $poll->poll_uid, "t" => Session::getCSRFToken()), false)), \Program\Lib\HTML\HTML::img(array("alt" => "Erase", "src" => "skins/".Output::get_env("skin")."/images/1397492211_RecycleBin.png", "height" => "12px")) . " " . l::g('Erase poll')));
+        } else {
+          $html .= \Program\Lib\HTML\HTML::div(array("class" => "poll__list_element"),
+              \Program\Lib\HTML\HTML::a(array("title" => l::g('Clic to view the poll (Number of responses)', false), "href" => Output::url(null, null, array("u" => $poll->poll_uid), false)), $poll->title
+                  . " (" . $poll->count_responses . ")"
+                  ) .
+              ($poll->locked == 1 ? " (" . l::g('Locked') .")" : "")
+              );
+        }
+      }
+      if (!Output::get_env("mobile"))
+        $html = $table->show();
+	  }
+	  return $html;
 	}
 	/**
 	 * Génération de la liste HTML permettant d'afficher les sondages auquel l'utilisateur à répondu

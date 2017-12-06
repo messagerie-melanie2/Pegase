@@ -33,6 +33,7 @@ use Program\Lib\Templates\Show as s;
 use Program\Lib\Templates\Edit_end as e;
 use Program\Data\Poll as p;
 use Program\Data\User as u;
+use Api\SSO\SSO as sso;
 ?>
 <?php t::inc('head') ?>
 <body>
@@ -46,15 +47,20 @@ use Program\Data\User as u;
                 <h1><img alt="Find" src="skins/<?= o::get_env("skin") ?>/images/1395837531_aiga_information_bg_blue.png" height="23px"/> <?= o::tohtml(p::get_current_poll()->title) ?></h1>
             </div>
             <?php if (u::isset_current_user()
-                    && p::get_current_poll()->organizer_id == u::get_current_user()->user_id) { ?>
-                    <a id="button_edit_poll" title="<?= l::g("Clic to edit the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url("edit", ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="Modify" src="skins/<?= o::get_env("skin") ?>/images/1395932254_gear-01_white.png" height="12px"/> <?= l::g('Modify poll') ?></a>
-                    <a id="button_edit_prop_poll" title="<?= l::g("Clic to change poll proposals", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url("edit_".p::get_current_poll()->type, ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="List" src="skins/<?= o::get_env("skin") ?>/images/1395932290_list-01_white.png" height="12px"/> <?= l::g('Modify propositions') ?></a>
-                    <a id="button_modify_responses_poll" title="<?= l::g("Clic to change everybody responses", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url(null, ACT_MODIFY_ALL, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="Responses" src="skins/<?= o::get_env("skin") ?>/images/1395932292_grid-01_white.png" height="12px"/> <?= l::g('Modify responses') ?></a>
-                    <a id="button_lock_poll" title="<?= l::g("Clic to lock the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url(null, (p::get_current_poll()->locked == 0 ? ACT_LOCK : ACT_UNLOCK), array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><img alt="Lock" src="skins/<?= o::get_env("skin") ?>/images/1395932256_link-01_white.png" height="12px"/> <?= (p::get_current_poll()->locked == 0 ? l::g('Lock') : l::g('Unlock')) ?></a>
-                    <a id="button_delete_poll" title="<?= l::g("Clic to delete the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 16%;" href="<?= o::url("main", ACT_DELETE, array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><img alt="Delete" src="skins/<?= o::get_env("skin") ?>/images/1395836978_remove-01_white.png" height="12px"/> <?= l::g('Delete poll') ?></a>
+                    && p::get_current_poll()->organizer_id == u::get_current_user()->user_id
+                    && !p::get_current_poll()->deleted) { ?>
+                    <a id="button_edit_poll" title="<?= l::g("Clic to edit the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 12%;" href="<?= o::url("edit", ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="Modify" src="skins/<?= o::get_env("skin") ?>/images/1395932254_gear-01_white.png" height="12px"/> <?= l::g('Modify poll') ?></a>
+                    <a id="button_edit_prop_poll" title="<?= l::g("Clic to change poll proposals", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 15%;" href="<?= o::url("edit_".p::get_current_poll()->type, ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="List" src="skins/<?= o::get_env("skin") ?>/images/1395932290_list-01_white.png" height="12px"/> <?= l::g('Modify propositions') ?></a>
+                    <a id="button_modify_responses_poll" title="<?= l::g("Clic to change everybody responses", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 13%;" href="<?= o::url(null, ACT_MODIFY_ALL, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="Responses" src="skins/<?= o::get_env("skin") ?>/images/1395932292_grid-01_white.png" height="12px"/> <?= l::g('Modify responses') ?></a>
+                    <a id="button_lock_poll" title="<?= l::g("Clic to lock the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 14%;" href="<?= o::url(null, (p::get_current_poll()->locked == 0 ? ACT_LOCK : ACT_UNLOCK), array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><img alt="Lock" src="skins/<?= o::get_env("skin") ?>/images/1395932256_link-01_white.png" height="12px"/> <?= (p::get_current_poll()->locked == 0 ? l::g('Lock') : l::g('Unlock')) ?></a>
+                    <a id="button_delete_poll" title="<?= l::g("Clic to delete the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 14%;" href="<?= o::url("main", ACT_DELETE, array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><img alt="Delete" src="skins/<?= o::get_env("skin") ?>/images/1395836978_remove-01_white.png" height="12px"/> <?= l::g('Delete poll') ?></a>
+                    <a id="button_export_csv" title="<?= l::g("Clic to export in CSV", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" style="width: 4%;" href="<?= o::url(null, ACT_DOWNLOAD_CSV, array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><?= l::g('CSV') ?></a>
                     <br><br>
-            <?php } elseif (!u::isset_current_user()) { ?>
+            <?php } elseif (!u::isset_current_user() && !p::get_current_poll()->deleted) { ?>
                     <a class="pure-button pure-button-connect-with-account customtooltip_bottom" title="<?= l::g("Clic to connect and respond with your account") ?>" href="<?= o::url("login", null, array("poll" => p::get_current_poll()->poll_uid)) ?>"><img alt="Connect" src="skins/<?= o::get_env("skin") ?>/images/1395933029_user-01_white.png" height="20px"/> <?= l::g('Login, to respond with your account') ?></a>
+                    <?php if (\Config\IHM::$USE_CERBERE) { ?>
+                    	<a class="pure-button pure-button-connect-with-cerbere customtooltip_bottom" title="<?= l::g("Clic to connect and respond with your Cerbere account") ?>" href="<?= sso::get_sso('Cerbere')->getLoginUrl(null, p::get_current_poll()->poll_uid) ?>"><img alt="Connect" src="skins/<?= o::get_env("skin") ?>/images/1395933029_user-01_white.png" height="20px"/> <?= l::g('Login with cerbere to respond') ?></a>
+                    <?php } ?>
                     <br><br>
             <?php } ?>
             <div id="edit">
@@ -63,8 +69,8 @@ use Program\Data\User as u;
                     	<label style="width: 35%;"><?= l::g('URL to the poll') ?> : </label>
                     	<?= e::GetPublicUrl() ?>
                     </div>
-                    <?php if (\Program\Data\Poll::get_current_poll()->auth_only
-	                            && !\Program\Data\User::isset_current_user()) { ?>
+                    <?php if (p::get_current_poll()->auth_only
+	                            && !u::isset_current_user()) { ?>
                         <div class="pure-control-group">
                             <label style="width: 35%;"> <?= l::g('Last modification time') ?> </label> <?= o::date_format(strtotime(p::get_current_poll()->modified)) ?>
                         </div>
@@ -74,7 +80,7 @@ use Program\Data\User as u;
                         	<?php if (u::isset_current_user() && o::get_env("poll_organizer")->user_id == u::get_current_user()->user_id) {?>
                         	    <b><?= o::tohtml(l::g('You')) ?></b>
                         	<?php } else {?>
-                        	    <?php if (!\Program\Data\User::isset_current_user()) { ?>
+                        	    <?php if (!u::isset_current_user()) { ?>
                         	        <b><?= o::tohtml(s::AnonymName(o::get_env("poll_organizer")->fullname)) ?></b>
                         	    <?php } else { ?>
                         	        <b><?= o::tohtml(o::get_env("poll_organizer")->fullname) ?></b>
@@ -94,10 +100,16 @@ use Program\Data\User as u;
                         	<label style="width: 35%;"><?= l::g('This poll is anonyme, user cannot see others responses until the poll is lock') ?></label>
                         </div>
                     <?php } ?>
+                    <?php if (p::get_current_poll()->deleted) { ?>
+                        <div class="pure-control-group">
+                        	<label style="width: 35%;"><?= l::g('This poll is deleted') ?></label>
+                        </div>
+                    <?php } ?>
                     <br>
                 </div>
-                <?php if (!\Program\Data\Poll::get_current_poll()->auth_only
-	                            || \Program\Data\User::isset_current_user()) { ?>
+                <?php if ((!p::get_current_poll()->auth_only
+	                            || u::isset_current_user())
+                          && !p::get_current_poll()->deleted) { ?>
                     <?php if (!empty(p::get_current_poll()->location)) {?>
                     <div class="pure-control-group">
                     	<label style="width: 35%;"><b><?= l::g('Edit location') ?> : </b></label>
@@ -134,7 +146,7 @@ use Program\Data\User as u;
 <div class="dialog_popup" id="lock_poll_popup" title="<?= l::g('Lock the poll') ?>">
 	<div class="dialog_popup_content">
 		<div><?= l::g('Remember to lock the poll when it\'s finished') ?></div>
-		<?php if (\Program\Data\Poll::get_current_poll()->type == 'date') { ?>
+		<?php if (p::get_current_poll()->type == 'date') { ?>
 			<div><?= l::g('So you can create the meeting') ?></div>
 		<?php } ?>
 		<div><a title="<?= l::g("Clic here to lock the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" href="<?= o::url(null, ACT_LOCK, array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><img alt="Lock" src="skins/<?= o::get_env("skin") ?>/images/1395932256_link-01_white.png" height="12px"/> <?= l::g('Clic here to lock the poll') ?></a></div>

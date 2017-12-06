@@ -23,16 +23,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-include_once 'program/lib/defs/defs.php';
-include_once 'config/env.php';
+
+// Configuration du nom de l'application pour l'ORM
+if (! defined('CONFIGURATION_APP_LIBM2')) {
+  define('CONFIGURATION_APP_LIBM2', 'roundcube');
+}
+
+require_once 'program/lib/defs/defs.php';
+require_once 'config/env.php';
 
 // Chargement de la configuration en fonction de l'environnement
-include_once 'program/include/include_conf.php';
+require_once 'program/include/include_conf.php';
 
 // Utilisation d'un autoloader
 // http://fr.php.net/manual/fr/function.spl-autoload-register.php
-include_once 'program/include/autoload.php';
+require_once 'program/include/autoload.php';
 
 // Inclusion de la localisation
-include_once 'program/include/include_localization.php';
+require_once 'program/include/include_localization.php';
+
+// Charge les vendor
+require_once 'vendor/autoload.php';
 

@@ -124,7 +124,7 @@ class Show {
     // L'application doit elle enregistrer les événements dans l'agenda
     o::set_env("can_get_freebusy", \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_GET_FREEBUSY);
     o::set_env("can_generate_ics", \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_GENERATE_ICS);
-    o::set_env("can_write_calendar", \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_WRITE_CALENDAR);
+    o::set_env("can_write_calendar", \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_WRITE_CALENDAR && (!\Program\Data\User::isset_current_user() || !\Program\Data\User::get_current_user()->is_cerbere));
     // Ajout de la source de la requête si elle existe
     o::set_env("request_source", \Program\Lib\Request\Request::getInputValue("_s", POLL_INPUT_GET));
     // Ajout des labels
@@ -134,6 +134,10 @@ class Show {
     		&& \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_GENERATE_ICS
     		&& (\Program\Data\User::isset_current_user() || ! \Program\Data\Poll::get_current_poll()->auth_only)) {
       self::_action_download_ics();
+    }
+    elseif (o::get_env("action") == ACT_DOWNLOAD_CSV
+        && (\Program\Data\User::isset_current_user() || ! \Program\Data\Poll::get_current_poll()->auth_only)) {
+      self::_action_download_csv();
     }
     // Bloquer le modify all si on n'est pas organisateur
     if (o::get_env("action") == ACT_MODIFY_ALL && \Program\Data\User::isset_current_user() && \Program\Data\Poll::get_current_poll()->organizer_id != \Program\Data\User::get_current_user()->user_id) {
@@ -275,22 +279,23 @@ class Show {
       self::$user_responded = false;
       if (o::get_env("action") != ACT_MODIFY_ALL) {
         foreach (self::$responses as $response) {
-          if (\Program\Data\User::isset_current_user() && $response->user_id == \Program\Data\User::get_current_user()->user_id && \Program\Data\Poll::get_current_poll()->locked == 0) {
+          if (\Program\Data\User::isset_current_user() && $response->user_id == \Program\Data\User::get_current_user()->user_id) {
             self::$user_responded = true;
-            // Afficher les freebusy de l'utilisateur
-            self::view_user_freebusy();
-            // Réponse de l'utilisateur courant authentifié, si le sondage n'est pas locké
-            self::view_current_user_unlock_response($response);
+            if (\Program\Data\Poll::get_current_poll()->locked == 0) {
+              // Afficher les freebusy de l'utilisateur
+              self::view_user_freebusy();
+              // Réponse de l'utilisateur courant authentifié, si le sondage n'est pas locké
+              self::view_current_user_unlock_response($response);
+            }
+            else {
+              // Réponse de l'utilisateur
+              self::view_user_response($response);
+            }
             break;
           }
           elseif (Session::is_set("user_noauth_id") && Session::is_set("user_noauth_name") && Session::is_set("user_noauth_poll_id") && Session::get("user_noauth_id") == $response->user_id && Session::get("user_noauth_poll_id") == \Program\Data\Poll::get_current_poll()->poll_id && \Program\Data\Poll::get_current_poll()->locked == 0) {
             // Réponse de l'utilisateur courant non authentifié, si le sondage n'est pas locké
             self::view_unauthenticate_current_user_unlock_response($response);
-            break;
-          }
-          elseif (\Program\Data\User::isset_current_user() && $response->user_id == \Program\Data\User::get_current_user()->user_id) {
-            // Réponse de l'utilisateur
-            self::view_user_response($response);
             break;
           }
           elseif (Session::is_set("user_noauth_id") && Session::is_set("user_noauth_name") && Session::is_set("user_noauth_poll_id") && Session::get("user_noauth_id") == $response->user_id && Session::get("user_noauth_poll_id") == \Program\Data\Poll::get_current_poll()->poll_id) {
@@ -869,19 +874,20 @@ class Show {
         // Ajoute le champ de status à la table
         self::$table->add(array("title" => Localization::g($status),"class" => "freebusy_" . strtolower($status) . " freebusy_prop_$prop_key customtooltip_bottom","align" => "center"), Localization::g($status));
       }
-      if (\Program\Data\Poll::get_current_poll()->locked == 0 && ! o::get_env("mobile")) {
+      if (! o::get_env("mobile")) {
         if (self::$user_responded
         		&& \Program\Data\EventsList::isset_current_eventslist()
         		&& \Program\Data\EventsList::get_current_eventslist()->events_status == \Program\Data\Event::STATUS_TENTATIVE
-        		&& \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_WRITE_CALENDAR) {
+        		&& \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_WRITE_CALENDAR
+            && !\Program\Data\User::get_current_user()->is_cerbere) {
           // Ajout de la derniere colonne
-          self::$table->add(array("colspan" => "2","class" => "prop_cell_nobackground"), \Program\Lib\HTML\html::a(array("onclick" => o::command("delete_tentatives"),"id" => "button_delete_tentatives","data-role" => "button","class" => "pure-button pure-button-delete customtooltip_bottom","title" => Localization::g("Clic here to delete tentatives link to this poll", false)), Localization::g("Delete tentatives")));
+          self::$table->add(array("colspan" => "2","class" => "prop_cell_nobackground"), \Program\Lib\HTML\html::a(array("onclick" => o::command(ACT_DELETE_TENTATIVES),"id" => "button_delete_tentatives","data-role" => "button","class" => "pure-button pure-button-delete customtooltip_bottom","title" => Localization::g("Clic here to delete tentatives link to this poll", false)), Localization::g("Delete tentatives")));
         }
-        else if (! self::$user_responded) {
+        else if (! self::$user_responded && \Program\Data\Poll::get_current_poll()->locked == 0) {
           // Ajout de la derniere colonne
           self::$table->add(array("colspan" => "2","class" => "prop_cell_nobackground"), \Program\Lib\HTML\html::a(array("onclick" => o::command("save_from_freebusy"),"class" => "check_freebusy_button customtooltip_bottom","title" => Localization::g("Clic here to automaticaly generate your response from your feebusy", false)), Localization::g("Save from freebusy")));
         }
-        else {
+        elseif (\Program\Data\Poll::get_current_poll()->locked == 0) {
           // Ajout de la derniere colonne
           self::$table->add(array("class" => "prop_cell_nobackground last_col"), " ");
         }
@@ -1192,7 +1198,8 @@ class Show {
       if (\Program\Data\User::isset_current_user()
       		&& \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
         if (\Program\Data\Poll::get_current_poll()->type == "date"
-        		&& \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_WRITE_CALENDAR) {
+        		&& \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_WRITE_CALENDAR
+            && !\Program\Data\User::get_current_user()->is_cerbere) {
           if (! isset(self::$validate_proposals[$prop_value]) || ! \Program\Lib\Event\Drivers\Driver::get_driver()->event_exists($prop_value, (isset($events[$prop_value]) ? $events[$prop_value] : null), null, null, \Program\Data\Event::STATUS_CONFIRMED, $calendar_id)) {
             $html .= \Program\Lib\HTML\html::a(array("onclick" => o::command("show_add_to_calendar", o::url("ajax", ACT_ADD_CALENDAR, $options, false), ACT_ADD_CALENDAR, array("prop_key" => $prop_key,"poll_uid" => \Program\Data\Poll::get_current_poll()->poll_uid,"token" => Session::getCSRFToken())),"class" => "pure-button pure-button-calendar customtooltip_bottom","title" => Localization::g("Clic to add this proposal to your calendar", false),"style" => (! isset(self::$validate_proposals[$prop_value]) ? "display: none;" : "")), "");
           }
@@ -1208,7 +1215,8 @@ class Show {
       }
       elseif (\Program\Data\Poll::get_current_poll()->type == "date") {
         if (\Program\Data\User::isset_current_user()
-        		&& \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_WRITE_CALENDAR) {
+        		&& \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_WRITE_CALENDAR
+            && !\Program\Data\User::get_current_user()->is_cerbere) {
           if (isset(self::$validate_proposals[$prop_value])) {
             $event_exists = \Program\Lib\Event\Drivers\Driver::get_driver()->event_exists($prop_value, (isset($events[$prop_value]) ? $events[$prop_value] : null), null, null, $calendar_id);
             if ($event_exists && \Program\Data\EventsList::isset_current_eventslist() && isset(\Program\Data\EventsList::get_current_eventslist()->events_part_status[$prop_value]) && \Program\Data\EventsList::get_current_eventslist()->events_part_status[$prop_value] == \Program\Data\Event::PARTSTAT_ACCEPTED) {
@@ -1521,7 +1529,7 @@ class Show {
       if (isset(self::$proposals[$prop])) {
         $ics = \Program\Lib\Event\Drivers\Driver::get_driver()->generate_ics(self::$proposals[$prop]);
         header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
+        header('Content-Type: application/octet-stream; charset=utf-8');
         header('Content-Disposition: attachment; filename=event.ics');
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
@@ -1535,6 +1543,65 @@ class Show {
       else {
         o::set_env("error", "Error while generating the ICS file");
       }
+    }
+  }
+  /**
+   * Appel l'action download csv pour le téléchargement du fichier CSV
+   */
+  private static function _action_download_csv() {
+    $csrf_token = trim(strtolower(Request::getInputValue("_t", POLL_INPUT_GET)));
+    if (Session::validateCSRFToken($csrf_token)) {
+      // Headers HTTP
+      header('Content-Description: File Transfer');
+      header('Content-Type: text/csv; charset=utf-8');
+      header('Content-Disposition: attachment; filename=export.csv');
+      ob_clean();
+      flush();
+      $out = fopen('php://output', 'w');
+      
+      $csv_header = array(Localization::g('Attendees'));
+      // Liste des propositions du sondage
+      $proposals = unserialize(\Program\Data\Poll::get_current_poll()->proposals);
+      if (! is_array($proposals)) {
+        $proposals = array();
+      }
+      foreach ($proposals as $prop) {
+        $csv_header[] = $prop;
+      }
+      fputcsv($out, $csv_header);
+      
+      $responses = \Program\Drivers\Driver::get_driver()->getPollResponses(\Program\Data\Poll::get_current_poll()->poll_id);
+      foreach ($responses as $response) {
+        if (\Program\Data\User::isset_current_user() && $response->user_id == \Program\Data\User::get_current_user()->user_id) {
+          $user = \Program\Data\User::get_current_user();
+        }
+        else {
+          $user = \Program\Drivers\Driver::get_driver()->getUser($response->user_id);
+        }
+        
+        $username = \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id ? ($user->fullname ?: $user->username) . " <" . $user->email . ">" : ($user->fullname ?: $user->username);
+        // Unserialize les réponses de l'utilisateur
+        $resp = unserialize($response->response);
+        if (! is_array($resp))
+          $resp = array();
+        
+        $result = array($username);
+        foreach ($proposals as $prop_key => $prop_value) {
+          if (isset($resp[$prop_value]) && $resp[$prop_value]) {
+            $result[] = Localization::g("Yes");
+          }
+          elseif (isset($resp["$prop_value:if_needed"]) && $resp["$prop_value:if_needed"]) {
+            $result[] = Localization::g("If needed");
+          }
+          else {
+            $result[] = Localization::g("No");
+          }          
+        }
+        fputcsv($out, $result);
+      }
+
+      fclose($out);
+      exit();
     }
   }
 }

@@ -110,7 +110,7 @@ use Program\Lib\Request\Output as o,
     		        </div>
     		        <div class="pure-control-group">
     		        	<label style="width: 60%;" for="edit_only_auth_user" class="customtooltip_right" title="<?= l::g("This poll is only open for auth users", false) ?>">
-    		        	    <input id="edit_only_auth_user" name="edit_only_auth_user" type="checkbox" value="true" <?= p::isset_current_poll() && p::get_current_poll()->auth_only || !p::isset_current_poll() ? 'checked' : '' ?>>
+    		        	    <input id="edit_only_auth_user" name="edit_only_auth_user" type="checkbox" value="true" <?= p::isset_current_poll() && p::get_current_poll()->auth_only ? 'checked' : '' ?>>
     		        	    <?= l::g('Poll for only auth user') ?>
     		        	</label>
     		        </div>

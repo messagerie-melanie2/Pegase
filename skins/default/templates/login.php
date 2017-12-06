@@ -24,12 +24,13 @@ use Program\Lib\Request\Localization as l;
 use Program\Lib\Request\Template as t;
 use Program\Lib\Request\Request as r;
 use Program\Lib\Request\Session as s;
+use Api\SSO\SSO as sso;
 ?>
 <?php t::inc('head') ?>
 <body>
 <div id="prevcontent">
     <div id="login-logo">
-    	<img src="/skins/default/images/M2web_MEEM_MLHD_2016.png" id="login-logo">
+    	<img src="./skins/default/images/M2web_MEEM_MLHD_2016.png" id="login-logo">
     </div>
     <div id="login_content">
         <?php t::inc('message') ?>
@@ -57,6 +58,15 @@ use Program\Lib\Request\Session as s;
     		        </div>
     			</fieldset>
     		</form>
+    		<?php if (\Config\IHM::$USE_CERBERE) { ?>
+    		<div class="pure-form">
+    			<legend class="legend"><?= l::g('No Melanie2 account ?') ?></legend>
+    			<div class="pure-controls" style="margin-left: 35%;">
+    				<a class="pure-button pure-button-submit customtooltip_bottom" title="<?= l::g("Clic to use Cerbere account", false) ?>"  href="<?= sso::get_sso('Cerbere')->getLoginUrl() ?>"><?= l::g('Use Cerbere account') ?></a>
+  				</div>
+  				<br>
+    		</div>    			
+    		<?php } ?>
     	</div>
     </div>
     <?php t::inc('login_copyright') ?>

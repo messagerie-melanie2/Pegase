@@ -22,12 +22,13 @@
 use Program\Lib\Request\Output as o;
 use Program\Data\User as u;
 use Program\Lib\Request\Localization as l;
+use Program\Lib\Request\Session as s;
 ?>
 
 <?php if (u::isset_current_user()) { ?>
 <div id="conn">
     <span style="font-size: 80%;">
-        <?= l::g('Connected as') ?> <b title="<?= u::get_current_user()->fullname ?>"><?= u::get_current_user()->username ?></b>
+        <?= l::g('Connected as') ?> <b title="<?= u::get_current_user()->fullname ?>"><?= s::is_set('SSO') ? u::get_current_user()->email : u::get_current_user()->username ?></b> 
     </span>
     <a class="pure-button pure-button-new-poll customtooltip_bottom" title="<?= l::g("Create a new poll", false) ?>" href="<?= o::url("edit", ACT_NEW) ?>">
         <img alt="Add" src="skins/<?= o::get_env("skin") ?>/images/1395836978_add_new_poll.png" height="10px"/>

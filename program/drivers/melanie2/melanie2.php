@@ -34,52 +34,69 @@ class Melanie2 extends \Program\Drivers\Driver {
      * @return bool true si auth ok, false sinon
      */
     function authenticate($username, $password) {
-        $infos = \Program\Lib\Backend\Ldap\Ldap::GetUserInfos($username);
-        if (isset($infos)) {
-            if (\Program\Lib\Backend\Ldap\Ldap::GetInstance(\Config\Ldap::$AUTH_LDAP)->authenticate($infos['dn'], $password)) {
+        if (\Program\Lib\Request\Session::is_set('SSO')) {
+            // Récupération de l'utilisateur
+            $user = $this->getAuthUser($username);
+            if (isset($user)
+                && isset($user->user_id)) {
+              $user->last_login = date("Y-m-d H:i:s");
+              if (!\Program\Lib\Request\Session::is_setUsername())
+                $this->modifyUser($user);
+              \Program\Data\User::set_current_user($user);
+              return true;
+            }
+            else {
+              return false;
+            }
+        }
+        else {
+            $infos = \Program\Lib\Backend\Ldap\Ldap::GetUserInfos($username);
+            if (isset($infos)) {
+              if (\Program\Lib\Backend\Ldap\Ldap::GetInstance(\Config\Ldap::$AUTH_LDAP)->authenticate($infos['dn'], $password)) {
                 // Récupération de l'utilisateur
                 $user = $this->getAuthUser($username);
                 if (isset($user)
-                        && isset($user->user_id)) {
-                    $user->last_login = date("Y-m-d H:i:s");
-                    if ($user->fullname != $infos['cn'][0]) $user->fullname = $infos['cn'][0];
-                    if (isset($infos['mineqmelmailemission'])) {
+                    && isset($user->user_id)) {
+                      $user->last_login = date("Y-m-d H:i:s");
+                      if ($user->fullname != $infos['cn'][0]) $user->fullname = $infos['cn'][0];
+                      if (isset($infos['mineqmelmailemission'])) {
                         if ($user->email != $infos['mineqmelmailemission'][0]) $user->email = $infos['mineqmelmailemission'][0];
-                    } elseif (isset($infos['mail'])) {
+                      } elseif (isset($infos['mail'])) {
                         if ($user->email != $infos['mail'][0]) $user->email = $infos['mail'][0];
-                    }
-                    if (!\Program\Lib\Request\Session::is_setUsername())
+                      }
+                      if (!\Program\Lib\Request\Session::is_setUsername())
                         $this->modifyUser($user);
-                    \Program\Data\User::set_current_user($user);
-                    return true;
-                }
-                else {
-                    $user = new \Program\Data\User(
-                                    array(
-                                        "username" => $username,
-                                        "fullname" => $infos['cn'][0],
-                                        "email" => isset($infos['mineqmelmailemission']) ? $infos['mineqmelmailemission'][0] : $infos['mail'][0],
-                                        "last_login" => date("Y-m-d H:i:s"),
-                                        "language" => "fr_FR",
-                                        "auth" => 1,
-                                    )
-                            );
-                    // Création de l'utilisateur dans la base de données
-                    $user_id = $this->addUser($user);
-                    if (!is_null($user_id)) {
+                        \Program\Data\User::set_current_user($user);
+                        return true;
+                    }
+                    else {
+                      $user = new \Program\Data\User(
+                          array(
+                              "username" => $username,
+                              "fullname" => $infos['cn'][0],
+                              "email" => isset($infos['mineqmelmailemission']) ? $infos['mineqmelmailemission'][0] : $infos['mail'][0],
+                              "last_login" => date("Y-m-d H:i:s"),
+                              "language" => "fr_FR",
+                              "auth" => 1,
+                          )
+                          );
+                      // Création de l'utilisateur dans la base de données
+                      $user_id = $this->addUser($user);
+                      if (!is_null($user_id)) {
                         // Si l'utilisateur est bien créé
                         //$user = $this->getAuthUser($username);
                         $user = $this->getUser($user_id);
                         if (isset($user)
-                                && isset($user->user_id)) {
-                            \Program\Data\User::set_current_user($user);
-                            return true;
-                        }
+                            && isset($user->user_id)) {
+                              \Program\Data\User::set_current_user($user);
+                              return true;
+                            }
+                      }
                     }
-                }
+              }
             }
+            //
         }
-        //
         return false;
     }
 
@@ -89,12 +106,26 @@ class Melanie2 extends \Program\Drivers\Driver {
      * @return \Program\Data\Poll[] Liste des sondages
      */
     function listUserPolls($user_id) {
-        $query = "SELECT *, (SELECT count(*) FROM responses r WHERE poll_id = p.poll_id) as count_responses FROM polls p WHERE organizer_id = :user_id ORDER BY poll_id DESC;";
+        $query = "SELECT *, (SELECT count(*) FROM responses r WHERE poll_id = p.poll_id) as count_responses FROM polls p WHERE organizer_id = :user_id AND deleted = 0 ORDER BY poll_id DESC;";
         $params = array(
             "user_id" => $user_id,
         );
         // Execution de la requête, retourne le résultat un array de Poll
         return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$READ_SERVER)->executeQuery($query, $params, 'Program\Data\Poll');
+    }
+    
+    /**
+     * Récupération de la liste des sondage supprimés pour l'utilisateur
+     * @param int $user_id Identifiant de l'utilisateur
+     * @return Program\Data\Poll[] Liste des sondages
+     */
+    function listUserDeletedPolls($user_id) {
+      $query = "SELECT *, (SELECT count(*) FROM responses r WHERE poll_id = p.poll_id) as count_responses FROM polls p WHERE organizer_id = :user_id AND deleted = 1 ORDER BY modified DESC;";
+      $params = array(
+          "user_id" => $user_id,
+      );
+      // Execution de la requête, retourne le résultat un array de Poll
+      return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$READ_SERVER)->executeQuery($query, $params, 'Program\Data\Poll');
     }
 
     /**
@@ -103,7 +134,7 @@ class Melanie2 extends \Program\Drivers\Driver {
      * @return \Program\Data\Poll[] Liste des sondages
      */
     function listUserRespondedPolls($user_id) {
-        $query = "SELECT p.*, (SELECT count(*) FROM responses r WHERE poll_id = p.poll_id) as count_responses FROM polls p INNER JOIN responses r USING (poll_id) WHERE r.user_id = :user_id ORDER BY poll_id DESC;";
+        $query = "SELECT p.*, (SELECT count(*) FROM responses r WHERE poll_id = p.poll_id) as count_responses FROM polls p INNER JOIN responses r USING (poll_id) WHERE r.user_id = :user_id AND deleted = 0 ORDER BY poll_id DESC;";
         $params = array(
             "user_id" => $user_id,
         );
@@ -115,7 +146,7 @@ class Melanie2 extends \Program\Drivers\Driver {
      * Récupération du nombre de réponse pour un sondage
      * @param string $poll_id Identifiant du sondage
      * @return int Nombre de réponses
-    */
+     */
     function countPollResponses($poll_id) {
         $query = "SELECT count(*) FROM responses r WHERE poll_id = :poll_id;";
         $params = array(
@@ -135,7 +166,7 @@ class Melanie2 extends \Program\Drivers\Driver {
      * Récupération des informations du sondage
      * @param int $poll_id Identifiant du sondage
      * @return Program\Data\Poll Sondage à retourner
-    */
+     */
     function getPoll($poll_id) {
         $query = "SELECT * FROM polls WHERE poll_id = :poll_id;";
         $params = array(
@@ -171,7 +202,7 @@ class Melanie2 extends \Program\Drivers\Driver {
      * Récupération de la liste des réponses pour un sondage
      * @param string $poll_id Identifiant du sondage
      * @return \Program\Data\Response[] Liste des réponses pour le sondage
-    */
+     */
     function getPollResponses($poll_id) {
         $query = "SELECT * FROM responses WHERE poll_id = :poll_id ORDER BY response_time;";
         $params = array(
@@ -200,6 +231,26 @@ class Melanie2 extends \Program\Drivers\Driver {
         $user->__initialize_haschanged();
         return $user;
     }
+    
+    /**
+     * Récupère l'utilisateur en fonction de son email
+     * Il s'agit donc forcément d'un utilisateur authentifié
+     * @param string $email
+     * @return Program\Data\User
+     */
+    function getAuthUserByEmail($email) {
+      $query = "SELECT * FROM users WHERE auth = :auth AND lower(email) = lower(:email);";
+      $params = array(
+          "email" => $email,
+          "auth" => "1",
+      );
+      // Execution de la requête, recupère le résultat dans l'objet user
+      $user = new \Program\Data\User();
+      \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$READ_SERVER)->executeQueryToObject($query, $params, $user);
+      // RAZ des has changed de l'objet
+      $user->__initialize_haschanged();
+      return $user;
+    }
 
     /**
      * Récupère l'utilisateur en fonction du user_id
@@ -223,9 +274,9 @@ class Melanie2 extends \Program\Drivers\Driver {
      * Création d'un utilisateur
      * @param \Program\Data\User $user
      * @return $user_id si OK, null sinon
-    */
+     */
     function addUser(\Program\Data\User $user) {
-        $query = "INSERT INTO users (username, email, fullname, last_login, auth, language) VALUES (:username, :email, :fullname, :last_login, :auth, :language);";
+        $query = "INSERT INTO users (username, email, fullname, last_login, auth, language, preferences) VALUES (:username, :email, :fullname, :last_login, :auth, :language, :preferences);";
         $params = array(
             "username" => $user->username,
             "email" => $user->email,
@@ -233,6 +284,7 @@ class Melanie2 extends \Program\Drivers\Driver {
             "last_login" => $user->last_login,
             "auth" => $user->auth,
             "language" => $user->language,
+            "preferences" => $user->preferences ?: "",
         );
         // Execution de la requête
         if (\Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params)) {
@@ -246,7 +298,7 @@ class Melanie2 extends \Program\Drivers\Driver {
      * Modification d'un utilisateur
      * @param \Program\Data\User $user
      * @return bool true si ok, false sinon
-    */
+     */
     function modifyUser(\Program\Data\User $user) {
         $set = "";
         $params = array();
@@ -269,7 +321,7 @@ class Melanie2 extends \Program\Drivers\Driver {
      * Suppression de l'utilisateur
      * @param int $user_id Identifiant de l'utilisateur
      * @return bool True si ok, false sinon
-    */
+     */
     function deleteUser($user_id) {
         $query = "DELETE FROM users WHERE user_id = :user_id;";
         $params = array(
@@ -283,7 +335,7 @@ class Melanie2 extends \Program\Drivers\Driver {
      * Création d'un nouveau sondage
      * @param Program\Data\Poll $poll
      * @return $poll_id si ok, null sinon
-    */
+     */
     function createPoll(\Program\Data\Poll $poll) {
         $query = "INSERT INTO polls (poll_uid, title, location, description, organizer_id, type, settings) VALUES (:poll_uid, :title, :location, :description, :organizer_id, :type, :settings);";
         $params = array(
@@ -307,7 +359,7 @@ class Melanie2 extends \Program\Drivers\Driver {
      * Modification d'un sondage existant
      * @param Program\Data\Poll $poll
      * @return bool true si ok, false sinon
-    */
+     */
     function modifyPoll(\Program\Data\Poll $poll) {
         $set = "";
         $params = array();
@@ -326,13 +378,45 @@ class Melanie2 extends \Program\Drivers\Driver {
         // Execution de la requête
         return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params);
     }
-
+    
     /**
      * Suppression d'un sondage
      * @param string $poll_id
      * @return bool true si ok, false sinon
-    */
+     */
     function deletePoll($poll_id) {
+        $query = "UPDATE polls SET deleted = 1, modified = :modified WHERE poll_id = :poll_id;";
+        $params = array(
+            "poll_id"   => $poll_id,
+            "modified"  => date("Y-m-d H:i:s"),
+        );
+        
+        // Execution de la requête
+        return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params);
+    }
+    
+    /**
+     * Restaurer un sondage supprimé
+     * @param string $poll_id
+     * @return bool true si ok, false sinon
+     */
+    function restorePoll($poll_id) {
+        $query = "UPDATE polls SET deleted = 0, modified = :modified WHERE poll_id = :poll_id;";
+        $params = array(
+            "poll_id"   => $poll_id,
+            "modified"  => date("Y-m-d H:i:s"),
+        );
+        
+        // Execution de la requête
+        return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params);
+    }
+
+    /**
+     * Supprimer définitivement un sondage supprimé
+     * @param string $poll_id
+     * @return bool true si ok, false sinon
+     */
+    function erasePoll($poll_id) {
         // Récupère les réponses pour supprimer les user non authentifié
         $responses = $this->getPollResponses($poll_id);
         \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->beginTransaction();
@@ -422,7 +506,7 @@ class Melanie2 extends \Program\Drivers\Driver {
      * Modifie la réponse de l'utilisateur sur un sondage
      * @param \Program\Data\Response $response
      * @return true si ok, false sinon
-    */
+     */
     function modifyPollUserResponse(\Program\Data\Response $response) {
         $set = "";
         $params = array();
@@ -447,7 +531,7 @@ class Melanie2 extends \Program\Drivers\Driver {
      * @param int $user_id Identifiant de l'utilisateur
      * @param string $poll_id Identifiant du sondage
      * @return true si ok, false sinon
-    */
+     */
     function deletePollUserResponse($user_id, $poll_id) {
         $query = "DELETE FROM responses WHERE poll_id = :poll_id AND user_id = :user_id;";
         $params = array(
@@ -537,6 +621,27 @@ class Melanie2 extends \Program\Drivers\Driver {
 
     	// Execution de la requête
     	return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params);
+    }
+    
+    /**
+     * Permet de récupérer une liste de réponses dans un lapse de temps
+     *
+     * @param int $user_id
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @return \Program\Data\Response[]
+     */
+    function getResponsesByRange($user_id, $start, $end) {
+      $query = "SELECT p.title as poll_title, r.* FROM responses r INNER JOIN polls p USING (poll_id) WHERE r.user_id = :user_id AND p.locked = :poll_locked AND p.type = :poll_type AND ((p.date_end >= :date_start AND p.date_end <= :date_end) OR (p.date_start >= :date_start AND p.date_start <= :date_end)) ORDER BY response_time;";
+      $params = [
+          "user_id" => $user_id,
+          "poll_locked" => 0,
+          "poll_type" => "date",
+          "date_start" => $start->format('Y-m-d H:i:s'),
+          "date_end" => $end->format('Y-m-d H:i:s'),
+      ];
+      // Execution de la requête, retourne le résultat un array de Response
+      return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$READ_SERVER)->executeQuery($query, $params, 'Program\Data\Response');
     }
 
     /***** STATISTIQUES *******/

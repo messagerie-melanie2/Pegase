@@ -45,11 +45,12 @@ abstract class SSO {
     }
     /**
      * Récupère l'instance du driver à utiliser
+     * @param string $sso_name Forcer le sso à récupérer
      * @return SSO
      */
-    public static function get_sso() {
+    public static function get_sso($sso_name = null) {
         if (!isset(self::$sso)) {
-            $sso_class = strtolower(\Config\IHM::$SSO_NAME);
+            $sso_class = $sso_name ?: strtolower(\Config\IHM::$SSO_NAME);
             $sso_class = "\\API\\SSO\\$sso_class\\$sso_class";
             self::$sso = new $sso_class();
         }

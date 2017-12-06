@@ -326,13 +326,39 @@ class Pegase extends \Program\Drivers\Driver {
         // Execution de la requête
         return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params);
     }
-
+    
     /**
      * Suppression d'un sondage
      * @param string $poll_id
      * @return bool true si ok, false sinon
-    */
+     */
     function deletePoll($poll_id) {
+        $query = "UPDATE polls SET deleted = 1 WHERE poll_id = :poll_id;";
+        $params["poll_id"] = $poll->poll_id;
+        
+        // Execution de la requête
+        return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params);
+    }
+    
+    /**
+     * Restaurer un sondage supprimé
+     * @param string $poll_id
+     * @return bool true si ok, false sinon
+     */
+    function restorePoll($poll_id) {
+        $query = "UPDATE polls SET deleted = 0 WHERE poll_id = :poll_id;";
+        $params["poll_id"] = $poll->poll_id;
+        
+        // Execution de la requête
+        return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params);
+    }
+
+    /**
+     * Supprimer définitivement un sondage supprimé
+     * @param string $poll_id
+     * @return bool true si ok, false sinon
+     */
+    function erasePoll($poll_id) {
         // Récupère les réponses pour supprimer les user non authentifié
         $responses = $this->getPollResponses($poll_id);
         \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->beginTransaction();
@@ -456,6 +482,86 @@ class Pegase extends \Program\Drivers\Driver {
 
         // Execution de la requête
         return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params);
+    }
+
+    /**
+     * Récupère la liste des événements de l'utilisateur sur un sondage
+     * @param int $user_id Identifiant de l'utilisateur
+     * @param int $poll_id Identifiant du sondage
+     * @return \Program\Data\EventsList
+     */
+    function getPollUserEventsList($user_id, $poll_id) {
+    	$query = "SELECT * FROM eventslist WHERE user_id = :user_id AND poll_id = :poll_id;";
+    	$params = array(
+    			"user_id" => $user_id,
+    			"poll_id" => $poll_id,
+    	);
+    	// Execution de la requête, recupère le résultat dans l'objet eventslist
+    	$eventslist = new \Program\Data\EventsList();
+    	\Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$READ_SERVER)->executeQueryToObject($query, $params, $eventslist);
+    	// RAZ des has changed de l'objet
+    	$eventslist->__initialize_haschanged();
+    	return $eventslist;
+    }
+
+    /**
+     * Enregistre les events list pour l'utilisateur sur un sondage
+     * @param \Program\Data\EventsList $eventslist
+     * @return true si ok, false sinon
+     */
+    function addPollUserEventsList(\Program\Data\EventsList $eventslist) {
+    	$query = "INSERT INTO eventslist (user_id, poll_id, events, events_status, settings, modified_time) VALUES (:user_id, :poll_id, :events, :events_status, :settings, :modified_time);";
+    	$params = array(
+    			"user_id" => $eventslist->user_id,
+    			"poll_id" => $eventslist->poll_id,
+    			"events" => $eventslist->events,
+    			"events_status" => $eventslist->events_status,
+    			"settings" => $eventslist->settings,
+    			"modified_time" => $eventslist->modified_time,
+    	);
+    	// Execution de la requête
+    	return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params);
+    }
+
+    /**
+     * Modifie les events list de l'utilisateur sur un sondage
+     * @param \Program\Data\EventsList $eventslist
+     * @return true si ok, false sinon
+     */
+    function modifyPollUserEventsList(\Program\Data\EventsList $eventslist) {
+    	$set = "";
+    	$params = array();
+    	foreach($eventslist->__get_haschanged() as $key => $value) {
+    		if ($value) {
+    			if ($set != "") $set .= ", ";
+    			$set .= "$key = :$key";
+    			$params[$key] =  $eventslist->$key;
+    		}
+    	}
+    	if ($set == "") return false;
+    	$query = "UPDATE eventslist SET $set WHERE poll_id = :poll_id AND user_id = :user_id;";
+    	$params["poll_id"] = $eventslist->poll_id;
+    	$params["user_id"] = $eventslist->user_id;
+
+    	// Execution de la requête
+    	return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params);
+    }
+
+    /**
+     * Supprime les events list de l'utilisateur sur un sondage
+     * @param int $user_id Identifiant de l'utilisateur
+     * @param string $poll_id Identifiant du sondage
+     * @return true si ok, false sinon
+     */
+    function deletePollUserEventsList($user_id, $poll_id) {
+    	$query = "DELETE FROM eventslist WHERE poll_id = :poll_id AND user_id = :user_id;";
+    	$params = array(
+    			"poll_id" => $poll_id,
+    			"user_id" => $user_id,
+    	);
+
+    	// Execution de la requête
+    	return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params);
     }
 
     /***** STATISTIQUES *******/

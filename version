@@ -1,16 +1,28 @@
-Pégase - Version 1.0.5
-Pégase - Build 1610041131
+Pégase - Version 1.0.6
+Pégase - Build 170523165754
 Pégase - Liste des changements
+
+Pégase - 1.0.6 (Pas encore publiée) [ Afficher les bogues ]
+===================================
+- 0004233: [General] Cerbériser/cassifier Pégase (thomas.payen) - résolu.
+- 0004269: [General] Permettre la suppression des provisoires quelque soit l'état du sondage (thomas.payen) - résolu.
+- 0004512: [General] Export Csv (thomas.payen) - résolu.
+- 0004465: [General] Possibilité de restaurer un sondage (thomas.payen) - résolu.
+- 0003906: [Interface] Page d'accueil: Afficher plus de sondages (thomas.payen) - résolu.
+- 0004511: [Interface] Modification Options avancées Page d'accueil (thomas.payen) - résolu.
+
+[6 bogues]
 
 Pégase - 1.0.5 (Publiée 04/10/2016) [ Afficher les bogues ]
 ===================================
+- 0004458: [General] Création d'une page de maintenance (thomas.payen) - résolu.
 - 0004283: [Interface] En non authentifié les infos bulles montrent les noms complets (thomas.payen) - résolu.
 - 0004354: [General] Création d'un sondage, récupérer les paramètres en GET (thomas.payen) - résolu.
 - 0004257: [Driver Event] Les événements privés ne sont pas correctement affichés (thomas.payen) - résolu.
 - 0004245: [Driver Event] Problème lorsqu'un événement sans titre est dans l'agenda (thomas.payen) - résolu.
 - 0004256: [General] Le lien supprimer les provisoires de l'événement ne fonctionne pas (thomas.payen) - résolu.
 
-[5 bogues]
+[6 bogues]
 
 Pégase - 1.0.4 (Publiée 15/02/2016) [ Afficher les bogues ]
 ===================================

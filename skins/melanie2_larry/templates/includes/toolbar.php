@@ -30,7 +30,8 @@ use Program\Lib\Request\Session as s;
 	<a class="button listpoll customtooltip_bottom" title="<?= l::g("Go back to poll list", false) ?>" href="<?= o::url() ?>"><?= l::g('List poll') ?></a>
     <a class="button addpoll customtooltip_bottom" title="<?= l::g("Create a new poll", false) ?>" href="<?= o::url("edit", ACT_NEW) ?>"><?= l::g('New poll') ?></a>
     <?php if (o::get_env("page") == 'show'
-			&& p::isset_current_poll()) { ?>
+			&& p::isset_current_poll()
+      && !\Program\Data\Poll::get_current_poll()->deleted) { ?>
 		<a class="button refreshpoll customtooltip_bottom" title="<?= l::g("Clic to refresh the poll", false) ?>" href="<?= o::url(null, null, array('u' => p::get_current_poll()->poll_uid)) ?>"><?= l::g('Refresh poll') ?></a>
 		<?php if (p::get_current_poll()->organizer_id == u::get_current_user()->user_id) { ?>
 			<a id="button_edit_poll" title="<?= l::g("Clic to edit the poll", false) ?>" class="button editpoll customtooltip_bottom" style="width: 16%;" href="<?= o::url("edit", ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('Modify poll') ?></a>
@@ -38,6 +39,7 @@ use Program\Lib\Request\Session as s;
 	        <a id="button_modify_responses_poll" title="<?= l::g("Clic to change everybody responses", false) ?>" class="button modifyresponsespoll customtooltip_bottom" style="width: 16%;" href="<?= o::url(null, ACT_MODIFY_ALL, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('Modify responses') ?></a>
 	        <a id="button_lock_poll" title="<?= l::g("Clic to lock the poll", false) ?>" class="button <?= (p::get_current_poll()->locked === 0 ? "lockpoll" : "unlockpoll") ?> customtooltip_bottom" style="width: 16%;" href="<?= o::url(null, (p::get_current_poll()->locked === 0 ? ACT_LOCK : ACT_UNLOCK), array("u" => p::get_current_poll()->poll_uid, "t" => s::getCSRFToken())) ?>"><?= (p::get_current_poll()->locked === 0 ? l::g('Lock') : l::g('Unlock')) ?></a>
 	        <a id="button_delete_poll" title="<?= l::g("Clic to delete the poll", false) ?>" class="button deletepoll customtooltip_bottom" style="width: 16%;" href="<?= o::url("main", ACT_DELETE, array("u" => p::get_current_poll()->poll_uid, "t" => s::getCSRFToken())) ?>"><?= l::g('Delete poll') ?></a>
+	        <a id="button_export_csv" title="<?= l::g("Clic to export in CSV", false) ?>" class="button exportpoll customtooltip_bottom" style="width: 16%%;" href="<?= o::url(null, ACT_DOWNLOAD_CSV, array("u" => p::get_current_poll()->poll_uid, "t" => s::getCSRFToken())) ?>"><?= l::g('Export CSV') ?></a>
         <?php } ?>
 	<?php } elseif (o::get_env("page") == 'edit'
 					&& p::isset_current_poll()

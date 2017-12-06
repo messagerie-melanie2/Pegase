@@ -60,6 +60,13 @@ abstract class Driver {
      * @return Program\Data\Poll[] Liste des sondages
      */
     abstract function listUserPolls($user_id);
+    
+    /**
+     * Récupération de la liste des sondage supprimés pour l'utilisateur
+     * @param int $user_id Identifiant de l'utilisateur
+     * @return Program\Data\Poll[] Liste des sondages
+     */
+    abstract function listUserDeletedPolls($user_id);
 
     /**
      * Récupération de la liste des sondage auquel l'utilisateur à répondu
@@ -103,6 +110,14 @@ abstract class Driver {
      * @return Program\Data\User
      */
     abstract function getAuthUser($username);
+    
+    /**
+     * Récupère l'utilisateur en fonction de son email
+     * Il s'agit donc forcément d'un utilisateur authentifié
+     * @param string $email
+     * @return Program\Data\User
+     */
+    abstract function getAuthUserByEmail($email);
 
     /**
      * Récupère l'utilisateur en fonction du user_id
@@ -152,6 +167,20 @@ abstract class Driver {
      * @return bool true si ok, false sinon
      */
     abstract function deletePoll($poll_id);
+    
+    /**
+     * Restaurer un sondage supprimé
+     * @param string $poll_id
+     * @return bool true si ok, false sinon
+     */
+    abstract function restorePoll($poll_id);
+    
+    /**
+     * Supprimer définitivement un sondage supprimé
+     * @param string $poll_id
+     * @return bool true si ok, false sinon
+     */
+    abstract function erasePoll($poll_id);
 
     /**
      * Test si l'identifiant unique du sondage existe déjà
@@ -219,6 +248,16 @@ abstract class Driver {
      * @return true si ok, false sinon
      */
     abstract function deletePollUserEventsList($user_id, $poll_id);
+    
+    /**
+     * Permet de récupérer une liste de réponses dans un lapse de temps
+     *
+     * @param int $user_id
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @return \Program\Data\Response[]
+     */
+    abstract function getResponsesByRange($user_id, $start, $end);
 
 
     /***** STATISTIQUES *******/
