@@ -51,7 +51,7 @@ class External_Login {
 	    // Passage en version mobile
 	    Main::MobileVersion();
    		$username = trim(strtolower(Request::getInputValue("username", POLL_INPUT_GPC)));
-   		$password = Request::getInputValue("password", POLL_INPUT_GPC);
+   		$password = Request::getInputValue("password", POLL_INPUT_GPC, true);
    		if (isset($username)
    		       && isset($password)) {
    		    if (\Program\Drivers\Driver::get_driver()->authenticate($username, $password)) {
@@ -67,6 +67,7 @@ class External_Login {
    		        return true;
    		    } else {
    		        \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "External_Login::Process() Bad login for user $username");
+   		        sleep(5);
    		        return false;
    		    }
 		} else {

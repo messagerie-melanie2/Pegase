@@ -8,7 +8,7 @@
  *
  * @author Thomas Payen
  * @author PNE Annuaire et Messagerie
- * @version 0.9.1-1505061856
+ * @version 1.0.5-1610041131
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -34,6 +34,14 @@ include 'program/include/includes.php';
 
 // Initialisation de l'output
 o::init();
+
+// Page de maintenance ?
+if (Config\IHM::$MAINTENANCE) {
+	t::load("maintenance");
+	
+	// Envoi de la page
+	o::send();
+}
 
 // Définition de la page par défaut
 if (!o::isset_env("page")) {
@@ -80,12 +88,14 @@ if (o::get_env("page") != "login"
     if (o::get_env("page") == "login") {
         if (Program\Lib\Templates\Login::Process()) {
             o::set_env("page", "main");
+            Program\Lib\Templates\Main::Process();
         } elseif (isset($_POST['username'])) {
             o::set_env("error", "Auth error, bad login or password");
         }
     } elseif(o::get_env("page") == "register") {
     	if (Program\Lib\Templates\Register::Process()) {
     		o::set_env("page", "main");
+    		Program\Lib\Templates\Main::Process();
     	}
     } elseif(o::get_env("page") == "external_login") {
     	if (!Program\Lib\Templates\External_Login::Process()

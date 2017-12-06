@@ -25,7 +25,24 @@
 // Ce fichier permet de gérer le calendrier pour la gestion des dates
 // Il va afficher le calendrier et gérer les intéractions
 $(document).ready(function() {
-	$( ".button_delete_poll" ).click(function() {
-		return confirm(poll.labels['Are you sure you want to delete the poll ?']);
-	});
+  $(".button_delete_poll").click(
+      function(event) {
+        event.preventDefault();
+        var _this = $(this);
+        poll.confirm(
+            '<div>' +
+            poll.labels['Are you sure you want to delete the poll ?']
+            + '</div>'
+            + '<br><form><label><input type="checkbox" class="delete_poll_notification" name="send_notification" value="true" checked> '+poll.labels['Notify attendees']+'</label><br></form>',
+            poll.labels['Yes'], poll.labels['No'], function Yes() {
+              if ($('input.delete_poll_notification:checked').length) {
+                window.location.href = _this.attr('href') + '&_send_notif=1';
+              }
+              else {
+                window.location.href = _this.attr('href');
+              }              
+            }, function No() {
+
+            });
+      });
 });

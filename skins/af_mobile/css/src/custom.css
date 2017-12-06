@@ -1,0 +1,56 @@
+.pure-button-disconnect,
+.pure-button-home,
+.pure-button-submit,
+.pure-button-save,
+.pure-button-edit-poll,
+.pure-button-see-poll,
+.pure-button-new-poll,
+.pure-button-modify-poll,
+.pure-button-light-red,
+.pure-button-connect-with-account {
+    color: white;
+    border-radius: 2px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    margin-bottom: 5px;
+    width: 95%;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    font-size: 150%;
+    white-space: pre-line;
+
+}
+
+.pure-button-connect-with-account {
+    background: #336699; /* this is a  blue */
+}
+.pure-button-see-poll {
+    background: #476583; /* this is a  blue */
+}
+.pure-button-edit-poll {
+    background: #476583; /* this is a  blue */
+}
+.pure-button-submit {
+    background: #476583; /* this is a light blue */
+}
+.pure-button-disconnect {
+    background: rgb(223, 117, 20); /* this is an orange */
+}
+
+.pure-button-home {
+    background: rgb(66, 184, 221); /* this is a light blue */
+}
+
+.pure-button-save {
+    background: #837797; /* this is a blue */
+}
+
+.pure-button-modify-poll {
+	background: #476583; /* this is a light blue */
+    margin-bottom: 5px;
+}
+.pure-button-light-red {
+	background: #8887D2; /* this is a light red */
+}
+.pure-button-new-poll {
+	background: #8887D2; /* this is a light red */
+}

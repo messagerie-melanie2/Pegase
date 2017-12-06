@@ -1,0 +1,13 @@
+@CHARSET "UTF-8";
+
+#tplt,
+#tplh,
+.tplNav,
+#tplb,
+#tplo {
+	display: none;
+}
+
+div.tplc_out_yes {
+    margin-left: 0px;
+}

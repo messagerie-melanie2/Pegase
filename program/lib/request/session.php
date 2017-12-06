@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -27,7 +27,7 @@ namespace Program\Lib\Request;
 
 /**
  * Classe de gestion des sessions pour l'application de sondage
- * 
+ *
  * @package    Lib
  * @subpackage Request
  */
@@ -36,7 +36,7 @@ class Session {
 	 *  Constructeur privé pour ne pas instancier la classe
 	 */
 	private function __construct() { }
-	
+
 	/**
 	 * @desc Valide le token de session et le renouvelle
 	 * @access public
@@ -44,7 +44,7 @@ class Session {
 	public static function validateSession() {
 		// Gestion de la session
 		if (!self::is_setUsername()) return false;
-		
+
 		if (self::genToken(Cookie::getCookie(\Config\IHM::$COOKIE_TOKEN)) == self::get(\Config\IHM::$SESSION_TOKEN)
 		        && \Program\Drivers\Driver::get_driver()->authenticate(self::getUsername(), self::getPassword())) {
 			// On renouvelle le token
@@ -60,8 +60,8 @@ class Session {
 			}
 			\Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Session::validateSession() Valid session : " . self::get(\Config\IHM::$SESSION_TOKEN));
 			return true;
-		} else {		    
-			\Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Session::validateSession() Invalid session, relogin : Cookie : " . self::genToken(Cookie::getCookie(\Config\IHM::$COOKIE_TOKEN)) . " / Session : " . self::get(\Config\IHM::$SESSION_TOKEN));			
+		} else {
+			\Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Session::validateSession() Invalid session, relogin : Cookie : " . self::genToken(Cookie::getCookie(\Config\IHM::$COOKIE_TOKEN)) . " / Session : " . self::get(\Config\IHM::$SESSION_TOKEN));
 			\Program\Lib\Templates\Logout::Process();
 			Cookie::deleteCookie(\Config\IHM::$COOKIE_TOKEN);
 			return false;
@@ -77,7 +77,7 @@ class Session {
 		Cookie::setCookie(\Config\IHM::$COOKIE_TOKEN, $uniqID, true);
 		session_regenerate_id(true);
 	}
-	
+
 	/**
 	 * Récupère la valeur de session
 	 * @param string $name
@@ -167,7 +167,7 @@ class Session {
 	    unset($_SESSION);
 	    $_SESSION = array();
 	}
-	
+
 	/**
 	 * Génération du token CSRF
 	 */
@@ -175,7 +175,7 @@ class Session {
 	    // Génération du token CSRF pour protéger les formulaires
 	    self::set(\Config\IHM::$CSRF_TOKEN, self::genToken(self::genUniqID()));
 	}
-	
+
 	/**
 	 * Retourne le token CSRF à ajouter dans chaque formulaire
 	 * @return string
@@ -187,16 +187,17 @@ class Session {
 	    }
 	    return self::get(\Config\IHM::$CSRF_TOKEN);
 	}
-	
+
 	/**
 	 * Validation du token csrf en fonction de la valeur en session
 	 * @param string $csrf_token
 	 * @return boolean
 	 */
 	public static function validateCSRFToken($csrf_token) {
+		\Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Session::validateCSRFToken($csrf_token) Valid csrf : " . self::get(\Config\IHM::$CSRF_TOKEN));
 	    return $csrf_token == self::get(\Config\IHM::$CSRF_TOKEN);
 	}
-	
+
 	/*********** PRIVATE FUNCTIONS ********/
 	/**
 	 * Génération du token de session
@@ -207,7 +208,7 @@ class Session {
 	private static function genToken($uniqID) {
 		return md5(base64_encode($uniqID.':'.self::getUserAgent()));
 	}
-	
+
 	/**
 	 * Génération d'un ID unique
 	 * @return string

@@ -131,5 +131,30 @@ use Program\Data\User as u;
     </div>
     <?php t::inc('copyright') ?>
 </div>
+<div class="dialog_popup" id="lock_poll_popup" title="<?= l::g('Lock the poll') ?>">
+	<div class="dialog_popup_content">
+		<div><?= l::g('Remember to lock the poll when it\'s finished') ?></div>
+		<?php if (\Program\Data\Poll::get_current_poll()->type == 'date') { ?>
+			<div><?= l::g('So you can create the meeting') ?></div>
+		<?php } ?>
+		<div><a title="<?= l::g("Clic here to lock the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" href="<?= o::url(null, ACT_LOCK, array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><img alt="Lock" src="skins/<?= o::get_env("skin") ?>/images/1395932256_link-01_white.png" height="12px"/> <?= l::g('Clic here to lock the poll') ?></a></div>
+	</div>
+</div>
+
+<div class="dialog_popup" id="validate_prop_popup" title="<?= l::g('Validate one or more prop') ?>">
+	<div class="dialog_popup_content">
+		<div><?= l::g('Your poll is now lock! You can validate one or more proposal to notify the attendees') ?></div>
+		<div class="dialog_popup_content_separator"></div>
+		<div><?= s::GetBestProposalPopup() ?></div>
+	</div>
+</div>
+
+<div class="dialog_popup" id="add_to_calendar_popup" title="<?= l::g('Validate your presence') ?>">
+	<div class="dialog_popup_content">
+		<div><?= l::g('Organizer has validate one or more date, you can now say if you be there or not') ?></div>
+		<div><?= s::GetAddCalendarProposalsPopup() ?></div>
+	</div>
+</div>
+
 </body>
 <?php t::inc('foot') ?>

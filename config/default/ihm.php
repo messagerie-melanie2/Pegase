@@ -39,6 +39,12 @@ class IHM {
      * Configuration de l'overlay pour la localization
      */
     public static $OVERLAY_LOCALIZATION = null;
+    
+    /**
+     * Doit-on afficher la page de maintenance ?
+     */
+    public static $MAINTENANCE = false;
+    
     /**
      * Configuration du nom de la skin à utiliser pour l'ihm
      */
@@ -52,6 +58,18 @@ class IHM {
      * Le driver doit prendre en compte la création de l'utilisateur avec un mot de passe crypté
      */
     public static $CREATE_USER = false;
+    
+    /**
+     * Nombre de réponses nécessaires avant l'affichage du pop de verrouillage
+     * @var int
+     */
+    public static $POPUP_NB_RESPONSES = 2;
+    /**
+     * Temps entre la création du sondage et l'affichage du pop up pour le verrouillage
+     * En secondes
+     * @var int
+     */
+    public static $POPUP_TIME_CREATED = 60;
     /**
      * Configuration du timezone par defaut pour l'application
      */
@@ -95,6 +113,12 @@ class IHM {
      */
     public static $LOGIN_URL = null;
     /**
+     * Utiliser un SSO pour se connecter à Pégase
+     * Dans ce cas la page de login est limitée
+     * @var boolean
+     */
+    public static $USE_SSO = false;
+    /**
      * Défini la valeur du champ get pour lui passer une url en redirection
      * [Optionnel] Peut être mis à null
      */
@@ -107,6 +131,24 @@ class IHM {
      * Configuration du ou des serveurs memcache
      */
     public static $MEMCACHE_SERVER = array();
+    
+    /**
+     * URL de disponibilité des utilisateurs
+     * Peut être configuré dans le ldap ou ici (la valeur du ldap prend le dessus)
+     *
+     * Paramètres possible: %%username%% / %%email%%
+     *
+     * @var string
+     */
+    public static $FREEBUSY_URL = "https://melanie2web.melanie2.i2/kronolith/fb.php?u=%%username%%";
+    
+    
+    /**
+     * Défini si les tentatives supprimés par l'organisateur (validation d'une date, suppression du sondage)
+     * sont répercutées pour tous les participants
+     * @var boolean
+     */
+    public static $ORGANIZER_DELETE_TENTATIVES_ATTENDEES = true;
 
     /**
      * Défini si l'application propose aux utilisateurs d'ajouter la réponse à leur calendrier.

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Classe abstraite pour le driver de gestion des évènements pour l'application
  *
@@ -30,34 +31,78 @@ use Config;
 abstract class Driver {
   /**
    * Défini si le driver est configurable
+   *
    * @var bool
    */
   const CONFIGURABLE = false;
 
   /**
+   * Est-ce que le driver permet l'affichage des freebusy
+   * @var boolean
+   */
+  public $CAN_GET_FREEBUSY = false;
+
+  /**
+   * Est-ce que le driver permet d'écrire dans le calendrier
+   * @var boolean
+   */
+  public $CAN_WRITE_CALENDAR = false;
+
+  /**
+   * Est-ce que le driver permet de générer un fichier ICS
+   * @var boolean
+   */
+  public $CAN_GENERATE_ICS = true;
+
+  /**
+   * Identifiant de l'outil utilisant l'ICS (pour la génération)
+   * @var string
+   */
+  const PRODID = '-//Pegase/Sabre/PHP/PNE Messagerie/MEDDE';
+  /**
+   * Version ICalendar utilisé pour la génération de l'ICS
+   * @var string
+   */
+  const VERSION = '2.0';
+
+  /**
+   * Constructeur du par défaut driver
+   * A modifier dans le driver
+   */
+  function __construct() {
+    if (isset(\Config\IHM::$FREEBUSY_URL)
+    		&& !empty(\Config\IHM::$FREEBUSY_URL)
+    		|| \Program\Data\User::isset_current_user()
+    		&& isset(\Program\Data\User::get_current_user()->freebusy_url)) {
+      $this->CAN_GET_FREEBUSY = true;
+		}
+  }
+
+  /**
    * Instance des drivers
+   *
    * @var Driver[]
    */
   private static $drivers = [];
   /**
    * Récupère l'instance du driver à utiliser pour l'utilisateur courant
+   *
    * @param string $name [Optionnel] Nom du driver à récupérer
    * @return Driver
    */
   public static function get_driver($name = null) {
     // Récupération la liste des drivers
     self::get_drivers();
-    if (!isset($name)
-        && count(self::$drivers) == 1) {
+    if (! isset($name) && count(self::$drivers) == 1) {
       // Le nom n'est pas fourni, il n'y en a qu'un
-      foreach(self::$drivers as $driver) {
+      foreach (self::$drivers as $driver) {
         return $driver;
       }
     }
-    elseif (!isset($name)) {
+    elseif (! isset($name)) {
       // Le nom n'est pas fourni, on retourne le premier driver non configurable
-      foreach(self::$drivers as $driver) {
-        if (!$driver::CONFIGURABLE) {
+      foreach (self::$drivers as $driver) {
+        if (! $driver::CONFIGURABLE) {
           return $driver;
         }
       }
@@ -73,20 +118,21 @@ abstract class Driver {
   }
   /**
    * Récupère la liste des drivers pour l'utilisateur courant
+   *
    * @return Driver[]
    */
   public static function get_drivers() {
     // Le tableau d'instance doit être initialisé
-    if (!isset(self::$drivers)) {
+    if (! isset(self::$drivers)) {
       self::$drivers = [];
     }
     // Parcour les drivers configuré
     $drivers = \Config\Driver::$Drivers_event;
-    if (!is_array($drivers)) {
+    if (! is_array($drivers)) {
       $drivers = [$drivers];
     }
     // Parcours les drivers pour générer les instances
-    foreach($drivers as $driver) {
+    foreach ($drivers as $driver) {
       $driver_class = strtolower($driver);
       $driver_class = "\\Program\\Lib\\Event\\Drivers\\$driver_class\\$driver_class";
       self::$drivers[$driver] = new $driver_class();
@@ -97,14 +143,14 @@ abstract class Driver {
 
   /**
    * Méthode pour uniformiser la génération de l'uid pour un événement
+   *
    * @param string $date Date de l'évènement
    * @param \Program\Data\Poll $poll [Optionnel] Sondage à utiliser, si ce n'est pas le courant
    * @return string $uid
    */
   public function generate_event_uid($date, $poll = null) {
     // Récupération du poll courant
-    if (!isset($poll)
-        && \Program\Data\Poll::isset_current_poll()) {
+    if (! isset($poll) && \Program\Data\Poll::isset_current_poll()) {
       $poll = \Program\Data\Poll::get_current_poll();
     }
     if (isset($poll)) {
@@ -118,6 +164,7 @@ abstract class Driver {
 
   /**
    * Permet de formater une date en date de début et date de fin
+   *
    * @param string $date Date de l'évènement
    * @return array $start,$end,$allday
    */
@@ -133,7 +180,8 @@ abstract class Driver {
         $end->add(new \DateInterval('P1D'));
         $allday = true;
       }
-    } else {
+    }
+    else {
       $end = clone $start;
       // Pour une journée entière on fait +1 jour pour ne pas avoir de décalage
       if (strlen($tmp[0]) == 10) {
@@ -145,64 +193,294 @@ abstract class Driver {
       }
     }
 
-    return [$start, $end, $allday];
+    return [$start,$end,$allday];
   }
 
-  /****** METHODES ABSTRAITES ******/
+  /**
+   * **** METHODES ABSTRAITES *****
+   */
   /**
    * Génération de la liste des disponibilités pour l'utilisateur
    * Les disponibilités peuvent se situer entre une date de début et une date de fin
    * Retourne une liste d'objet Event
+   *
    * @param \DateTime $start Début des disponibilités
    * @param \DateTime $end Fin des disponibilités
    * @param \Program\Data\User $user [Optionnel] Utilisateur si ce n'est pas le courant
+   * @param \Program\Data\Calendar $calendar [Optionnel] Calendrier si ce n'est pas le courant
    * @return \Program\Data\Event[] Tableau contenant la liste des évènements
    */
-  abstract function get_user_freebusy($start = null, $end = null, $user = null);
+  function get_user_freebusy($start = null, $end = null, $user = null, $calendar = null) {
+  	// Récupération de l'utilisateur
+  	if (! isset($user) && \Program\Data\User::isset_current_user()) {
+  	  if (\Program\Data\User::isset_current_user()) {
+  	    $user = \Program\Data\User::get_current_user();
+  	  }
+  	  else {
+  	    return null;
+  	  }
+  	}
+  	// Récupération de l'url de freebusy
+  	if (isset($user->freebusy_url)) {
+  		$fburl = $user->freebusy_url;
+  	}
+  	elseif (isset(\Config\IHM::$FREEBUSY_URL)
+    		&& !empty(\Config\IHM::$FREEBUSY_URL)) {
+  		$fburl = \Config\IHM::$FREEBUSY_URL;
+  	}
+  	else {
+  		return null;
+  	}
+  	// Données utilisateur
+  	$fburl = str_replace("%%username%%", $user->username, $fburl);
+  	$fburl = str_replace("%%email%%", $user->email, $fburl);
+  	// Gestion des dates
+  	if (strpos($fburl, "%%start%%") !== false
+  			&& isset($start)) {
+		  $fburl = str_replace("%%start%%", $start->format('U'), $fburl);
+  	}
+  	if (strpos($fburl, "%%end%%") !== false
+  	    && isset($end)) {
+  	      $fburl = str_replace("%%end%%", $end->format('U'), $fburl);
+  	    }
+  	// Récupération des données de freebusy
+  	$fbdata = @file_get_contents($fburl);
+  	if ($fbdata !== false) {
+  		// Inclusion du VObject de Sabre
+  		require_once __DIR__.'/../vendor/autoload.php';
+
+  		$vcalendar = \Sabre\VObject\Reader::read($fbdata);
+  		$events = [];
+  		// Parcours les freebusy
+  		foreach($vcalendar->VFREEBUSY as $vfreebusy) {
+        foreach($vfreebusy->FREEBUSY as $prop) {
+        	// Récupération des dates
+        	$freebusy_time = explode('/', $prop->getValue(), 2);
+        	$event_start = new \DateTime($freebusy_time[0]);
+        	if (isset($freebusy_time[1])) {
+        		$event_end = new \DateTime($freebusy_time[1]);
+        	}
+        	else {
+        		$event_end = clone $event_start;
+        	}
+      		$freebusy = $prop->parameters;
+        	// Récupération du status
+        	if (isset($freebusy['FBTYPE'])) {
+        		switch ($freebusy['FBTYPE']) {
+        		  default:
+        		  case 'BUSY':
+        		  case 'BUSY-UNAVAILABLE':
+        		    $status = \Program\Data\Event::STATUS_CONFIRMED;
+        		    break;
+        		  case 'FREE':
+        		    $status = \Program\Data\Event::STATUS_NONE;
+        		    break;
+        		  case 'BUSY-TENTATIVE':
+        		    $status = \Program\Data\Event::STATUS_TENTATIVE;
+        		    break;
+        		}
+        	}
+        	else {
+        		$status = \Program\Data\Event::STATUS_CONFIRMED;
+        	}
+
+        	// Génération de l'événement
+        	$event = new \Program\Data\Event([
+        			'uid' => $this->generate_event_uid($prop->getValue()),
+        			'start' => $event_start,
+        			'end' => $event_end,
+        			'status' => $status,
+        			'title' => \Program\Lib\Request\Localization::g(ucfirst(strtolower($status)), false),
+        	]);
+        	if ($event->start->format('H:i:s') == '00:00:00' && $event->end->format('H:i:s') == '00:00:00') {
+        	  $event->allday = true;
+        	}
+        	else {
+        	  $event->allday = false;
+        	  $event->start->setTimezone($this->get_user_timezone($user));
+        	  $event->end->setTimezone($this->get_user_timezone($user));
+        	}
+        	// Ajoute l'évènement au tableau
+        	$events[] = $event;
+        }
+  		}
+  		return $events;
+  	}
+  	return null;
+  }
 
   /**
    * Retourne le timezone de l'utilisateur
+   *
    * @param \Program\Data\User $user [Optionnel] Utilisateur si ce n'est pas le courant
-   * @return string Timezone de l'utilisateur
+   * @return \DateTimeZone Timezone de l'utilisateur
    */
-  abstract function get_user_timezone($user = null);
+  function get_user_timezone($user = null) {
+  	return new \DateTimeZone(date_default_timezone_get());
+  }
 
   /**
    * Enregistre dans l'agenda de l'utilisateur l'évènement lié au sondage
+   *
    * @param string $date Date de l'évènement
    * @param \Program\Data\Poll $poll [Optionnel] Sondage à utiliser, si ce n'est pas le courant
    * @param \Program\Data\User $user [Optionnel] Utilisateur si ce n'est pas le courant
-   * @param string $status Event::STATUS_* [Optionnel] Statut lié à l'évènement
-   * @return boolean True si la création s'est bien passée, False sinon
+   * @param string $status \Program\Data\Event::STATUS_* [Optionnel] Statut lié à l'évènement
+   * @param string $part_status \Program\Data\Event::PARTSTAT_* [Optionnel] Statut de participant pour la génération de la réunion
+   * @param \Program\Data\Calendar $calendar [Optionnel] Calendrier si ce n'est pas le courant
+   * @param boolean $selected_date Date retenue par l'organisateur ?
+   * @return string UID de l'événement créé si OK, null sinon
    */
-  abstract function add_to_calendar($date, $poll = null, $user = null, $status = null);
+  abstract function add_to_calendar($date, $poll = null, $user = null, $status = null, $part_status = null, $calendar = null, $selected_date = false);
+
+  /**
+   * Liste les calendriers accessibles pour l'utilisateur (en lecture/écriture)
+   * @param \Program\Data\User $user [Optionnel] Utilisateur si ce n'est pas le courant
+   * @return \Program\Data\Calendar[] Tableau contenant la liste des calendriers
+   */
+  abstract function list_user_calendars($user = null);
 
   /**
    * Permet la génération d'un fichier ICS en fonction du sondage et de la date de la proposition
+   *
    * @param string $date Date de l'évènement
    * @param \Program\Data\Poll $poll [Optionnel] Sondage à utiliser, si ce n'est pas le courant
    * @param \Program\Data\User $user [Optionnel] Utilisateur si ce n'est pas le courant
+   * @param string $status \Program\Data\Event::STATUS_* [Optionnel] Statut lié à l'évènement
+   * @param string $part_status \Program\Data\Event::PARTSTAT_* [Optionnel] Statut de participant pour la génération de la réunion
+   * @param boolean $request S'agit il d'une request, permet de définir METHOD:REQUEST
+   * @param \Program\Data\Calendar $calendar [Optionnel] Calendrier si ce n'est pas le courant
    * @return string Contenu ICS
    */
-  abstract function generate_ics($date, $poll = null, $user = null);
+  function generate_ics($date, $poll = null, $user = null, $status = null, $part_status = null, $request = false, $calendar = null) {
+  	// Récupération du sondage
+  	if (! isset($poll)) {
+  	  if (\Program\Data\Poll::isset_current_poll()) {
+  	    $poll = \Program\Data\Poll::get_current_poll();
+  	  }
+  	  else {
+  	    return null;
+  	  }
+  	}
+  	// Récupération de l'utilisateur
+  	if (! isset($user) && \Program\Data\User::isset_current_user()) {
+  		if (\Program\Data\User::isset_current_user()) {
+  			$user = \Program\Data\User::get_current_user();
+  		}
+      else {
+        return null;
+      }
+  	}
+  	// Inclusion du VObject de Sabre
+  	require_once __DIR__.'/../vendor/autoload.php';
+
+  	// Génération du component VCalendar
+  	$vcalendar = new \Sabre\VObject\Component\VCalendar();
+  	// PRODID et Version
+  	$vcalendar->PRODID = self::PRODID;
+  	$vcalendar->VERSION = self::VERSION;
+  	// METHOD
+  	if ($request) {
+  	  $vcalendar->add('METHOD', 'REQUEST');
+  	}
+  	// Création de l'objet VEVENT
+  	$vevent = $vcalendar->add('VEVENT');
+  	$vevent->UID = $this->generate_event_uid($date, $poll);
+  	$vevent->SUMMARY = $poll->title;
+  	$vevent->LOCATION = $poll->location;
+  	$vevent->DESCRIPTION = $poll->description;
+  	$vevent->STATUS = isset($status) ? $status : 'CONFIRMED';
+  	$vevent->DTSTAMP = new \DateTime();
+
+    // Gestion des dates
+  	// Récupération de la date de début et de la date de fin
+  	list($start, $end, $allday) = $this->date_to_start_end($date);
+  	// Récupération du timezone
+  	$timezone = $this->get_user_timezone($user);
+  	if ($allday) {
+  		// All day event
+  		$vevent->add("DTSTART", $start->format('Ymd'), ["VALUE" => "DATE"]);
+  		$vevent->add("DTEND", $end->format('Ymd'), ["VALUE" => "DATE"]);
+  	}
+  	else {
+  		// Si c'est une date/time
+  		$vevent->DTSTART = new \DateTime($start->format('Y-m-d H:i:s'), $timezone);
+  		$vevent->DTEND = new \DateTime($end->format('Y-m-d H:i:s'), $timezone);
+  	}
+
+  	// Création de l'organisateur
+  	if ($user->user_id == $poll->organizer_id) {
+  		$organizer = $user;
+  	}
+  	else {
+  		$organizer = \Program\Drivers\Driver::get_driver()->getUser($poll->organizer_id);
+  	}
+
+  	// Add organizer
+  	$vevent->add('ORGANIZER',
+  	    'mailto:'.$organizer->email,
+  	    [
+  	            'CN' => $organizer->fullname,
+  	            'ROLE' => 'CHAIR',
+  	            'PARTSTAT' => 'ACCEPTED',
+  	            'RSVP' => 'TRUE',
+  	    ]);
+
+  	// Récupération des réponses du sondage
+  	$responses = \Program\Drivers\Driver::get_driver()->getPollResponses($poll->poll_id);
+
+  	// Parcours les réponses pour ajouter les participants
+  	foreach ($responses as $response) {
+  		// Ne pas ajouter l'organisateur
+  		if ($response->user_id == $poll->organizer_id) {
+  			continue;
+  		}
+  		// Récupération de l'utilisateur
+  		if ($response->user_id == $user->user_id) {
+  			$attendee = $user;
+  			$partstat = isset($part_status) ? $part_status : 'NEED-ACTION';
+  		}
+  		else {
+  			$attendee = \Program\Drivers\Driver::get_driver()->getUser($response->user_id);
+  			$partstat = 'NEED-ACTION';
+  		}
+  		// Add organizer
+  		$vevent->add('ATTENDEE',
+  		    'mailto:'.$attendee->email,
+  		    [
+  		            'CN' => isset($attendee->fullname) ? $attendee->fullname : $attendee->username,
+  		            'ROLE' => 'REQ-PARTICIPANT',
+  		            'PARTSTAT' => $partstat,
+  		            'RSVP' => 'TRUE',
+  		    ]);
+  	}
+
+  	return $vcalendar->serialize();
+  }
 
   /**
    * Permet de tester si la réponse est déjà enregistré dans l'agenda de l'utilisateur
+   *
    * @param string $date Date de l'évènement
+   * @param string $event_uid [Optionnel] UID de l'événement
    * @param \Program\Data\Poll $poll [Optionnel] Sondage à utiliser, si ce n'est pas le courant
    * @param \Program\Data\User $user [Optionnel] Utilisateur si ce n'est pas le courant
    * @param string $status Event::STATUS_* [Optionnel] Statut lié à l'évènement
+   * @param \Program\Data\Calendar $calendar [Optionnel] Calendrier si ce n'est pas le courant
    * @return boolean True si l'évènement existe, False sinon
    */
-  abstract function event_exists($date, $poll = null, $user = null, $status = null);
+  abstract function event_exists($date, $event_uid = null, $poll = null, $user = null, $status = null, $calendar = null);
 
   /**
    * Supprime l'événement créé en fonction du sondage
+   *
    * @param string $date Date de l'évènement
+   * @param string $event_uid [Optionnel] UID de l'événement
    * @param \Program\Data\Poll $poll [Optionnel] Sondage à utiliser, si ce n'est pas le courant
    * @param \Program\Data\User $user [Optionnel] Utilisateur si ce n'est pas le courant
    * @param string $status Event::STATUS_* [Optionnel] Statut lié à l'évènement
+   * @param \Program\Data\Calendar $calendar [Optionnel] Calendrier si ce n'est pas le courant
    * @return boolean True si l'événement a bien été supprimé, False sinon
    */
-  abstract function delete_event($date, $poll = null, $user = null);
+  abstract function delete_event($date, $event_uid = null, $poll = null, $user = null, $calendar = null);
 }

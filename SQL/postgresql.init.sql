@@ -3,9 +3,12 @@
 -- DROP INDEX polls_poll_uid_idx;
 -- DROP INDEX responses_user_id_idx;
 -- DROP INDEX responses_poll_id_idx;
+-- DROP INDEX eventslist_user_id_idx;
+-- DROP INDEX eventslist_poll_id_idx;
 -- DROP TABLE users;
 -- DROP TABLE polls;
 -- DROP TABLE responses;
+-- DROP TABLE eventslist;
 -- DROP SEQUENCE users_seq;
 -- DROP SEQUENCE polls_seq;
 
@@ -32,7 +35,7 @@ CREATE SEQUENCE users_seq
 CREATE TABLE users (
 	user_id integer DEFAULT nextval('users_seq'::text) PRIMARY KEY,
 	username varchar(255) DEFAULT '' NOT NULL,
-  password varchar(255),
+  	password varchar(255),
 	email varchar(255),
 	fullname text,
 	created timestamp with time zone DEFAULT now() NOT NULL,
@@ -70,12 +73,16 @@ CREATE TABLE polls (
 	organizer_id integer NOT NULL
         	REFERENCES users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	created timestamp with time zone DEFAULT now() NOT NULL,
-	modified timestamp with time zone DEFAULT now() NOT NULL,
+	modified timestamp with time zone DEFAULT now() NOT NULL,	
 	locked smallint DEFAULT 0 NOT NULL,
 	deleted smallint DEFAULT 0 NOT NULL,
 	type varchar(10),
 	proposals text DEFAULT ''::text NOT NULL,
-	settings text DEFAULT ''::text NOT NULL
+	settings text DEFAULT ''::text NOT NULL,
+	date_start timestamp with time zone,
+	date_end timestamp with time zone,
+	deadline timestamp with time zone,
+	attendees text DEFAULT ''::text NOT NULL
 );
 
 --
@@ -91,6 +98,22 @@ CREATE TABLE responses (
 	response text DEFAULT ''::text NOT NULL,
 	settings text DEFAULT ''::text NOT NULL,
 	response_time timestamp with time zone DEFAULT now() NOT NULL
+);
+
+--
+-- Table "eventslist"
+-- Name: eventslist; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE eventslist (
+	user_id integer NOT NULL
+        	REFERENCES users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	poll_id integer NOT NULL
+        	REFERENCES polls (poll_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	events text DEFAULT ''::text NOT NULL,
+	events_status varchar(255) DEFAULT '' NOT NULL,
+	settings text DEFAULT ''::text NOT NULL,
+	modified_time timestamp with time zone DEFAULT now() NOT NULL
 );
 
 -- Index: public.users_username_auth_idx
@@ -129,5 +152,24 @@ CREATE INDEX responses_user_id_idx
 
 CREATE INDEX responses_poll_id_idx
   ON public.responses
+  USING btree
+  (poll_id);
+
+-- Index: public.eventslist_user_id_idx
+
+-- DROP INDEX public.eventslist_user_id_idx;
+
+CREATE INDEX eventslist_user_id_idx
+  ON public.eventslist
+  USING btree
+  (user_id);
+
+
+-- Index: public.eventslist_poll_id_idx
+
+-- DROP INDEX public.eventslist_poll_id_idx;
+
+CREATE INDEX eventslist_poll_id_idx
+  ON public.eventslist
   USING btree
   (poll_id);

@@ -190,6 +190,36 @@ abstract class Driver {
      */
     abstract function deletePollUserResponse($user_id, $poll_id);
 
+    /**
+     * Récupère la liste des événements de l'utilisateur sur un sondage
+     * @param int $user_id Identifiant de l'utilisateur
+     * @param int $poll_id Identifiant du sondage
+     * @return \Program\Data\EventsList
+     */
+    abstract function getPollUserEventsList($user_id, $poll_id);
+
+    /**
+     * Enregistre les events list pour l'utilisateur sur un sondage
+     * @param \Program\Data\EventsList $eventslist
+     * @return true si ok, false sinon
+     */
+    abstract function addPollUserEventsList(\Program\Data\EventsList $eventslist);
+
+    /**
+     * Modifie les events list de l'utilisateur sur un sondage
+     * @param \Program\Data\EventsList $eventslist
+     * @return true si ok, false sinon
+     */
+    abstract function modifyPollUserEventsList(\Program\Data\EventsList $eventslist);
+
+    /**
+     * Supprime les events list de l'utilisateur sur un sondage
+     * @param int $user_id Identifiant de l'utilisateur
+     * @param string $poll_id Identifiant du sondage
+     * @return true si ok, false sinon
+     */
+    abstract function deletePollUserEventsList($user_id, $poll_id);
+
 
     /***** STATISTIQUES *******/
     /**

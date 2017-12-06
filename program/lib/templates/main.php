@@ -54,8 +54,17 @@ class Main {
 				&& \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
 			$csrf_token = trim(strtolower(Request::getInputValue("_t", POLL_INPUT_GET)));
 			if (Session::validateCSRFToken($csrf_token)) {
+				// Récupération des réponses du sondage
+				$responses = \Program\Drivers\Driver::get_driver ()->getPollResponses ( \Program\Data\Poll::get_current_poll()->poll_id );
+				// Suppression des provisoires
+				self::delete_tentatives_calendar($responses);
 				if (\Program\Drivers\Driver::get_driver()->deletePoll(\Program\Data\Poll::get_current_poll()->poll_id)) {
 					Output::set_env("message", "Poll has been deleted");
+					$send_notif = Request::getInputValue("_send_notif", POLL_INPUT_GET);
+					if (isset($send_notif)
+							&& $send_notif == 1) {
+						\Program\Lib\Mail\Mail::SendDeletedPollNotificationMail(\Program\Data\Poll::get_current_poll(), $responses);
+					}
 					\Program\Data\Poll::set_current_poll(null);
 				} else {
 					Output::set_env("error", "Error while deleting the poll");
@@ -64,11 +73,11 @@ class Main {
 				Output::set_env("error", "Invalid request");
 			}
 		}
-	    // Ajout des labels
-	    Output::add_label(array(
-	        'Are you sure you want to delete the poll ?',
-	    ));
-	    self::MobileVersion();
+    // Ajout des labels
+    Output::add_label(array(
+        'Are you sure you want to delete the poll ?', 'Yes', 'No', 'Notify attendees',
+    ));
+    self::MobileVersion();
 	}
 	/**
 	 * Méthode pour passer en version mobile ou en version desktop
@@ -147,5 +156,72 @@ class Main {
 	        $html = l::g('No poll');
 	    }
 	    return $html;
+	}
+
+	/**
+	 * Suppression des événements provisoires
+	 */
+	private static function delete_tentatives_calendar($responses = null)
+	{
+		  $proposals = unserialize(\Program\Data\Poll::get_current_poll()->proposals);
+
+	    // Charge le eventslist depuis la base de données
+	    if (\Program\Data\EventsList::isset_current_eventslist() && \Program\Data\EventsList::get_current_eventslist()->events_status == \Program\Data\Event::STATUS_TENTATIVE) {
+	        $events = unserialize(\Program\Data\EventsList::get_current_eventslist()->events);
+	        // Parcours les propositions du sondage
+	        foreach ($proposals as $prop_key => $proposal) {
+	            // La proposition n'est pas validée, il faut peut être la supprimer
+	            if (\Program\Lib\Event\Drivers\Driver::get_driver()->event_exists($proposal, (isset($events[$proposal]) ? $events[$proposal] : null), null, null, \Program\Data\Event::STATUS_TENTATIVE)) {
+	                // L'événement existe, il faut donc le supprimer
+	                if (\Program\Lib\Event\Drivers\Driver::get_driver()->delete_event($proposal, (isset($events[$proposal]) ? $events[$proposal] : null))) {
+	                    // Supprime la date de la liste des events
+	                    if (isset($events[$proposals[$prop_key]])) {
+	                        unset($events[$proposals[$prop_key]]);
+	                    }
+	                }
+	            }
+	        }
+
+	        // Enregistre les modifications sur le current eventslist
+	        \Program\Data\EventsList::get_current_eventslist()->events = serialize($events);
+	        \Program\Data\EventsList::get_current_eventslist()->modified_time = date('Y-m-d H:i:s');
+	        \Program\Drivers\Driver::get_driver()->modifyPollUserEventsList(\Program\Data\EventsList::get_current_eventslist());
+	    }
+
+	    if (\Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id && \Config\IHM::$ORGANIZER_DELETE_TENTATIVES_ATTENDEES) {
+	        // Supprimer automatiquement les tentatives des participants
+	        if (!isset($responses)) {
+	        	$responses = \Program\Drivers\Driver::get_driver()->getPollResponses(\Program\Data\Poll::get_current_poll()->poll_id);
+	        }
+	        foreach ($responses as $response) {
+	            if ($response->user_id != \Program\Data\Poll::get_current_poll()->organizer_id) {
+	                // Récupère les événements enregistrés depuis la base de données
+	                $user_eventslist = \Program\Drivers\Driver::get_driver()->getPollUserEventsList($response->user_id, \Program\Data\Poll::get_current_poll()->poll_id);
+	                if (isset($user_eventslist) && $user_eventslist->events_status == \Program\Data\Event::STATUS_TENTATIVE) {
+	                    $events = unserialize($user_eventslist->events);
+	                    $user = \Program\Drivers\Driver::get_driver()->getUser($response->user_id);
+	                    if ($user->auth == 1) {
+	                        // Parcours les événéments pour supprimer ceux qui doivent l'être
+	                        // Parcours les propositions du sondage
+	                        foreach ($proposals as $proposal_key => $proposal) {
+	                            // La proposition n'est pas validée, il faut peut être la supprimer
+	                            if (\Program\Lib\Event\Drivers\Driver::get_driver()->event_exists($proposal, (isset($events[$proposal]) ? $events[$proposal] : null), null, $user, \Program\Data\Event::STATUS_TENTATIVE)) {
+	                                // L'événement existe et la proposition n'est pas validée, il faut donc le supprimer
+	                                \Program\Lib\Event\Drivers\Driver::get_driver()->delete_event($proposal, (isset($events[$proposal]) ? $events[$proposal] : null), null, $user);
+	                                // Supprime la date de la liste des events
+	                                if (isset($events[$proposal])) {
+	                                    unset($events[$proposal]);
+	                                }
+	                            }
+	                        }
+	                    }
+	                }
+	                // Enregistre les modifications sur le eventslist de l'utilisateur
+	                $user_eventslist->events = serialize($events);
+	                $user_eventslist->modified_time = date('Y-m-d H:i:s');
+	                \Program\Drivers\Driver::get_driver()->modifyPollUserEventsList($user_eventslist);
+	            }
+	        }
+	    }
 	}
 }

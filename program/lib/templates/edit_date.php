@@ -58,8 +58,15 @@ class Edit_date {
 	        o::set_env("error", "Current poll is not defined");
 	        return;
 	    }
+	    if (\Program\Data\Poll::get_current_poll()->organizer_id != \Program\Data\User::get_current_user()->user_id) {
+	        o::set_env("page", "error");
+	        o::set_env("error", "You are not organizer of the poll");
+	        return;
+	    }
 	    // L'application doit elle enregistrer les événements dans l'agenda
-	    o::set_env("add_to_calendar", \Config\IHM::$ADD_TO_CALENDAR);
+	    o::set_env("can_get_freebusy", \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_GET_FREEBUSY);
+	    o::set_env("can_generate_ics", \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_GENERATE_ICS);
+	    o::set_env("can_write_calendar", \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_WRITE_CALENDAR);
 	    // Définition du nombre de prop par défaut
 	    $nb_prop = 1;
 	    if (o::get_env("mobile"))
@@ -94,8 +101,8 @@ class Edit_date {
     	    'Edit date (Y-m-d H:i:s)', 'Edit date', 'Delete',
     	    'Are you sure ? Not saved proposals are lost',
     	    'Choose date on the calendar',
-    	    'show calendar', 'None', 'Tentative', 'Confirmed', 'Your freebusy',
-	    	'Loading your events...',
+    	    'show calendar', 'hide calendar', 'None', 'Tentative', 'Confirmed', 'Your freebusy',
+	    		'Loading your events...',
 	    ));
 	    // Ajout de l'environnement
 	    o::set_env('poll_title', \Program\Data\Poll::get_current_poll()->title);

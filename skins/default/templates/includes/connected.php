@@ -30,11 +30,14 @@ use Program\Lib\Request\Localization as l;
         <?= l::g('Connected as') ?> <b title="<?= u::get_current_user()->fullname ?>"><?= u::get_current_user()->username ?></b>
     </span>
     <a class="pure-button pure-button-new-poll customtooltip_bottom" title="<?= l::g("Create a new poll", false) ?>" href="<?= o::url("edit", ACT_NEW) ?>">
-        <img alt="Add" src="skins/<?= o::get_env("skin") ?>/images/1395836978_add_new_poll.png" height="10px"/> 
+        <img alt="Add" src="skins/<?= o::get_env("skin") ?>/images/1395836978_add_new_poll.png" height="10px"/>
         <?= l::g('New poll') ?>
     </a>
     <a class="pure-button pure-button-home customtooltip_bottom" title="<?= l::g("Go back to the main page", false) ?>" href="<?= o::url("main") ?>">
         <?= l::g('Return to the index') ?>
+    </a>
+    <a id="help-page-button" class="pure-button pure-button-help customtooltip_bottom" title="<?= l::g("View help of the page", false) ?>" href="#">
+        <?= l::g('Help') ?>
     </a>
     <a class="pure-button pure-button-disconnect customtooltip_bottom" title="<?= l::g("Disconnect from the app", false) ?>" href="<?= o::url("logout") ?>">
         <?= l::g('Disconnect') ?>

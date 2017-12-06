@@ -231,7 +231,7 @@ class DB {
 			else $sth->execute();
 		} catch (\PDOException $ex) {
 			// Retourne false, erreur
-			Log::l(Log::DEBUG, "DB->executeQueryToObject(): Exception $ex");
+			Log::l(Log::ERROR, "DB->executeQueryToObject(): Exception $ex");
 			return false;
 		}
 

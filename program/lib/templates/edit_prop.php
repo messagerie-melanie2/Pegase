@@ -58,6 +58,11 @@ class Edit_prop {
 	        o::set_env("error", "Current poll is not defined");
 	        return;
 	    }
+	    if (\Program\Data\Poll::get_current_poll()->organizer_id != \Program\Data\User::get_current_user()->user_id) {
+	        o::set_env("page", "error");
+	        o::set_env("error", "You are not organizer of the poll");
+	        return;
+	    }
 	    o::set_env("proposals", unserialize(\Program\Data\Poll::get_current_poll()->proposals), false);
 	    if (!is_array(o::get_env("proposals")))
 	        o::set_env("proposals", array(), false);

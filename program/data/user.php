@@ -1,10 +1,10 @@
 <?php
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
- * Cette application est un doodle-like permettant aux utilisateurs 
+ * Cette application est un doodle-like permettant aux utilisateurs
  * d'effectuer des sondages sur des dates ou bien d'autres criteres
- * 
- * L'application est écrite en PHP5,HTML et Javascript 
+ *
+ * L'application est écrite en PHP5,HTML et Javascript
  * et utilise une base de données postgresql et un annuaire LDAP pour l'authentification
  *
  * @author Thomas Payen
@@ -30,7 +30,7 @@ use \Program\Lib\Request\Session as Session;
 
 /**
  * Définition d'un utilisateur pour l'application de sondage
- * 
+ *
  * @property int $user_id Identifiant de l'utilisateur dans la bdd
  * @property string $username Login de l'utilisateur
  * @property string $password Mot de passe de l'utilisateur
@@ -42,7 +42,8 @@ use \Program\Lib\Request\Session as Session;
  * @property string $language Langue utilisé par l'utilisateur
  * @property string $preferences Préférences de l'utilisateur sérialisées
  * @property int $auth Est-ce que l'utilisateur est authentifié ou non
- * 
+ * @property string $freebusy_url URL de freebusy de l'utilisateur
+ *
  * @package Data
  */
 class User extends Object {
@@ -59,7 +60,7 @@ class User extends Object {
      * @param array $data Données à charger dans l'objet
      */
     public function __construct($data = null) {
-        if (isset($data) 
+        if (isset($data)
                 && is_array($data)) {
             foreach ($data as $key => $value) {
                 $key = strtolower($key);
@@ -103,5 +104,34 @@ class User extends Object {
      */
     public static function isset_current_user() {
         return isset(self::$current_user);
+    }
+    /**
+     * Positionne la valeur de paramètre $freebusy_url depuis les settings de l'utilisateur
+     * @param string $freebusy_url
+     * @return boolean
+     */
+    protected function __set_freebusy_url($freebusy_url) {
+      $settings = unserialize($this->settings);
+      if ($settings === false) {
+        $settings = array();
+      }
+      $settings['freebusy_url'] = $freebusy_url;
+      $this->settings = serialize($settings);
+      return true;
+    }
+    /**
+     * Retourne la valeur de paramètre $freebusy_url depuis les settings de l'utilisateur
+     * @return string
+     */
+    protected function __get_auth_only() {
+      $settings = unserialize($this->settings);
+      if ($settings === false) {
+        $settings = array();
+      }
+      if (isset($settings['freebusy_url']))
+        return $settings['freebusy_url'];
+      else
+        // Valeur par défaut
+        return false;
     }
 }

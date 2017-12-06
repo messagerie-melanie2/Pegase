@@ -1,0 +1,98 @@
+.pure-button-disconnect,
+.pure-button-im,
+.pure-button-owncloud,
+.pure-button-ldap,
+.pure-button-home,
+.pure-button-submit,
+.pure-button-save,
+.pure-button-edit-poll,
+.pure-button-see-poll,
+.pure-button-new-poll,
+.pure-button-modify-poll,
+.pure-button-light-red,
+.pure-button-delete,
+.pure-button-poll,
+.pure-button-connect-with-account {
+    color: white;
+    border-radius: 2px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.pure-button-im {
+    background: rgb(28, 184, 65); /* this is a green */
+    font-size: 50%;
+    padding: 4px 12px;
+}
+
+.pure-button-owncloud {
+    background: #F4FA58; /* this is a green */
+    font-size: 50%;
+    padding: 5px 12px;
+}
+
+.pure-button-ldap {
+    background: #8887D2; /* this is a light blue */
+    font-size: 50%;
+    padding: 4px 12px;
+}
+
+.pure-button-poll {
+    background: #769DDB; /* this is a light blue */
+    font-size: 50%;
+    padding: 4px 12px;
+}
+
+.pure-button-connect-with-account {
+    background: #336699; /* this is a  blue */
+}
+
+.pure-button-connect-with-account img {
+    margin-right: 5px;
+	float: left;
+}
+
+.pure-button-see-poll {
+    background: #476583; /* this is a  blue */
+    font-size: 90%;
+}
+.pure-button-edit-poll {
+    background: #476583; /* this is a  blue */
+    font-size: 90%;
+}
+.pure-button-submit {
+    background: #476583; /* this is a light blue */
+    font-size: 90%;
+}
+.pure-button-disconnect {
+    background: rgb(223, 117, 20); /* this is an orange */
+    font-size: 80%;
+}
+
+.pure-button-home {
+    background: rgb(66, 184, 221); /* this is a light blue */
+    font-size: 80%;
+}
+
+.pure-button-save {
+    background: #837797; /* this is a blue */
+    font-size: 80%;
+}
+
+.pure-button-delete {
+    background: rgb(202, 60, 60);
+    font-size: 80%;
+}
+
+.pure-button-modify-poll {
+	background: #476583; /* this is a light blue */
+    font-size: 75%;
+    margin-bottom: 5px;
+}
+.pure-button-light-red {
+	background: #8887D2; /* this is a light red */
+	font-size: 90%;
+}
+.pure-button-new-poll {
+	background: #8887D2; /* this is a light red */
+	font-size: 80%;
+}

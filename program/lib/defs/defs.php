@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 /* Récupération de la version depuis le fichier */
-define('VERSION', '0.9.1');
-define('BUILD', '1505061856');
+define('VERSION', '1.0.5');
+define('BUILD', '1702131754');
 
 // framework constants
 define('POLL_CHARSET', 'UTF-8');
@@ -67,3 +67,7 @@ define('ACT_VALIDATE_PROP','validate_prop');
 define('ACT_UNVALIDATE_PROP','unvalidate_prop');
 define('ACT_GET_VALID_PROPOSALS','get_valid_proposals_text');
 define('ACT_GET_USER_EVENTS','get_user_events_json');
+define('ACT_GET_USER_FREEBUSY','get_user_freebusy');
+define('ACT_DELETE_TENTATIVES','delete_tentatives');
+define('ACT_DATE_ACCEPTED','date_accepted');
+define('ACT_DATE_DECLINED','date_declined');

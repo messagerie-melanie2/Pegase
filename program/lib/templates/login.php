@@ -71,22 +71,26 @@ class Login {
     		            Session::setToken();
     		            \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "Login::Process() Login for user $username");
     		            $poll_uid = Request::getInputValue("_poll", POLL_INPUT_GET);
+    		            $params = urldecode(Request::getInputValue("_params", POLL_INPUT_GET));
     		            if (!empty($poll_uid)) {
-    		              header("Location: " . Output::get_poll_url(new \Program\Data\Poll(["poll_uid" => $poll_uid])));
+    		              header("Location: " . Output::get_poll_url(new \Program\Data\Poll(["poll_uid" => $poll_uid])) . "$params" );
     		              exit();
     		            }
     		            return true;
     		        } else {
     	              \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::INFO, "Login::Process() Bad login for user $username");
     		        	  Output::set_env("error", "Auth error, bad login or password");
+    		        	  sleep(2);
     		            return false;
     		        }
     		    } else {
     		        return false;
     		    }
-		    } else {
+		    } elseif (isset($_POST['username'])) {
         	  Output::set_env("error", "Invalid request");
             return false;
+		    } else {
+		    		return false;
 		    }
 		}
 	}

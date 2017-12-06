@@ -25,9 +25,6 @@
  */
 namespace Program\Data;
 
-// Utilisation des namespaces
-use Program\Lib\Request\Output as o;
-
 /**
  * Définition d'un événement pour l'application de sondage
  *
@@ -50,9 +47,14 @@ class Event extends Object {
     const STATUS_CANCELLED = 'CANCELLED';
     const STATUS_NONE = 'NONE';
 
+    // PARTICIPANT STATUS Fields
+    const PARTSTAT_ACCEPTED = 'ACCEPTED';
+    const PARTSTAT_DECLINED = 'DECLINED';
+    const PARTSTAT_TENTATIVE = 'TENTATIVE';
+
     /******* METHODES *******/
     /**
-     * Constructeur par défaut de la classe Poll
+     * Constructeur par défaut de la classe Event
      * @param array $data Données à charger dans l'objet
      */
     public function __construct($data = null) {

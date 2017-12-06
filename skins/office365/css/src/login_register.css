@@ -1,0 +1,21 @@
+@CHARSET "UTF-8";
+
+#login_content {
+	margin: 0ex 1ex 2ex;
+	height: 37ex;
+}
+
+#register_content {
+    margin: -269px 81ex 2ex;
+    padding-top: 20px;
+    height: 224px;
+}
+
+#login_copyright {
+    margin: 0% 186px;
+}
+
+#login_content .message {
+    margin-top: -82px;
+    margin-left: 111px;
+}

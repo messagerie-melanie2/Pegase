@@ -49,6 +49,9 @@ use Program\Lib\Request\Output as o;
  * @property boolean $if_needed Si le sondage propose aux répondeurs un "si besoin"
  * @property boolean $anonymous Si le sondage est en mode anonyme, les utilisateurs ne voient pas les réponses des autres
  * @property array $validate_proposals Liste des propositions validées par l'organisateur du sondage
+ * @property date $date_start Première date de proposition pour le sondage (sondage de dates)
+ * @property date $date_end Dernière date de proposition pour le sondage (sondage de dates)
+ * @property date $deadline Date butoir avant la fermeture des votes du sondage
  *
  * @package Data
  */
@@ -259,4 +262,108 @@ class Poll extends Object {
         // Valeur par défaut
         return false;
     }
+
+		/**
+		 * Retourne la valeur du champ date_start
+		 * Si le date start n'existe pas dans le sondage, il est calculé en fonction des propositions
+		 * @return date
+		 */
+		protected function __get_date_start() {
+			if ($this->type != "date") {
+				return null;
+			}
+			if (!isset($this->date_start)
+					&& isset($this->proposals)
+					&& !empty($this->proposals)) {
+				$proposals = unserialize($this->proposals);
+				if ($proposals !== false
+						&& is_array($proposals)
+						&& count($proposals) > 0) {
+					// Parcourir les proposition pour trouver le start et end
+					foreach ($proposals as $prop_key => $prop_value) {
+						if (strpos($prop_value, ' - ')) {
+							$prop = explode(' - ', $prop_value, 2);
+							$prop_start = new \DateTime($prop[0]);
+							$prop_end = new \DateTime($prop[1]);
+						}
+						else {
+							$prop_start = new \DateTime($prop_value);
+							$prop_end = clone $prop_start;
+						}
+						$prop_end->add(new \DateInterval('P1D'));
+						if (!isset($start)
+								&& !isset($end)) {
+							// Positionnement de la date de début et de fin
+							$start = $prop_start;
+							$end = $prop_end;
+						}
+						else {
+							if ($prop_end > $end) {
+								// Si tmp est supérieur, on conserve comme fin
+								$end = $prop_end;
+							}
+							if ($prop_start < $start) {
+								// Si tmp est inférieur, on conserve comme début
+								$start = $prop_start;
+							}
+						}
+					}
+					$this->date_start = $start->format('Y-m-d H:i:s');
+					$this->date_end = $end->format('Y-m-d H:i:s');
+				}
+			}
+			return $this->data['date_start'];
+		}
+		/**
+		 * Retourne la valeur du champ date_end
+		 * Si le date end n'existe pas dans le sondage, il est calculé en fonction des propositions
+		 * @return date
+		 */
+		protected function __get_date_end() {
+			if ($this->type != "date") {
+				return null;
+			}
+			if (!isset($this->date_end)
+					&& isset($this->proposals)
+					&& !empty($this->proposals)) {
+				$proposals = unserialize($this->proposals);
+				if ($proposals !== false
+						&& is_array($proposals)
+						&& count($proposals) > 0) {
+					// Parcourir les proposition pour trouver le start et end
+					foreach ($proposals as $prop_key => $prop_value) {
+						if (strpos($prop_value, ' - ')) {
+							$prop = explode(' - ', $prop_value, 2);
+							$prop_start = new \DateTime($prop[0]);
+							$prop_end = new \DateTime($prop[1]);
+						}
+						else {
+							$prop_start = new \DateTime($prop_value);
+							$prop_end = clone $prop_start;
+						}
+						$prop_end->add(new \DateInterval('P1D'));
+						if (!isset($start)
+								&& !isset($end)) {
+							// Positionnement de la date de début et de fin
+							$start = $prop_start;
+							$end = $prop_end;
+						}
+						else {
+							if ($prop_end > $end) {
+								// Si tmp est supérieur, on conserve comme fin
+								$end = $prop_end;
+							}
+							if ($prop_start < $start) {
+								// Si tmp est inférieur, on conserve comme début
+								$start = $prop_start;
+							}
+						}
+					}
+					$this->date_start = $start->format('Y-m-d H:i:s');
+					$this->date_end = $end->format('Y-m-d H:i:s');
+				}
+			}
+			return $this->data['date_end'];
+		}
+
 }

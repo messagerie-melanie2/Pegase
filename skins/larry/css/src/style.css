@@ -1,0 +1,546 @@
+@CHARSET "UTF-8";
+html {
+  height: 100%;
+}
+body {
+  font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background: url("../../images/linen.jpg") repeat scroll 0% 0% rgb(209, 213, 216);
+  color: #464545;
+  padding: 0px;
+  margin: 0px;
+  height: 100%;
+}
+a {
+  color: #00b7ff;
+}
+legend {
+	font-size: 125%;
+}
+h1 {
+	color: #4B6184;
+	font-weight: bold;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+#prevcontent {
+  margin: 0px 10px 10px 10px;
+  padding: 23px 30px;
+}
+#content {
+  background-color: #fff;
+  padding: 10px 30px;
+  margin-top: -10px;
+  min-width: 800px;
+  border-radius: 4px;
+  border: 1px solid rgb(163, 163, 163);
+  box-shadow: 0px 0px 2px rgb(153, 153, 153);
+}
+#copyright {
+  color: #808080;
+  font-size: 65%;
+  margin-left: 35px;
+}
+#header {
+  background: #3a3636;
+  height: 40px;
+  width: 100%;
+  margin-top: 0px;
+  position: fixed;
+  z-index: 100;
+  min-width: 1040px;
+}
+#header a {
+  text-decoration: none;
+}
+#logo {
+	padding-top: 5px;
+	margin-left: 90px;
+	height: 30px;
+}
+#header-buttons {
+	float: right;
+	margin-top: 2px;
+	margin-right: 90px;
+	height: 35px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.header-button {
+	border-left: 1px solid grey;
+	padding-left: 5px;
+	margin: 0px;
+}
+.message {
+	width: 55%;
+	color: #1B1A47;
+	background-color: white;
+	box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+	padding: 0px;
+	z-index: 200;
+	margin-top: -20px;
+	margin-left: 150px;
+	min-width: 580px;
+	position: fixed;
+	font: 13px Georgia, Helvetica, Arial, sans-serif;
+  	color: #848484;
+  	opacity: 0.9;
+}
+
+.message:hover {
+  	opacity: 1;
+}
+
+.success {
+	border: 2px solid #9FC3A1;
+	padding: 5px 20px 5px 20px;
+	margin: 0px;
+}
+
+.error {
+	border: 2px solid #C42D2D;
+	padding: 5px 20px 5px 20px;
+	margin: 0px;
+}
+#login_content .loading,
+#content .loading {
+	display: none;
+	position: fixed;
+	bottom: 20px;
+	right: 30px;
+	top: auto;
+	left: auto;
+	border-radius: 2px;
+	padding: 12px 10px 10px 36px;
+	color: #E6E6E6;
+	background: url('../../images/ajax-loader.gif') 2px center no-repeat #2E2E2E;
+	box-shadow: 0px 0px 9px rgba(0,0,0,0.50);
+	z-index: 300000;
+}
+#warning_change_poll_type {
+	width: 570px;
+	color: red;
+	font-size: 90%;
+	display: none;
+}
+.pure-form-aligned input[type=text] {
+	width: 40%;
+}
+#conn {
+	padding-left: 5px;
+	float: right;
+}
+#proposals_div {
+	overflow: auto;
+	margin-left:240px;
+}
+#proposals_table {
+	border-spacing: 3px; 
+	border-collapse: separate;
+	right: 85px;
+}
+#proposals_table .prop_header {
+	background-color: #6B7F9F;
+	color: #ffffff; 
+	padding: 4px;
+	border-radius: 2px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 150px;
+}
+#proposals_table .prop_header_time {
+	background-color: #F8FAFC;
+	color: dark-grey; 
+	padding: 4px;
+	width: 150px;
+}
+#proposals_table td {
+	min-width: 100px;
+	vertical-align: middle;
+	padding-top: 5px;
+    padding-bottom: 5px;
+}
+#proposals_table .prop_accepted {
+	background-color: #B9E6C7;
+	border-radius: 2px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    color: green;
+}
+#proposals_table .prop_refused {
+	background-color: #F5CFD4;
+	border-radius: 2px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    color: red;
+    height: 18px;
+}
+#proposals_table .prop_if_needed {
+  background-color: #F5DBC0;
+  border-radius: 2px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  color: #61380B;
+  height: 18px;
+}
+#proposals_table .prop_not_responded {
+	background-color: #FFFFFF;
+	border-radius: 2px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    border: 1px solid grey;
+    height: 32px;
+}
+#proposals_table .prop_not_responded:hover {
+	background-color: #E4EBF5;
+	cursor : pointer;
+}
+#proposals_table .prop_change {
+	padding: 0;
+	margin: 0;
+	cursor : pointer;
+}
+#proposals_table .prop_best {
+	color: #0B2D64;
+	font-weight: bold;
+	background-color: #B8C4D7;
+	border-radius: 2px;
+}
+#proposals_table .validate_prop {
+	height: 25px;
+	border: 1px solid green;
+	background: url("../../images/1395859186_Symbol_-_Check_small.png") center center no-repeat;
+}
+#proposals_table .validate_prop_header {
+	background-color: #75B531;
+	border: 1px solid green;
+}
+#proposals_table .prop_cell_nobackground {
+	background-color: #ffffff;
+}
+#proposals_table .first_col {
+	position:absolute;
+    *position: relative; /*ie7*/
+    left: 80px;
+    width: 220px;
+    z-index: 100;
+    margin: auto;
+}
+#proposals_table .last_col {
+	min-width: 0px;
+	padding-top: 3px;
+    padding-bottom: 3px;
+    white-space: nowrap;
+    text-align: center;
+}
+#proposals_table .last_col a {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#proposals_table .nb_attendees {
+	color: #0B2D64;
+	font-weight: bold;
+	background-color: #CFD9E9;
+	border-radius: 2px;
+	padding-left: 5px;
+}
+#proposals_table td.user_list_name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-left: 3px;
+    background-color: #F8FAFC;
+    padding-left: 20px;
+    width: 205px;
+}
+#proposals_table .wait {
+	background: url("../../images/wait-big.gif") center center no-repeat;
+}
+#proposals_table .user_authenticate {
+	background: url("../../images/1399479249_user.png") 2px 7px no-repeat;
+}
+#proposals_table .user_email {
+  background: url("../../images/1429207099_email.png") 2px 11px no-repeat;
+}
+#proposals_table td.user_list_name:hover {
+	width: auto;
+	min-width: 205px;
+	opacity: 0.8;
+}
+#proposals_table td.user_list_name_connected {
+	border: 1px solid #BDCADF;
+	border-radius: 2px;
+}
+#proposals_table tr:hover.prop_row_elements {
+	border: 1px solid grey;
+}
+#proposals_table .check_uncheck_all {
+    min-width: 0px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    white-space: nowrap;
+    text-align: center;
+}
+#proposals_table .user_calendar {
+    background: url("../../images/1427238024_calendar.png") no-repeat scroll 2px 7px transparent;
+}
+#proposals_table td.user_freebusy_first_col {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-color: #8095A9;
+    color: white;
+    padding-left: 20px;
+    width: 205px;
+    border-radius: 2px;
+}
+#proposals_table .freebusy_confirmed {
+    background-color: #DBE3FC;
+    border-radius: 2px;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+    color: #14214A;
+    border: 1px solid #96A2C4;
+    height: 18px;
+}
+#proposals_table .freebusy_none {
+    background-color: #E2F2D0;
+    border-radius: 2px;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+    color: #006100;
+    border: 1px solid #94A97B;
+    height: 18px;
+}
+#proposals_table .freebusy_tentative {
+    background-color: #F5F5E0;
+    border-radius: 2px;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+    color: #4B2112;
+    border: 1px solid #B6B77C;
+    height: 18px;
+}
+#proposals_table input[type=radio] {
+    display: none;
+}
+#proposals_table .radio_label {
+  cursor: pointer;
+  color: black;
+  padding: 2px 4px;
+  display: block;
+  margin:0;
+  background-color: #FFF;
+  font-size: 90%;
+  width: 60px;
+  height: 20px;
+}
+
+#proposals_table .radio_label.label_yes {
+  border-top: 1px solid grey;
+  border-right: 1px solid grey;
+  border-left: 1px solid grey;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  margin-top: 4px
+}
+#proposals_table input[type="radio"]:checked + label.radio_label.label_yes,
+#proposals_table .radio_label.label_yes:hover {
+  color: #008000;
+  font-weight: bold;
+  background-color: #B9E6C7;
+}
+#proposals_table .radio_label.label_if_needed {
+  border-top: 1px solid grey;
+  border-right: 1px solid grey;
+  border-left: 1px solid grey;
+}
+#proposals_table input[type="radio"]:checked + label.radio_label.label_if_needed,
+#proposals_table .radio_label.label_if_needed:hover {
+  color: #61380B;
+  font-weight: bold;
+  background-color: #F5DBC0;
+}
+#proposals_table .radio_label.label_no {
+  border-top: 1px solid grey;
+  border-right: 1px solid grey;
+  border-left: 1px solid grey;
+  border-bottom: 1px solid grey;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+  margin-bottom: 4px
+}
+#proposals_table input[type="radio"]:checked + label.radio_label.label_no,
+#proposals_table .radio_label.label_no:hover {
+  color: #F00;
+  font-weight: bold;
+  background-color: #F5CFD4;
+}
+
+#calendar .fc-border-separate {
+	border-radius: 2px;
+	box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+	border-spacing: 3px; 
+	border-collapse: separate;
+}
+#calendar .fc-widget-header {
+	background-color: #F8FAFC;
+	color: #535353; 
+	padding: 4px;
+	border-radius: 2px;
+}
+#calendar .fc-button {
+	font-size: 85%;
+}
+#calendar .fc-header-legend {
+  float: right;
+  margin-top: -9px;
+}
+#calendar .fc-header-legend span {
+  border-radius: 4px;
+  font-size: 80%;
+  margin-left: 3px;
+  padding: 2px 5px;
+}
+#calendar .fc-header-legend-confirmed {
+  background-color: #DBE3FC;
+  color: #14214A;
+  border: 1px solid #96A2C4;
+}
+#calendar .fc-header-legend-none {
+  background-color: #E2F2D0;
+  color: #006100;
+  border: 1px solid #94A97B;
+}
+#calendar .fc-header-legend-tentative {
+  background-color: #F5F5E0;
+  color: #4B2112;
+  border: 1px solid #B6B77C;
+}
+/* This is how you would create a theme called "my-custom-theme": */
+.af-tooltip-theme {
+	max-width: 70%;
+	border: 1px solid rgb(71, 101, 131);
+	border-radius: 5px; 
+	background: rgb(248, 250, 252);
+	color: rgb(71, 101, 131);
+}
+/* Use this next selector to style things like font-size and line-height: */
+.af-tooltip-theme .tooltipster-content {
+	font-family: Arial, sans-serif;
+	font-size: 14px;
+	line-height: 16px;
+	padding: 8px 10px;
+}
+.toolbar {
+	margin-bottom: 20px;
+}
+.toolbar a.button {
+	text-decoration: none;
+    text-align: center;
+    font-size: 10px;
+    color: rgb(85, 85, 85);
+    min-width: 50px;
+    max-width: 75px;
+    height: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 28px 2px 0px;
+    text-shadow: 0px 1px 1px rgb(238, 238, 238);
+    box-shadow: none;
+    background: url("../../images/toolbar.png") no-repeat scroll -100px 0px transparent;
+    border: 0px none;
+}
+.toolbar a.button.addpoll {
+    background: url("../../images/newpoll.png") no-repeat scroll center 0px transparent;
+}
+.toolbar a.button.modifyresponsespoll {
+    background: url("../../images/changeresponsespoll.png") no-repeat scroll center -2px transparent;
+}
+.toolbar a.button.showpoll {
+    background: url("../../images/showpoll.png") no-repeat scroll center -3px transparent;
+}
+.toolbar a.button.editpoll {
+    background: url("../../images/editpoll.png") no-repeat scroll center -3px transparent;
+}
+.toolbar a.button.editproppoll {
+    background: url("../../images/changeproppoll.png") no-repeat scroll center 0px transparent;
+}
+.toolbar a.button.lockpoll {
+    background: url("../../images/lockpoll.png") no-repeat scroll center 3px transparent;
+}
+.toolbar a.button.unlockpoll {
+    background: url("../../images/unlockpoll.png") no-repeat scroll center 3px transparent;
+}
+.toolbar a.button.help {
+    background: url("../../images/help.png") no-repeat scroll center 3px transparent;
+    margin: 0 5px;
+}
+.toolbar a.button.listpoll {
+    background-position: center -360px;
+}
+.toolbar a.button.refreshpoll {
+	background: url("../../images/buttons.png") no-repeat scroll -100px 0px transparent;
+    background-position: center -1176px;
+}
+.toolbar a.button.deletepoll {
+	background: url("../../images/buttons.png") no-repeat scroll -100px 0px transparent;
+    background-position: center -690px;
+}
+.poll__list_element {
+	margin-top: 10px;
+}
+.best_proposals {
+	font-weight: bold;	
+}
+.validate_proposals {
+	font-weight: bold;	
+}
+.add_attendee_button,
+.remove_attendee_button,
+.check_all_button,
+.uncheck_all_button,
+.check_freebusy_button,
+.yes_to_all_button,
+.if_needed_to_all_button,
+.no_to_all_button,
+.hide_attendees_button,
+.show_attendees_button {
+	cursor: pointer;
+}
+.poll_information {
+	color: #4B6184;
+	font-size: 95%;
+}
+#div_show_more_inputs {
+	position: absolute;
+	left: -15px;
+	top: 46px;
+	border-radius: 4px;
+	border: 1px solid #808080;
+	background-color: #FFF;
+	padding: 4px;
+	display: none;
+}
+#div_show_more_inputs span {
+	font-size: 0.9em;
+}
+.hidden {
+	display: none;
+}
+.dialog_popup {
+	display: none;
+}
+.dialog_popup_content div {
+  padding-bottom: 5px;
+}
+.dialog_popup_content_separator {
+	margin-top: 10px;
+	border-top: 1px solid grey;
+	width: 100%;
+}
+.fixedmessage {
+	display: none;
+  border-style: solid;
+  border-width: 1px;
+  padding: 7px;
+  background-color: #FFFFE0;
+  margin: 5px;
+  font-family: "Lucida Grande",Verdana,Arial,Helvetica,sans-serif;
+  font-size: 12px;
+  color: #333;
+}

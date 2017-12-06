@@ -1,6 +1,71 @@
-Pégase - Version 0.9.1
-Pégase - Build 1505061856
+Pégase - Version 1.0.5
+Pégase - Build 1610041131
 Pégase - Liste des changements
+
+Pégase - 1.0.5 (Publiée 04/10/2016) [ Afficher les bogues ]
+===================================
+- 0004283: [Interface] En non authentifié les infos bulles montrent les noms complets (thomas.payen) - résolu.
+- 0004354: [General] Création d'un sondage, récupérer les paramètres en GET (thomas.payen) - résolu.
+- 0004257: [Driver Event] Les événements privés ne sont pas correctement affichés (thomas.payen) - résolu.
+- 0004245: [Driver Event] Problème lorsqu'un événement sans titre est dans l'agenda (thomas.payen) - résolu.
+- 0004256: [General] Le lien supprimer les provisoires de l'événement ne fonctionne pas (thomas.payen) - résolu.
+
+[5 bogues]
+
+Pégase - 1.0.4 (Publiée 15/02/2016) [ Afficher les bogues ]
+===================================
+- 0004227: [General] Décalage de deux heures pour des évènements récurrents (thomas.payen) - résolu.
+
+[1 bogue]
+
+Pégase - 1.0.3 (Publiée 15/02/2016) [ Afficher les bogues ]
+===================================
+- 0004048: [General] Affichage du nom du ministère (thomas.payen) - résolu.
+- 0004194: [General] Remaniement : changement de bandeau (thomas.payen) - résolu.
+- 0004184: [Driver Event] Lorsque l'organisateur valide une date, passer le provisoire en "Date retenue" (thomas.payen) - résolu.
+- 0004173: [General] Possibilité de répondre au nom d'une autre personne (thomas.payen) - résolu.
+- 0004175: [General] Signaler à l'organisateur qu'il n'a pas répondu au sondage (thomas.payen) - résolu.
+- 0004174: [Messages] Réécrire le premier message de création d'un sondage (thomas.payen) - résolu.
+- 0004034: [Messages] Souci de compréhension - proposition de modification de message (thomas.payen) - résolu.
+- 0004149: [Interface] Souci d'encodage d'accent (thomas.payen) - résolu.
+- 0003947: [Messages] Ne pas encoder en HTML la date validée dans le sujet (thomas.payen) - résolu.
+- 0004011: [General] Ajouter un fichier robot.txt pour les moteurs de recherche (thomas.payen) - résolu.
+- 0004176: [Interface] Améliorer les radio boutons (thomas.payen) - résolu.
+- 0004181: [Interface] Les tooltips personnalisés ne s'affiche plus avec Firefox > 40 (thomas.payen) - fermé.
+
+[12 bogues]
+
+Pégase - 1.0.2 (Publiée 09/09/2015) [ Afficher les bogues ]
+===================================
+- 0004165: [Driver Event] Problème de fuseau horaire dans Pégase (thomas.payen) - résolu.
+- 0004109: [General] Problème avec certains mots de passe (thomas.payen) - résolu.
+- 0004031: [Driver Event] Valider que les droits sont bons avant l'écriture dans l'agenda (thomas.payen) - résolu.
+
+[3 bogues]
+
+Pégase - 1.0.1 (Publiée 12/06/2015) [ Afficher les bogues ]
+===================================
+- 0003897: [Driver Event] Créer un driver event générique (thomas.payen) - résolu.
+- 0003898: [Driver Event] Le driver event doit retourner ses capacités (thomas.payen) - résolu.
+- 0003902: [Driver Event] Lecture des freebusy depuis une URL (thomas.payen) - résolu.
+
+[3 bogues]
+
+Pégase - 1.0 (Publiée 12/06/2015) [ Afficher les bogues ]
+=================================
+- 0003942: [Messages] Changement dans le titre du robot (thomas.payen) - résolu.
+- 0003892: [General] Ajouter un bouton Aide (thomas.payen) - résolu.
+- 0003889: [General] Actions automatiques sur les événements provisoires (thomas.payen) - résolu.
+- 0003888: [General] Ajouter la possibilité de notifier dans d'autres cas (thomas.payen) - résolu.
+- 0003877: [General] Proposer l'envoi d'un message de notification lors de changement d'un sondage (thomas.payen) - résolu.
+- 0003885: [General] Pour le participant, ajouter deux boutons "Je serais là" "Je ne serais pas là" (thomas.payen) - résolu.
+- 0003886: [General] Modifier le message de notification quand une date est validée (thomas.payen) - résolu.
+- 0003884: [General] Afficher un message pour l'organisateur pour la cloture du sondage (thomas.payen) - résolu.
+- 0003887: [General] Ajouter un bouton "Supprimer les provisoires" dans le sondage (thomas.payen) - résolu.
+- 0003883: [General] Enregistrer les identifiants des événements liés à un sondage (thomas.payen) - résolu.
+- 0003882: [General] Modifier les événements provisoires (thomas.payen) - résolu.
+
+[11 bogues]
 
 Pégase - 0.9.1 (Publiée 06/05/2015) [ Afficher les bogues ]
 ===================================

@@ -59,11 +59,13 @@ function poll_app()
 	{
 		$('.loading .loading_message').text(msg);
 		$('.loading').show();
+		document.body.style.cursor = 'wait';
 	}
 	
 	this.hide_loading = function()
 	{
 		$('.loading').hide();
+		document.body.style.cursor = 'default';
 	}
 	
 	this.show_popup = function(e, popup)
@@ -96,6 +98,59 @@ function poll_app()
 	        // Handle error(s) here
 	    }
 	}
+	
+	this.confirm = function(aMessage, aYesButton, aNoButton, aYesCallback, aNoCallback)
+	{
+	  // Gestion de la skin mobile
+	  if (this.env.mobile) {
+	    if (confirm(aMessage)) {
+	      aYesCallback();
+	    }
+	    else {
+	      aNoCallback();
+	    }
+	  }
+	  else {
+	    // Génération des boutons
+	    var buttons = {};
+	    buttons[aYesButton] = function () {
+	      aYesCallback();
+	      $(this).dialog("close");
+	    };
+	    buttons[aNoButton] = function () {
+	      aNoCallback();
+	      $(this).dialog("close");
+	    };
+	    $('<div></div>').appendTo('body')
+	      .html('<div class="dialog_message">' + aMessage + '</div>')
+	      .dialog({
+	          modal: true, 
+	          zIndex: 10000, 
+	          width: '450px', 
+	          resizable: false,
+	          buttons: buttons,
+	          close: function (event, ui) {
+	              $(this).remove();
+	          }
+	      });
+	  }
+	}
+	
+	this.popup = function(aPopupId, aCloseCallback) {
+            $('#' + aPopupId)
+            .dialog({
+                modal: false,
+                draggable: false,
+                zIndex: 10000, 
+                width: '350px',
+                maxHeight: 500,
+                resizable: false,
+                autoOpen: false,
+                position: { my: "right bottom", at: "right-20 bottom-30", of: window },
+                close: aCloseCallback,
+            })
+            .parent().css({position:"fixed"}).end().dialog('open');
+	}
 }
 $(document).ready(function() {
 	$('.message').fadeIn().delay(3000).fadeOut('slow');
@@ -120,4 +175,39 @@ $(document).on({
     	e.stopPropagation();
     }
 }, ".popup"); //pass the element as an argument to .on
+
+// Affichage de l'aide dans un pop up dialog
+$(document).on({
+    click: function (e) {
+    	var help_map = {
+    		"main": "1-PageAccueil.html",
+		"edit": "1-NouveauSondage.html",
+		"edit_date": "2-SondageDeDate.html",
+		"edit_prop": "3-SondageLibre.html",
+		"edit_end": "1-NouveauSondage.html",
+		"show": "2-VosParticipations.html",
+		"default": "1-PageAccueil.html",
+    	};
+    	// Récupération de la page
+    	if (help_map[poll.env.page]) {
+    	    var page = "/help/fr_FR/co/" + help_map[poll.env.page];
+    	}
+    	else {
+    	    var page = "/help/fr_FR/co/" + help_map["default"];
+    	}
+    	// Ouverture du dialog
+    	$('<div id="help_display_dialog"></div>').appendTo('body')
+	      .html('<iframe style="border: 0px; margin: 0px; " src="' + page + '" width="100%" height="100%"></iframe>')
+	      .dialog({
+	          modal: false, 
+	          zIndex: 10000, 
+	          width: 850,
+	          height: 500,
+	          resizable: true,
+	          close: function (event, ui) {
+	              $(this).remove();
+	          }
+	      }).dialog('open');
+    }
+}, "#help-page-button"); //pass the element as an argument to .on
 
