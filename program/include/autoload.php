@@ -45,7 +45,7 @@ function pollautoload($pClassName) {
     // Positionne le chemin en minuscule
     $dir_class = strtolower($dir_class);
     // Charge la classe
-    include_once $dir_class;
+    include_once __DIR__."/../../".$dir_class;
 }
 
 // Appel l'autoload register qui va utiliser notre méthode autoload

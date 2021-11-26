@@ -37,7 +37,7 @@ class Office365 extends \Program\Drivers\Driver {
      * si l'utilisateur n'existe pas, le créer
      * @return bool true si auth ok, false sinon
      */
-    function authenticate($username = null, $password = null) {
+    function authenticate($username = null, $password = null, $timezone = null) {
     	if (!Session::is_set('accessToken')
     			|| !Session::is_set('expireToken')
     			|| time() > Session::get('expireToken')) {
@@ -48,6 +48,9 @@ class Office365 extends \Program\Drivers\Driver {
     	if (isset($user)
     			&& isset($user->user_id)) {
     		$user->last_login = date("Y-m-d H:i:s");
+    		if (isset($timezone)) {
+    		  $user->timezone = $timezone;
+    		}
     		if (!\Program\Lib\Request\Session::is_setUsername())
     			$this->modifyUser($user);
     		\Program\Data\User::set_current_user($user);

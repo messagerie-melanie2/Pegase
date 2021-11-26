@@ -7,5 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Sabre\\VObject\\' => array($vendorDir . '/sabre/vobject/lib'),
-    'LibMelanie\\' => array($vendorDir . '/messagerie-melanie2/ORM-M2/src'),
+    'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
+    'LibMelanie\\' => array($vendorDir . '/messagerie-melanie2/orm-m2/src'),
 );

@@ -22,38 +22,18 @@
 use Program\Lib\Request\Output as o;
 use Program\Lib\Request\Localization as l;
 use Program\Lib\Request\Template as t;
-use Program\Lib\Request\Request as r;
 use Program\Lib\Templates\Main as m;
 ?>
 <?php t::inc('head') ?>
 <body>
 <div id="prevcontent">
-    <div id="content">
+	<?php t::inc('toolbar') ?>
+	<?php t::inc('left_panel') ?>
+    <div id="content" class="left-panel">
         <?php t::inc('message') ?>
-        <?php t::inc('connected') ?>
-        <br>
         <div id="title">
             <h1><?= l::g('Welcome to doodle of the MEDDE') ?></h1>
         </div>
-        <div id="newpoll">
-            <a class="pure-button pure-button-light-red customtooltip_bottom" title="<?= l::g("Create a new poll", false) ?>" href="<?= o::url("edit", ACT_NEW, null, true) ?>">
-                <img alt="Add" src="skins/<?= o::get_env("skin") ?>/images/1395836978_add_new_poll.png" height="11px"/>
-                <?= l::g('Create new poll') ?>
-            </a>
-        </div>
-        <div id="listyourpolls">
-            <h3><?= l::g('List of your polls') ?></h3>
-            <?= m::GetUserPolls() ?>
-        </div>
-        <div id="listpollsresponded">
-            <h3><?= l::g('List of polls you have responded') ?></h3>
-            <?= m::GetUserRespondedPolls() ?>
-        </div>
-        <div id="listyourdeletedpolls">
-            <h3><?= l::g('List of your deleted polls') ?></h3>
-            <?= m::GetUserDeletedPolls() ?>
-        </div>
-        <br>
     </div>
     <?php t::inc('copyright') ?>
 </div>

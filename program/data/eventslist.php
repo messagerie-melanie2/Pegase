@@ -38,7 +38,7 @@ namespace Program\Data;
  *
  * @package Data
  */
-class EventsList extends Object {
+class EventsList extends MagicObject {
 		/***** PRIVATE ****/
 		/**
 		 * Variable static pour le EventsList courant

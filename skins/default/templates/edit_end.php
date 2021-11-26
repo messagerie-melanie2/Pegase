@@ -29,17 +29,28 @@ use Program\Data\Poll as p;
 <?php t::inc('head') ?>
 <body>
 <div id="prevcontent">
-    <div id="content">
-        <?php t::inc('message') ?>
-        <?php t::inc('connected') ?>
-        <br><br>
-        <div><?= l::g('Congratulation, your poll is now created') ?></div>
-        <div><?= l::g('You can now share this url with your friend') ?></div>
-        <?= e::GetPublicUrl() ?>
-        <br><br>
-        <div><?= l::g('Attention, you have not respond to the poll ') ?><a href="<?= o::url(null, null, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('clic here to respond') ?></a></div>
-        <div><?= l::g('You can modify the poll by clicking ') ?><a href="<?= o::url("edit", ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('here') ?></a></div>
-        <br>
+	<?php t::inc('toolbar') ?>
+    <div id="content" class="edit_end">
+      <?php t::inc('message') ?>
+      <h1><?= l::g('Poll created with success') ?></h1>
+      <div id="head" class="<?= o::tohtml(p::get_current_poll()->type) ?>">
+    			<div class="poll_title" title="<?= l::g('Created by') . ' ' . o::tohtml(o::get_env("poll_organizer")->fullname) . ' ' . o::date_format(strtotime(p::get_current_poll()->created)) . '. ' . l::g('Last modification time') . ' ' . o::date_format(strtotime(p::get_current_poll()->modified)) ?>"><?= o::tohtml(p::get_current_poll()->title) ?></div>
+    			<div class="poll_location"><?= o::tohtml(p::get_current_poll()->location) ?></div>
+    			<?php if (!empty(p::get_current_poll()->description)) { ?>
+      			<div class="poll_description">
+      				<span class="label"><?= l::g('Description') ?> :</span>
+      				<span class="description"><?= o::tohtml(p::get_current_poll()->description) ?></span>
+          	</div>
+        	<?php } ?>
+        	<div class="poll_url">
+        		<span class="url"><?= e::GetPublicUrl(true) ?></span>
+        		<input type="text" id="input_url" value="<?= o::get_poll_url() ?>">
+        		<button class="copy_url customtooltip_bottom" title="<?=l::g('Clic here to copy URL')?>" onclick="poll.command(copy_url)"><?= l::g('Copy URL') ?></button>
+					</div>
+    		</div>
+    		<div class="buttons">
+    			<span class="left_button"><a class="pure-button" href="<?= o::url(null, null, array("u" => p::get_current_poll()->poll_uid)) ?>"><?= l::g('Open the poll') ?></a></span>
+    		</div>
     </div>
     <?php t::inc('copyright') ?>
 </div>

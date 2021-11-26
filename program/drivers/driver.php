@@ -50,9 +50,10 @@ abstract class Driver {
      * Set le current user
      * @param string $username
      * @param string $password
+     * @param string $timezone
      * @return bool true si auth ok, false sinon
      */
-    abstract function authenticate($username, $password);
+    abstract function authenticate($username, $password, $timezone = null);
 
     /**
      * Récupération de la liste des sondage pour l'utilisateur
@@ -110,6 +111,14 @@ abstract class Driver {
      * @return Program\Data\User
      */
     abstract function getAuthUser($username);
+
+    /**
+     * Ajoute un token à un utilisateur
+     * @param int $username
+     * @param string $token
+     * @return true si ok, false sinon
+     */
+    abstract function addTokenUser($username, $token);
     
     /**
      * Récupère l'utilisateur en fonction de son email

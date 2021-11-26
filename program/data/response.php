@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
  * Cette application est un doodle-like permettant aux utilisateurs
@@ -23,12 +24,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace Program\Data;
 
 /**
  * Définition de la réponse d'un utilisateur pour un sondage
  *
  * @property int $user_id Identifiant de l'utilisateur dans la bd
+ * @property string $user_username Username de l'utilisateur dans la bd
+ * @property string $user_email Email de l'utilisateur dans la bd
  * @property int $poll_id Identifiant du sondage dans la bdd
  * @property string $response Données de réponse de l'utilisateur pour le sondage, sérialisées
  * @property string $calendar_id Identifiant du calendrier utilisé si ce n'est pas celui par défaut de l'utilisateur
@@ -36,78 +40,96 @@ namespace Program\Data;
  *
  * @package Data
  */
-class Response extends Object {
-    /******* METHODES *******/
-    /**
-     * Constructeur par défaut de la classe Response
-     * @param array $data Données à charger dans l'objet
-     */
-    public function __construct($data = null) {
-        if (isset($data)
-                && is_array($data)) {
-            foreach ($data as $key => $value) {
-                $key = strtolower($key);
-                $this->$key = $value;
-            }
-        }
+class Response extends MagicObject implements \JsonSerializable
+{
+  /******* METHODES *******/
+  /**
+   * Constructeur par défaut de la classe Response
+   * @param array $data Données à charger dans l'objet
+   */
+  public function __construct($data = null)
+  {
+    if (
+      isset($data)
+      && is_array($data)
+    ) {
+      foreach ($data as $key => $value) {
+        $key = strtolower($key);
+        $this->$key = $value;
+      }
     }
+  }
 
-    /**
-     * Positionne la valeur de paramètre $calendar_id depuis les settings de la réponse
-     * @param string $calendar_id
-     * @return string
-     */
-    protected function __set_calendar_id($calendar_id) {
-      $settings = unserialize($this->settings);
-      if ($settings === false) {
-        $settings = array();
-      }
-      $settings['calendar_id'] = $calendar_id;
-      $this->settings = serialize($settings);
-      return true;
+  /**
+   * Positionne la valeur de paramètre $calendar_id depuis les settings de la réponse
+   * @param string $calendar_id
+   * @return string
+   */
+  protected function __set_calendar_id($calendar_id)
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
     }
-    /**
-     * Retourne la valeur de paramètre $calendar_id depuis les settings de la réponse
-     * @return string
-     */
-    protected function __get_calendar_id() {
-      $settings = unserialize($this->settings);
-      if ($settings === false) {
-        $settings = array();
-      }
-      if (isset($settings['calendar_id']))
-        return $settings['calendar_id'];
-      else
-        // Valeur par défaut
-        return null;
+    $settings['calendar_id'] = $calendar_id;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $calendar_id depuis les settings de la réponse
+   * @return string
+   */
+  protected function __get_calendar_id()
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
     }
-    /**
-     * Positionne la valeur de paramètre $calendar_name depuis les settings de la réponse
-     * @param string $calendar_name
-     * @return string
-     */
-    protected function __set_calendar_name($calendar_name) {
-      $settings = unserialize($this->settings);
-      if ($settings === false) {
-        $settings = array();
-      }
-      $settings['calendar_name'] = $calendar_name;
-      $this->settings = serialize($settings);
-      return true;
+    if (isset($settings['calendar_id']))
+      return $settings['calendar_id'];
+    else
+      // Valeur par défaut
+      return null;
+  }
+  /**
+   * Positionne la valeur de paramètre $calendar_name depuis les settings de la réponse
+   * @param string $calendar_name
+   * @return string
+   */
+  protected function __set_calendar_name($calendar_name)
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
     }
-    /**
-     * Retourne la valeur de paramètre $calendar_name depuis les settings de la réponse
-     * @return string
-     */
-    protected function __get_calendar_name() {
-      $settings = unserialize($this->settings);
-      if ($settings === false) {
-        $settings = array();
-      }
-      if (isset($settings['calendar_name']))
-        return $settings['calendar_name'];
-      else
-        // Valeur par défaut
-        return null;
+    $settings['calendar_name'] = $calendar_name;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $calendar_name depuis les settings de la réponse
+   * @return string
+   */
+  protected function __get_calendar_name()
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
     }
+    if (isset($settings['calendar_name']))
+      return $settings['calendar_name'];
+    else
+      // Valeur par défaut
+      return null;
+  }
+
+  public function jsonSerialize()
+  {
+    return [
+      'user_id' => $this->user_id,
+      'user_username' => $this->user_username,
+      'user_email' => $this->user_email,
+      'response' => $this->response,
+    ];
+  }
 }

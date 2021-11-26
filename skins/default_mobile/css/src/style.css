@@ -90,6 +90,12 @@ h3 {
 	font-size: 90%;
 	display: none;
 }
+
+#warning_max_attendees {
+  color: red;
+  font-size: 90%;
+}
+
 #proposals_div.swipe {
 	margin-left: 42px;
 }
@@ -193,8 +199,8 @@ h3 {
 #proposals_table .prop_change .ui-checkbox {
   margin: 0 auto;
 }
-#proposals_table .prop_row_new_response .first_col {
-  padding: 0;
+#proposals_table tr.prop_row_new_response {
+  height: 120px;
 }
 #proposals_table .last_col {
 	position:absolute;
@@ -281,4 +287,46 @@ h3 {
 a.showmore {
 	font-size: 70%;
 	margin-top: 10px;
+}
+
+#div_show_more_inputs {
+  position: relative;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: none;
+}
+
+#proposals_table a.pure-button-validate-prop {
+  color: #000;
+  width: 80px;
+  padding: 0;
+  padding-left: 20px;
+  cursor: pointer;
+  border: 1px solid #d5d5d5;
+  font-weight: normal;
+  background: url("../../images/check.png?v=e784.5000") no-repeat 15px center #fff;
+}
+
+#proposals_table .pure-button-validate-prop {
+  display: inline-block;
+  border: solid 1px #d5d5d5;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 4px;
+}
+
+#proposals_table .prop_rdv {
+  display: none;
+}
+
+#proposals_table .pure-button-validate-prop-rdv {
+  display: inline-block;
+  /* border: solid 1px var(--buttons-border-color); */
+  height: 30px;
+  line-height: 30px;
+  border-radius: 4px;
+  color: var(--inputs-text-color);
+  width: 75px;
+  padding: 0;
+  background: url("../../images/check_valide.png?v=e784.5000") no-repeat 25px center #50e3c2;
 }

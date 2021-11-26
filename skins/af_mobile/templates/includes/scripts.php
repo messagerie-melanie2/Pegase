@@ -26,20 +26,20 @@ use Program\Lib\Request\Request as r;
 <link href='skins/<?= o::get_env('skin') ?>/css/src/style.css?s=1503251722' rel='stylesheet' />
 <link href='skins/<?= o::get_env('skin') ?>/css/src/custom.css' rel='stylesheet' />
 
-<script src='javascript/lib/jquery-1.11.0.min.js'></script>
-<script src='javascript/src/app.js'></script>
+<script src='js/lib/jquery-1.11.0.min.js'></script>
+<script src='js/src/app.js'></script>
 <?php if (o::get_env("page") == 'edit_date') { ?>
-    <link href='javascript/lib/fullcalendar/fullcalendar.css' rel='stylesheet' />
-    <link href='javascript/lib/fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
-    <script src='javascript/lib/jquery-ui.custom.min.js'></script>
-    <script src='javascript/lib/fullcalendar/fullcalendar.min.js'></script>
-    <script src='javascript/src/calendar.js?s=1503251731'></script>
+    <link href='js/lib/fullcalendar/fullcalendar.css' rel='stylesheet' />
+    <link href='js/lib/fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+    <script src='js/lib/jquery-ui.custom.min.js'></script>
+    <script src='js/lib/fullcalendar/fullcalendar.min.js'></script>
+    <script src='js/src/calendar.js?s=1503251731'></script>
 <?php } elseif (o::get_env("page") == 'edit_prop') { ?>
-    <script src='javascript/src/proposals.js?s=1503241510'></script>
+    <script src='js/src/proposals.js?s=1503241510'></script>
 <?php } elseif (o::get_env("page") == 'edit') { ?>
-    <script src='javascript/src/edit.js'></script>
+    <script src='js/src/edit.js'></script>
 <?php } elseif (o::get_env("page") == 'show') { ?>
-    <script src='javascript/src/show.js'></script>
+    <script src='js/src/show.js'></script>
 <?php } elseif (o::get_env("page") == 'main') { ?>
-    <script src='javascript/src/main.js'></script>
+    <script src='js/src/main.js'></script>
 <?php } ?>

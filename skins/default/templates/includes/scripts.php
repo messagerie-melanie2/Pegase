@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Scripts css/javascript à charger pour l'application de sondage
  *
@@ -22,28 +23,32 @@
 use Program\Lib\Request\Output as o;
 use Program\Lib\Request\Request as r;
 ?>
-<link href='skins/<?= o::get_env('skin') ?>/css/lib/pure-min.css' rel='stylesheet' />
 <link href='skins/<?= o::get_env('skin') ?>/css/lib/tooltipster.css' rel='stylesheet' />
+<link href='skins/<?= o::get_env('skin') ?>/css/src/themes.css?s=<?= BUILD ?>' rel='stylesheet' />
 <link href='skins/<?= o::get_env('skin') ?>/css/src/style.css?s=<?= BUILD ?>' rel='stylesheet' />
-<link href='skins/<?= o::get_env('skin') ?>/css/src/custom.css?s=<?= BUILD ?>' rel='stylesheet' />
-<script src='javascript/lib/jquery-1.11.3.min.js'></script>
-<script src='javascript/lib/jquery.tooltipster.min.js'></script>
-<script src='javascript/src/app.js?s=<?= BUILD ?>'></script>
-<script src='javascript/src/tooltip.js?s=<?= BUILD ?>'></script>
+<script src='js/lib/jquery-1.11.3.min.js'></script>
+<script src='js/lib/jquery-ui-1.11.4.custom.dialog.min.js'></script>
+<script src='js/lib/jquery.tooltipster.min.js'></script>
+<script src='js/src/app.js?s=<?= BUILD ?>'></script>
+<script src='js/src/tooltip.js?s=<?= BUILD ?>'></script>
 <link href='skins/<?= o::get_env('skin') ?>/css/lib/jquery-ui-1.11.4.custom.dialog.min.css' rel='stylesheet' />
-<script src='javascript/lib/jquery-ui-1.11.4.custom.dialog.min.js'></script>
-<?php if (o::get_env("page") == 'edit_date') { ?>
-    <link href='javascript/lib/fullcalendar/fullcalendar.css' rel='stylesheet' />
-    <link href='javascript/lib/fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
-    <script src='javascript/lib/jquery-ui.custom.min.js'></script>
-    <script src='javascript/lib/fullcalendar/fullcalendar.min.js'></script>
-    <script src='javascript/src/calendar.js?s=<?= BUILD ?>'></script>
+<?php if (o::get_env("page") == 'edit_date' || o::get_env("page") == 'edit_rdv') { ?>
+    <script src='js/src/calendar.js?s=<?= BUILD ?>'></script>
+    <script src='js/lib/moment.min.js'></script>
+    <script src='js/lib/fullcalendar/fullcalendar.min.js'></script>
+    <script src='js/lib/fullcalendar/locale/fr.js'></script>
+    <link href='js/lib/fullcalendar/fullcalendar.css' rel='stylesheet' />
+    <link href='js/lib/fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
 <?php } elseif (o::get_env("page") == 'edit_prop') { ?>
-    <script src='javascript/src/proposals.js?s=<?= BUILD ?>'></script>
+    <script src='js/src/proposals.js?s=<?= BUILD ?>'></script>
 <?php } elseif (o::get_env("page") == 'edit') { ?>
-    <script src='javascript/src/edit.js?s=<?= BUILD ?>'></script>
+    <script src='js/src/edit.js?s=<?= BUILD ?>'></script>
 <?php } elseif (o::get_env("page") == 'show') { ?>
-    <script src='javascript/src/show.js?s=<?= BUILD ?>'></script>
+    <script src='js/src/show.js?s=<?= BUILD ?>'></script>
+    <script src='js/lib/interact.min.js?s=<?= BUILD ?>'></script>
+    <script src='js/src/resize.js?s=<?= BUILD ?>'></script>
 <?php } elseif (o::get_env("page") == 'main') { ?>
-    <script src='javascript/src/main.js?s=<?= BUILD ?>'></script>
+    <script src='js/src/main.js?s=<?= BUILD ?>'></script>
+    <script src='js/lib/interact.min.js?s=<?= BUILD ?>'></script>
+    <script src='js/src/resize.js?s=<?= BUILD ?>'></script>
 <?php } ?>

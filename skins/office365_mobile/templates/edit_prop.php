@@ -77,7 +77,7 @@ use Program\Lib\Request\Session as s;
         </div>
         <br>
         <div id="edit">
-    		<form action="<?= o::url("edit_end", o::get_env("action"), array('u' => p::get_current_poll()->poll_uid)) ?>" method="post" class="pure-form pure-form-stacked">
+    		<form action="<?= o::url("edit_end", o::get_env("action"), array('u' => p::get_current_poll()->poll_uid)) ?>" method="post" onsubmit="setFormSubmitting()" class="pure-form pure-form-stacked">
     			<fieldset>
     			    <div class="pure-controls" style="margin-left: 0;">
     		        	<button type="submit" class="pure-button pure-button-submit"><?= l::g('Save the poll') ?></button>

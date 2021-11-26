@@ -52,9 +52,10 @@ class External_Login {
 	    Main::MobileVersion();
    		$username = trim(strtolower(Request::getInputValue("username", POLL_INPUT_GPC)));
    		$password = Request::getInputValue("password", POLL_INPUT_GPC, true);
+   		$timezone = Request::getInputValue("timezone", POLL_INPUT_GPC, true);
    		if (isset($username)
    		       && isset($password)) {
-   		    if (\Program\Drivers\Driver::get_driver()->authenticate($username, $password)) {
+	         if (\Program\Drivers\Driver::get_driver()->authenticate($username, $password, $timezone)) {
    		        Session::setUsername($username);
    		        Session::setPassword($password);
    		        Session::setToken();

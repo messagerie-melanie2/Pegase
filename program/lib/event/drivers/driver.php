@@ -169,15 +169,16 @@ abstract class Driver {
    * 
    * @param string $date
    *          Date de l'évènement
+   * @param string $timezone Timezone du sondage         
    * @return array $start,$end,$allday
    */
-  public function date_to_start_end($date) {
+  public function date_to_start_end($date, $timezone) {
     // Génération de la date
     $tmp = explode(' - ', $date);
-    $start = new \DateTime($tmp[0]);
+    $start = new \DateTime($tmp[0], new \DateTimeZone($timezone));
     $allday = false;
     if (isset($tmp[1])) {
-      $end = new \DateTime($tmp[1]);
+      $end = new \DateTime($tmp[1], new \DateTimeZone($timezone));
       // Pour une journée entière on fait +1 jour pour ne pas avoir de décalage
       if (strlen($tmp[1]) == 10) {
         $end->add(new \DateInterval('P1D'));
@@ -252,7 +253,20 @@ abstract class Driver {
     
     $events = [];
     if (isset($fbdata) && $fbdata !== false) {
-      $vcalendar = \Sabre\VObject\Reader::read($fbdata);      
+      $vcalendar = \Sabre\VObject\Reader::read($fbdata);
+      // Parcours les vevents
+      foreach ($vcalendar->VEVENT as $vevent) {
+        // Génération de l'événement
+        $event = new \Program\Data\Event([
+            'uid' => $vevent->UID,
+            'start' => new \DateTime($vevent->DTSTART),
+            'end' => new \DateTime($vevent->DTEND),
+            'status' => $vevent->STATUS,
+            'title' => $vevent->SUMMARY
+        ]);
+        // Ajoute l'évènement au tableau
+        $events[] = $event;
+      }
       // Parcours les freebusy
       foreach ($vcalendar->VFREEBUSY as $vfreebusy) {
         foreach ($vfreebusy->FREEBUSY as $prop) {
@@ -341,7 +355,7 @@ abstract class Driver {
             try {
               // Gestion des dates
               // Récupération de la date de début et de la date de fin
-              list($start, $end, $allday) = $this->date_to_start_end($prop_value);
+              list($start, $end, $allday) = $this->date_to_start_end($prop_value, $user->timezone);
               
               // Génération de l'événement
               $event = new \Program\Data\Event([
@@ -461,9 +475,7 @@ abstract class Driver {
     
     // Gestion des dates
     // Récupération de la date de début et de la date de fin
-    list($start, $end, $allday) = $this->date_to_start_end($date);
-    // Récupération du timezone
-    $timezone = $this->get_user_timezone($user);
+    list($start, $end, $allday) = $this->date_to_start_end($date, $poll->timezone);    
     if ($allday) {
       // All day event
       $vevent->add("DTSTART", $start->format('Ymd'), [
@@ -473,9 +485,15 @@ abstract class Driver {
           "VALUE" => "DATE"
       ]);
     } else {
+      if ($user->timezone != $poll->timezone) {
+        // Récupération du timezone
+        $timezone = $this->get_user_timezone($user);
+        $start->setTimezone($timezone);
+        $end->setTimezone($timezone);
+      }      
       // Si c'est une date/time
-      $vevent->DTSTART = new \DateTime($start->format('Y-m-d H:i:s'), $timezone);
-      $vevent->DTEND = new \DateTime($end->format('Y-m-d H:i:s'), $timezone);
+      $vevent->DTSTART = $start;
+      $vevent->DTEND = $end;
     }
     
     // Création de l'organisateur

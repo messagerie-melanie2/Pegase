@@ -60,6 +60,10 @@ class Edit {
 		if (\Program\Data\Poll::isset_current_poll ()) {
 			o::set_env ( "poll_type", \Program\Data\Poll::get_current_poll ()->type );
 		}
+		o::set_env("ALL_FIELDS", \Config\IHM::$ALL_FIELDS);
+		o::set_env("SHOW_FIELDS", \Config\IHM::$SHOW_FIELDS);
+		o::set_env("CHECK_FIELDS", \Config\IHM::$CHECK_FIELDS);
+		o::set_env("MIN_ATTENDEES", max(\Program\Data\Poll::get_nb_attendees_per_prop(\Program\Data\Poll::get_current_poll())));
 		self::LockPoll ();
 	}
 
@@ -108,72 +112,106 @@ class Edit {
 		$csrf_token = trim ( strtolower ( Request::getInputValue ( "csrf_token", POLL_INPUT_POST ) ) );
 		if (isset ( $edit_title ) && $edit_title != "") {
 			if (Session::validateCSRFToken ( $csrf_token )) {
+				$edit_max_attendees_per_prop = Request::getInputValue ( "edit_max_attendees_per_prop", POLL_INPUT_POST );
+				$edit_prop_in_agenda = Request::getInputValue ( "edit_prop_in_agenda", POLL_INPUT_POST );
 				$edit_location = Request::getInputValue ( "edit_location", POLL_INPUT_POST );
 				$edit_description = Request::getInputValue ( "edit_description", POLL_INPUT_POST );
 				$edit_only_auth_user = Request::getInputValue ( "edit_only_auth_user", POLL_INPUT_POST );
 				$edit_if_needed = Request::getInputValue ( "edit_if_needed", POLL_INPUT_POST );
 				$edit_anonymous = Request::getInputValue ( "edit_anonymous", POLL_INPUT_POST );
-				if (o::get_env ( "action" ) == ACT_NEW) {
-					$poll = new \Program\Data\Poll ( array (
-							"title" => $edit_title,
-							"location" => $edit_location,
-							"description" => $edit_description,
-							"organizer_id" => \Program\Data\User::get_current_user ()->user_id,
-							"type" => $type
-					) );
-					$poll->auth_only = $edit_only_auth_user == "true";
-					$poll->if_needed = $edit_if_needed == "true";
-					$poll->anonymous = $edit_anonymous == "true";
-					// Création du sondage
-					$poll->poll_uid = \Program\Data\Poll::generation_uid ();
-					if (! is_null ( $poll->poll_uid )) {
-						$poll_id = \Program\Drivers\Driver::get_driver ()->createPoll ( $poll );
-						if (isset ( $poll_id )) {
-							\Program\Data\Poll::set_current_poll ( \Program\Drivers\Driver::get_driver ()->getPoll ( $poll_id ) );
-							if (isset ( \Config\IHM::$SEND_MAIL ) && \Config\IHM::$SEND_MAIL) {
-								\Program\Lib\Mail\Mail::SendCreatePollMail ( \Program\Data\Poll::get_current_poll (), \Program\Data\User::get_current_user () );
-							}
-						} else {
-							o::set_env ( "page", "edit" );
-							o::set_env ( "error", "Error creating the poll" );
-						}
-					} else {
-						o::set_env ( "page", "edit" );
-						o::set_env ( "error", "Error when generating the uid" );
+				$edit_cgu_accepted = Request::getInputValue ( "edit_cgu_accepted", POLL_INPUT_POST );
+				if (!isset($edit_cgu_accepted) 
+				    || $edit_cgu_accepted != 'true') {
+		      o::set_env ( "page", "edit" );
+		      o::set_env ( "error", "Error you need to accept CGUs" );
+		      return false;
+				}
+				else {
+				  if (o::get_env ( "action" ) == ACT_NEW) {
+				    $poll = new \Program\Data\Poll ( array (
+				        "title" => $edit_title,
+				        "location" => $edit_location,
+				        "description" => $edit_description,
+				        "organizer_id" => \Program\Data\User::get_current_user ()->user_id,
+				        "type" => $type,
+				    ));
+					if ($type == "rdv") {
+						$poll->max_attendees_per_prop = !empty($edit_max_attendees_per_prop) ? $edit_max_attendees_per_prop : 1;
+						$poll->prop_in_agenda = $edit_prop_in_agenda == "true";
 					}
-				} elseif (o::get_env ( "action" ) == ACT_MODIFY
-						&& \Program\Data\Poll::isset_current_poll()
-						&& \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
-					// Modification du sondage courant
-					$poll = \Program\Data\Poll::get_current_poll ();
-					// Déterminer si on doit notifier
-					$send_notification = $poll->title != $edit_title
-							|| $poll->location != $edit_location
-							|| $poll->description != $edit_description;
-					// Récupération des anciennes
-					$old_title = $poll->title != $edit_title ? $poll->title : null;
-					$old_location = $poll->location != $edit_location ? $poll->location : null;
-					$old_description = $poll->description != $edit_description ? $poll->description : null;
-
-					$poll->title = $edit_title;
-					$poll->location = $edit_location;
-					$poll->description = $edit_description;
-					$poll->type = $type;
-					$poll->auth_only = $edit_only_auth_user == "true";
-					$poll->if_needed = $edit_if_needed == "true";
-					$poll->anonymous = $edit_anonymous == "true";
-					if (\Program\Drivers\Driver::get_driver ()->modifyPoll ( $poll )) {
-						o::set_env ( "message", 'The poll is modified' );
-						// Envoi du message de notification
-						if ($send_notification) {
-							\Program\Lib\Mail\Mail::SendModifyPollNotificationMail($poll, $old_title, $old_location, $old_description);
-						}
+				    $poll->auth_only = $edit_only_auth_user == "true";
+				    $poll->if_needed = $edit_if_needed == "true";
+				    $poll->anonymous = $edit_anonymous == "true";
+				    $poll->cgu_accepted = $edit_cgu_accepted == "true";
+				    $poll->timezone = \Program\Data\User::get_current_user ()->timezone;
+				    // Création du sondage
+				    $poll->poll_uid = \Program\Data\Poll::generation_uid ();
+				    if (! is_null ( $poll->poll_uid )) {
+				      $poll_id = \Program\Drivers\Driver::get_driver ()->createPoll ( $poll );
+				      if (isset ( $poll_id )) {
+				        \Program\Data\Poll::set_current_poll ( \Program\Drivers\Driver::get_driver ()->getPoll ( $poll_id ) );
+				        if (isset ( \Config\IHM::$SEND_MAIL ) && \Config\IHM::$SEND_MAIL) {
+				          \Program\Lib\Mail\Mail::SendCreatePollMail ( \Program\Data\Poll::get_current_poll (), \Program\Data\User::get_current_user () );
+				        }
+				      } else {
+				        o::set_env ( "page", "edit" );
+				        o::set_env ( "error", "Error creating the poll" );
+				        return false;
+				      }
+				    } else {
+				      o::set_env ( "page", "edit" );
+				      o::set_env ( "error", "Error when generating the uid" );
+				      return false;
+				    }
+				  } elseif (o::get_env ( "action" ) == ACT_MODIFY
+				      && \Program\Data\Poll::isset_current_poll()
+				      && \Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
+		        // Modification du sondage courant
+		        $poll = \Program\Data\Poll::get_current_poll ();
+		        // Déterminer si on doit notifier
+		        $send_notification = $poll->title != $edit_title
+		        || $poll->location != $edit_location
+		        || $poll->description != $edit_description;
+		        // Récupération des anciennes
+		        $old_title = $poll->title != $edit_title ? $poll->title : null;
+		        $old_location = $poll->location != $edit_location ? $poll->location : null;
+		        $old_description = $poll->description != $edit_description ? $poll->description : null;
+		        
+		        $poll->title = $edit_title;
+				if ($type == "rdv") {
+					$poll_min_attendees = max(\Program\Data\Poll::get_nb_attendees_per_prop($poll));
+					if ($edit_max_attendees_per_prop < $poll_min_attendees) {
+						$poll->max_attendees_per_prop = $poll_min_attendees;
 					}
+					else {
+						$poll->max_attendees_per_prop = $edit_max_attendees_per_prop;
+					}
+          $poll->prop_in_agenda = $edit_prop_in_agenda == "true";
+          \Program\Lib\Utils\Utils::add_rdv_props_to_calendar(unserialize($poll->proposals));
+				}
+		        $poll->location = $edit_location;
+		        $poll->description = $edit_description;
+		        $poll->type = $type;
+		        $poll->auth_only = $edit_only_auth_user == "true";
+		        $poll->if_needed = $edit_if_needed == "true";
+		        $poll->anonymous = $edit_anonymous == "true";
+		        $poll->cgu_accepted = $edit_cgu_accepted == "true";
+		        $poll->timezone = \Program\Data\User::get_current_user ()->timezone;
+		        if (\Program\Drivers\Driver::get_driver ()->modifyPoll ( $poll )) {
+		          o::set_env ( "message", 'The poll is modified' );
+		          // Envoi du message de notification
+		          if ($send_notification) {
+		            \Program\Lib\Mail\Mail::SendModifyPollNotificationMail($poll, $old_title, $old_location, $old_description);
+		          }
+		        }
+				  }
 				}
 			} else {
 				o::set_env ( "page", "edit" );
 				o::set_env ( "error", "Invalid request" );
+				return false;
 			}
 		}
+		return true;
 	}
 }

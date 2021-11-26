@@ -30,9 +30,9 @@ use Program\Lib\Request\Session as s;
 <?php t::inc('head') ?>
 <body>
 <div id="prevcontent">
+	<?php t::inc('toolbar') ?>
     <div id="content">
         <?php t::inc('message') ?>	
-        <?php t::inc('connected') ?>
         <br>
         <div id="title">
             <?php if (o::get_env("action") == ACT_NEW) { ?>
@@ -42,12 +42,6 @@ use Program\Lib\Request\Session as s;
                 <h1><?= l::g('Modification poll page, change your own dates') ?></h1>
             <?php }?>
         </div>
-        <a class="pure-button pure-button-edit-poll customtooltip_bottom" title="<?= l::g("Clic to get back to the poll modification", false) ?>" style="width: 25%;" href="<?= o::url("edit", ACT_MODIFY, array('u' => p::get_current_poll()->poll_uid)) ?>"><img alt="Modify" src="skins/<?= o::get_env("skin") ?>/images/1395932254_gear-01_white.png" height="12px"/> <?= l::g('Return to the edit page of poll') ?></a>
-        <?php if (p::isset_current_poll()
-                    && o::get_env("action") != ACT_NEW) { ?>
-                <a class="pure-button pure-button-see-poll customtooltip_bottom" title="<?= l::g("Clic to view the poll", false) ?>" style="width: 25%;" href="<?= o::url(null, null, array("u" => p::get_current_poll()->poll_uid)) ?>"><img alt="See" src="skins/<?= o::get_env("skin") ?>/images/1395933052_message-01_white.png" height="12px"/> <?= l::g('See the poll') ?></a>
-        <?php }?>
-        <br><br>
         <div class="pure-control-group">
         	<label style="width: 35%;"><i><?= l::g('Poll name') ?> : </i></label>
         	<span id="poll_title"><?= o::tohtml(p::get_current_poll()->title) ?></span>
@@ -57,13 +51,14 @@ use Program\Lib\Request\Session as s;
         </div>
         <br>
         <div id="edit">
-    		<form action="<?= o::url("edit_end", o::get_env("action"), array('u' => p::get_current_poll()->poll_uid)) ?>" method="post" class="pure-form pure-form-aligned">
+    		<form action="<?= o::url("edit_end", o::get_env("action"), array('u' => p::get_current_poll()->poll_uid)) ?>" method="post" onsubmit="setFormSubmitting()" class="pure-form pure-form-aligned">
     			<fieldset>
     			    <div id="props_list">
     		            <?= e::ShowProps() ?>
     		        </div>
     		        <a style="margin-left: 50%;" href="" class="customtooltip_bottom" title="<?= l::g('Clic to add a new prop', false) ?>" id="add_new_prop"><?= l::g('Add') ?></a>
     		        <input type="hidden" name="csrf_token" value="<?= s::getCSRFToken() ?>"/>
+                    <a class="pure-button pure-button-return customtooltip_bottom" title="<?= l::g("Clic to get back to the poll modification", false) ?>" href="<?= o::url("edit", ACT_MODIFY, array('u' => p::get_current_poll()->poll_uid)) ?>"><?= l::g('Return to the edit page of poll') ?></a>
     		        <div class="pure-controls" style="margin-left: 40%;">
     		        	<button type="submit" class="pure-button pure-button-submit customtooltip_bottom" title="<?= l::g('Clic to save the proposals of the poll') ?>"><?= l::g('Save the poll') ?></button>
     		        </div>

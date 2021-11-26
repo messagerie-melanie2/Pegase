@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
  * Cette application est un doodle-like permettant aux utilisateurs
@@ -23,6 +24,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace Config;
 
 /**
@@ -30,7 +32,8 @@ namespace Config;
  *
  * @package Config
  */
-class IHM {
+class IHM
+{
     /**
      * Configuration de la localization par défaut
      */
@@ -39,12 +42,12 @@ class IHM {
      * Configuration de l'overlay pour la localization
      */
     public static $OVERLAY_LOCALIZATION = null;
-    
+
     /**
      * Doit-on afficher la page de maintenance ?
      */
     public static $MAINTENANCE = false;
-    
+
     /**
      * Configuration du nom de la skin à utiliser pour l'ihm
      */
@@ -58,7 +61,26 @@ class IHM {
      * Le driver doit prendre en compte la création de l'utilisateur avec un mot de passe crypté
      */
     public static $CREATE_USER = false;
-    
+
+    /**
+     * Page d'accueil
+     * Nombre de sondages personnels affichés
+     * Au delà ils sont masqués dynamiquement
+     */
+    public static $MAX_SHOW_OWN_POLLS = 3;
+    /**
+     * Page d'accueil
+     * Nombre de sondages auxquels on a répondu affichés
+     * Au delà ils sont masqués dynamiquement
+     */
+    public static $MAX_SHOW_RESP_POLLS = 5;
+    /**
+     * Page d'accueil
+     * Nombre de sondages supprimés affichés
+     * Au delà ils sont masqués dynamiquement
+     */
+    public static $MAX_SHOW_DELETED_POLLS = 1;
+
     /**
      * Nombre de réponses nécessaires avant l'affichage du pop de verrouillage
      * @var int
@@ -119,6 +141,11 @@ class IHM {
      */
     public static $USE_SSO = false;
     /**
+     * Proposer une connexion via Cerbere dans la base de login
+     * @var string
+     */
+    public static $USE_CERBERE = false;
+    /**
      * Défini la valeur du champ get pour lui passer une url en redirection
      * [Optionnel] Peut être mis à null
      */
@@ -126,12 +153,62 @@ class IHM {
     /**
      * Liste des types de sondage possible
      */
-    public static $POLL_TYPES = array("date", "prop");
+    public static $POLL_TYPES = array(
+        "date",
+        "rdv",
+        "prop"
+    );
+    /**
+     * Liste des champs pour les sondages
+     */
+    public static $ALL_FIELDS = array(
+        "edit_only_auth_user",
+        "edit_if_needed",
+        "edit_prop_in_agenda",
+        "edit_anonymous",
+        "edit_max_attendees_per_prop"
+    );
+    /**
+     * Liste des champs à afficher par types de sondages
+     */
+    public static $SHOW_FIELDS = array(
+        "date" => array(
+            "edit_only_auth_user",
+            "edit_if_needed",
+            "edit_anonymous"
+        ),
+        "rdv" => array(
+            "edit_only_auth_user",
+            "edit_prop_in_agenda",
+            "edit_anonymous",
+            "edit_max_attendees_per_prop"
+        ),
+        "prop" => array(
+            "edit_only_auth_user",
+            "edit_if_needed",
+            "edit_anonymous"
+        ),
+    );
+    /**
+     * Liste des champs à cocher par types de sondages
+     */
+    public static $CHECK_FIELDS = array(
+        "date" => array(
+            "edit_only_auth_user",
+        ),
+        "rdv" => array(
+            "edit_only_auth_user",
+            "edit_prop_in_agenda",
+        ),
+        "prop" => array(
+            "edit_only_auth_user",
+        ),
+    );
     /**
      * Configuration du ou des serveurs memcache
      */
     public static $MEMCACHE_SERVER = array();
-    
+
     /**
      * URL de disponibilité des utilisateurs
      * Peut être configuré dans le ldap ou ici (la valeur du ldap prend le dessus)
@@ -141,8 +218,8 @@ class IHM {
      * @var string
      */
     public static $FREEBUSY_URL = "https://melanie2web.melanie2.i2/kronolith/fb.php?u=%%username%%";
-    
-    
+
+
     /**
      * Défini si les tentatives supprimés par l'organisateur (validation d'une date, suppression du sondage)
      * sont répercutées pour tous les participants

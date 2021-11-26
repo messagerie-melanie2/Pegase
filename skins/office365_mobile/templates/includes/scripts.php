@@ -26,18 +26,18 @@ use Program\Lib\Request\Request as r;
 <link href='skins/<?= o::get_env('skin') ?>/css/lib/jquery.mobile-1.4.5.min.css' rel='stylesheet' />
 <link href='skins/<?= o::get_env('skin') ?>/css/src/style.css?s=<?= BUILD ?>' rel='stylesheet' />
 <!-- <link href='skins/<?= o::get_env('skin') ?>/css/src/custom.css?s=<?= BUILD ?>' rel='stylesheet' /> -->
-<script src='javascript/lib/jquery-1.11.0.min.js'></script>
-<script src='javascript/lib/jquery.mobile-1.4.5.min.js'></script>
-<script src='javascript/src/app.js?s=<?= BUILD ?>'></script>
-<script src='javascript/src/mobile.js?s=<?= BUILD ?>'></script>
+<script src='js/lib/jquery-1.11.0.min.js'></script>
+<script src='js/lib/jquery.mobile-1.4.5.min.js'></script>
+<script src='js/src/app.js?s=<?= BUILD ?>'></script>
+<script src='js/src/mobile.js?s=<?= BUILD ?>'></script>
 <?php if (o::get_env("page") == 'edit_date') { ?>
-    <script src='javascript/src/calendar_mobile.js?s=<?= BUILD ?>'></script>
+    <script src='js/src/calendar_mobile.js?s=<?= BUILD ?>'></script>
 <?php } elseif (o::get_env("page") == 'edit_prop') { ?>
-    <script src='javascript/src/proposals.js?s=<?= BUILD ?>'></script>
+    <script src='js/src/proposals.js?s=<?= BUILD ?>'></script>
 <?php } elseif (o::get_env("page") == 'edit') { ?>
-    <script src='javascript/src/edit.js?s=<?= BUILD ?>'></script>
+    <script src='js/src/edit.js?s=<?= BUILD ?>'></script>
 <?php } elseif (o::get_env("page") == 'show') { ?>
-    <script src='javascript/src/show.js?s=<?= BUILD ?>'></script>
+    <script src='js/src/show.js?s=<?= BUILD ?>'></script>
 <?php } elseif (o::get_env("page") == 'main') { ?>
-    <script src='javascript/src/main.js?s=<?= BUILD ?>'></script>
+    <script src='js/src/main.js?s=<?= BUILD ?>'></script>
 <?php } ?>

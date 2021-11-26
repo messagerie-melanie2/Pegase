@@ -25,17 +25,21 @@
  */
 
 // Login Page
-$labels['Log-in to create new poll and list all your polls'] = 'Connectez-vous avec votre compte Mélanie2 (prénom.nom) pour lister vos sondages ou en créer de nouveaux';
+$labels['Log-in to create new poll and list all your polls'] = 'Connectez-vous avec votre compte Mél (prénom.nom) pour lister vos sondages ou en créer de nouveaux';
 
-$labels['Select dates by clicking in the calendar'] = 'Sélectionnez des dates en cliquant dans le calendrier ci-dessous. Vous pouvez les créer sur plusieurs jours en vue Mois ou sur une plage horaire en vue Semaine/Jour. Chaque date peut être déplacée en glissant/déposant et supprimée en cliquant sur la croix blanche. Cliquez sur "Afficher votre agenda" pour visualiser votre agenda Mélanie2 par défaut.';
+$labels['Login, to respond with your account'] = 'Répondez avec votre compte Mél';
 
-$labels['Login, to respond with your account'] = 'Répondez avec votre compte Mélanie2';
+$labels['Clic to connect and respond with your account'] = 'Cliquez ici pour vous connecter et répondre au sondage avec votre compte Mél';
 
-$labels['Clic to connect and respond with your account'] = 'Cliquez ici pour vous connecter et répondre au sondage avec votre compte Mélanie2';
+$labels['Clic to add this proposal to your calendar'] = "Cliquez ici pour ajouter cette proposition à votre agenda Mél. Les événements en provisoire seront nettoyés";
+$labels['Event has been saved in your calendar'] = "L'évènement vient d'être créé dans votre agenda Mél par défaut";
 
-$labels['Clic to add this proposal to your calendar'] = "Cliquez ici pour ajouter cette proposition à votre agenda Mélanie2. Les événements en provisoire seront nettoyés";
-$labels['Event has been saved in your calendar'] = "L'évènement vient d'être créé dans votre agenda Mélanie2 par défaut";
+$labels['This proposals is already in your calendar'] = "Cette proposition est déjà présente dans votre calendrier Mél";
 
-$labels['This proposals is already in your calendar'] = "Cette proposition est déjà présente dans votre calendrier Mélanie2";
+$labels['Your freebusy title'] = "Liste de vos disponibilités basées sur votre agenda Mél par défaut";
 
-$labels['Your freebusy title'] = "Liste de vos disponibilités basées sur votre agenda Mélanie2 par défaut";
+$labels['Respect the principles of labeling in force on the internet, namely a set of rules of good manners concerning the use of the internet'] = "Respectez les principes de l'étiquette en vigueur sur l'internet, à savoir un ensemble de règles de savoir-vivre concernant l'emploi de l'internet";
+
+$labels['© Ministry of the Ecological and Inclusive Transition, © Ministry of Territorial Cohesion and Relations with Local Authorities, © Ministry of Agriculture and Food'] = "© Ministère de la Transition écologique et solidaire, © Ministère de la Cohésion des territoires et des Relations avec les collectivités territoriales, © Ministère de l'Agriculture et de l'Alimentation";
+
+$labels['SNUM - Digital service'] = "SNUM - Service du numérique";

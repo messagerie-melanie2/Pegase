@@ -93,6 +93,14 @@ use Program\Lib\Request\Output as o,
     		        	<textarea class="customtooltip_right"  title="<?= l::g('Description of the poll', false) ?>"
     		        	    rows="4" style="width: 60%;" id="edit_description" name="edit_description"><?= p::isset_current_poll() ? p::get_current_poll()->description : r::getInputValue('description', POLL_INPUT_GET) ?></textarea>
     		        </div>
+    		        <br><br>
+    		        <div class="pure-control-group" style="width: 59%; border: 1px solid #959595; box-shadow: inset 0 1px 3px #ddd; border-radius: 4px; padding: 7px; border-radius: 3px;">
+    		        	<label style="width: 60%;" for="edit_cgu_accepted" class="customtooltip_bottom" title="<?= l::g("You accept the CGUs", false) ?>">
+  		        	    <input id="edit_cgu_accepted" name="edit_cgu_accepted" type="checkbox" value="true" <?= p::isset_current_poll() && p::get_current_poll()->cgu_accepted ? 'checked' : '' ?>>
+  		        	    <span style="color: red;">*</span>
+  		        	    <?= l::g('I accept the CGUs', false) ?>
+    		        	</label>
+    		        </div>
     		        <br>
     		        <div class="pure-control-group">
     		        	<label style="width: 60%;">

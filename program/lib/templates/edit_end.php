@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ce fichier fait parti de l'application de sondage du MEDDE/METL
  * Cette application est un doodle-like permettant aux utilisateurs
@@ -23,6 +24,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace Program\Lib\Templates;
 
 // Utilisation des namespaces
@@ -41,19 +43,20 @@ class Edit_end
      * Constructeur privé pour ne pas instancier la classe
      */
     private function __construct()
-    {}
+    {
+    }
 
     /**
      * Execution de la requête
      */
     public static function Process()
     {
-        if (! \Program\Data\User::isset_current_user()) {
+        if (!\Program\Data\User::isset_current_user()) {
             o::set_env("page", "error");
             o::set_env("error", "You have to be connected");
             return;
         }
-        if (! \Program\Data\Poll::isset_current_poll()) {
+        if (!\Program\Data\Poll::isset_current_poll()) {
             o::set_env("page", "error");
             o::set_env("error", "Current poll is not defined");
             return;
@@ -66,7 +69,7 @@ class Edit_end
         $csrf_token = trim(strtolower(Request::getInputValue("csrf_token", POLL_INPUT_POST)));
         if (Session::validateCSRFToken($csrf_token)) {
             // récupération des données de post
-            if (! o::get_env("mobile") || \Program\Data\Poll::get_current_poll()->type == "prop") {
+            if (!o::get_env("mobile") || \Program\Data\Poll::get_current_poll()->type == "prop") {
                 $post = $_POST;
             } else {
                 $post = array();
@@ -80,62 +83,67 @@ class Edit_end
             // Génération des propositions du sondage
             $proposals = array();
             foreach ($post as $key => $value) {
-                if (strpos($key, "edit_date") === 0 || strpos($key, "edit_prop") === 0) {
+                if (strpos($key, "edit_date") === 0 || strpos($key, "edit_prop") === 0 || strpos($key, "edit_rdv") === 0) {
                     $val = Request::getInputValue($key, POLL_INPUT_POST);
                     if (empty($val) && o::get_env("mobile"))
                         $val = $value;
-                    if (! empty($val) && ! in_array($val, $proposals))
+                    if (!empty($val) && !in_array($val, $proposals))
                         $proposals[strtolower($key)] = $val;
                 }
             }
-            if (o::get_env("action") != ACT_NEW
-            		&& \Program\Data\Poll::get_current_poll()->type == "date") {
-            	// Déterminer si on doit notifier
-            	$send_notification = \Program\Data\Poll::get_current_poll()->proposals != serialize($proposals);
-            	// Récupère les propositions modifiées
-            	$old_proposals = unserialize(\Program\Data\Poll::get_current_poll()->proposals);
-            	$new_proposals = [];
-            	$deleted_proposals = [];
-            	if ($old_proposals !== false) {
-            		// Recherche les propositions supprimées
-            		foreach ($old_proposals as $prop_key => $prop_value) {
-            		    if (! in_array($prop_value, $proposals)) {
-            		        $deleted_proposals[] = $prop_value;
-            		    }
-            		}
-            		// Recherche les propositions ajoutées
-            		foreach ($proposals as $prop_key => $prop_value) {
-            		    if (! in_array($prop_value, $old_proposals)) {
-            		        $new_proposals[] = $prop_value;
-            		    }
-            		}
-            	}
+            if (
+                o::get_env("action") != ACT_NEW
+                && (\Program\Data\Poll::get_current_poll()->type == "date" || \Program\Data\Poll::get_current_poll()->type == "rdv")
+            ) {
+                // Déterminer si on doit notifier
+                $send_notification = \Program\Data\Poll::get_current_poll()->proposals != serialize($proposals);
+                // Récupère les propositions modifiées
+                $old_proposals = unserialize(\Program\Data\Poll::get_current_poll()->proposals);
+                $new_proposals = [];
+                $deleted_proposals = [];
+                if ($old_proposals !== false) {
+                    // Recherche les propositions supprimées
+                    foreach ($old_proposals as $prop_key => $prop_value) {
+                        if (!in_array($prop_value, $proposals)) {
+                            $deleted_proposals[] = $prop_value;
+                        }
+                    }
+                    // Recherche les propositions ajoutées
+                    foreach ($proposals as $prop_key => $prop_value) {
+                        if (!in_array($prop_value, $old_proposals)) {
+                            $new_proposals[] = $prop_value;
+                        }
+                    }
+                }
             }
-
+            // Ajout des labels
+            o::add_label(array('Copied URL'));
             // Enregistrement des propositions
             \Program\Data\Poll::get_current_poll()->proposals = serialize($proposals);
             // Réinitialiser les date start et end pour le recalcul automatique en fonction des propositions
             \Program\Data\Poll::get_current_poll()->date_start = null;
             \Program\Data\Poll::get_current_poll()->date_end = null;
-            if (! \Program\Drivers\Driver::get_driver()->modifyPoll(\Program\Data\Poll::get_current_poll()) && o::get_env("action") == ACT_NEW) {
+            if (!\Program\Drivers\Driver::get_driver()->modifyPoll(\Program\Data\Poll::get_current_poll()) && o::get_env("action") == ACT_NEW) {
                 o::set_env("page", "edit_" . \Program\Data\Poll::get_current_poll()->type);
                 o::set_env("error", "Error saving proposals");
             } else
                 if (o::get_env("action") != ACT_NEW) {
-                    // Envoi du message de notification
-                    if (isset($send_notification) && $send_notification) {
-                        \Program\Lib\Mail\Mail::SendModifyProposalsNotificationMail(\Program\Data\Poll::get_current_poll(), $new_proposals, $deleted_proposals);
-                    }
-                    // Suppression des tentatives pour un sondage de date
-                    if (\Program\Data\Poll::get_current_poll()->type == "date" && count($deleted_proposals) > 0) {
-                        // Si des propositions sont supprimées, on supprime aussi les provisoires
-                        self::delete_tentatives_calendar($deleted_proposals);
-                    }
+                // Envoi du message de notification
+                if (isset($send_notification) && $send_notification) {
+                    \Program\Lib\Mail\Mail::SendModifyProposalsNotificationMail(\Program\Data\Poll::get_current_poll(), $new_proposals, $deleted_proposals);
                 }
+                // Suppression des tentatives pour un sondage de date
+                if (\Program\Data\Poll::get_current_poll()->type == "date" && count($deleted_proposals) > 0) {
+                    // Si des propositions sont supprimées, on supprime aussi les provisoires
+                    self::delete_tentatives_calendar($deleted_proposals);
+                }
+            }
         } else {
             o::set_env("page", "edit_" . \Program\Data\Poll::get_current_poll()->type);
             o::set_env("error", "Invalid request");
         }
+
+        \Program\Lib\Utils\Utils::add_rdv_props_to_calendar($new_proposals);
     }
 
     /**
@@ -164,7 +172,7 @@ class Edit_end
      * @param array $proposals
      *            Liste des propositions supprimées
      */
-    private static function delete_tentatives_calendar($proposals = [])
+    public static function delete_tentatives_calendar($proposals = [])
     {
         // Charge le eventslist depuis la base de données
         if (\Program\Data\EventsList::isset_current_eventslist() && \Program\Data\EventsList::get_current_eventslist()->events_status == \Program\Data\Event::STATUS_TENTATIVE) {

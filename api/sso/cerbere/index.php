@@ -59,6 +59,21 @@ phpCAS::setCasServerCACert(Api\SSO\Cerbere\Config::$CA_CERT);
 // allow denial of service attacks where at the least the server is
 // tied up parsing bogus XML messages.
 //phpCAS::handleLogoutRequests(true, $cas_real_hosts);
+
+// Forcer l'URL du service client
+if (isset($_GET['logout'])) {
+  phpCAS::setFixedServiceURL($url . Api\SSO\Cerbere\Cerbere::SSO_URL . '?logout');
+}
+elseif (isset($_GET['uri'])) {
+  phpCAS::setFixedServiceURL($url . Api\SSO\Cerbere\Cerbere::SSO_URL . '?uri=' . $_GET['uri']);
+}
+elseif (isset($_GET['poll'])) {
+  phpCAS::setFixedServiceURL($url . Api\SSO\Cerbere\Cerbere::SSO_URL . '?poll=' . $_GET['poll']);
+}
+else {
+  phpCAS::setFixedServiceURL($url . Api\SSO\Cerbere\Cerbere::SSO_URL);
+}
+
 // Force CAS authentication on any page that includes this file
 phpCAS::forceAuthentication();
 // Some small code triggered by the logout button

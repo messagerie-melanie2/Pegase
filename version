@@ -1,17 +1,75 @@
-Pégase - Version 1.0.6
-Pégase - Build 170523165754
+Pégase - Version 1.0.11
+Pégase - Build 202111031641
 Pégase - Liste des changements
 
-Pégase - 1.0.6 (Pas encore publiée) [ Afficher les bogues ]
+Pégase - 1.0.11 (Pas encore publiée) [ Afficher les bogues ]
 ===================================
-- 0004233: [General] Cerbériser/cassifier Pégase (thomas.payen) - résolu.
-- 0004269: [General] Permettre la suppression des provisoires quelque soit l'état du sondage (thomas.payen) - résolu.
-- 0004512: [General] Export Csv (thomas.payen) - résolu.
-- 0004465: [General] Possibilité de restaurer un sondage (thomas.payen) - résolu.
-- 0003906: [Interface] Page d'accueil: Afficher plus de sondages (thomas.payen) - résolu.
-- 0004511: [Interface] Modification Options avancées Page d'accueil (thomas.payen) - résolu.
+- Envoi d'un mail au participant lorsque l'organisateur supprime sa réponse
+- 0006276: [Interface][module prise de RDV] Synchronisation de l'agenda lors de la suppression d'un participant par l'organisateur
+- [Interface] Ajout du nom du créateur du sondage dans les informations
+- 0006268: [Interface][module prise de RDV] Portée à connaissance du nombre de participants
+- 0006267: [Interface][module prise de RDV] Champ Nombre de paticipants autorisés par proposition
+- 0006264: [Interface][module prise de RDV] Nombre de participations par créneau
+- 0006263: [Interface][module prise de RDV] Suppression du choix pour un participant
+
+Pégase - 1.0.10 (Publiée 19/10/2021) [ Afficher les bogues ]
+===================================
+- 0006131: MelWeb - Page d'édition des rendez-vous manquante - résolu
+- 0005988: MelWeb - MelWeb - Figer la colonne Participants - résolu
+- 0005914: MelWeb - Si on décoche une case après avoir "Tout cocher" elle est qd même cochée après "Modifier" - A reproduire
+- 0006068: MelWeb - quand un Pégase auquel on participe est validé, même si on clique sur "Je participerai" il reste en attente dans l'agenda - A reproduire
+- 0005968: MelWeb - Prise de RDV - Définir le nombre de participants possibles / créneau proposé - résolu.
+- 0005969: MelWeb - Prise de RDV - Option Ajouter les propositions au calendrier de l'organisateur - résolu.
+- 0005970: MelWeb - Généralités - Impossible de revenir à l'écran initial depuis les choix des créneaux - résolu.
+- 0005972: MelWeb - Prise de rdv - Evénement crée après sélection d'un créneau - Cas à prendre en compte - résolu.
+- 0006131: MelWeb - Page d'édition des rendez-vous manquante - résolu.
+- 0006128: MelWeb - Lors des choix de dates un evt journée entière sur 2 jours est montré que sur le premier jour - résolu.
+- 0005989: MelWeb - Affichage tronqué des noms des sondages (arnaud.goubier.i) - résolu.
+- 0005738: lien vers les conditions d'utilisation à changer (arnaud.goubier.i) - résolu.
+- 0005658: Prise de RDV - IHM incite à se connecter (arnaud.goubier.i) - résolu.
+- 0005968: Prise de RDV - Définir le nombre de participants possibles / créneau proposé - résolu.
+
+[12 bogues]
+
+Pégase - 1.0.8 (Publiée) [ Afficher les bogues ]
+===================================
+- 0005139: [Interface] Problème d'encodage sur le nom de la prop après validation (thomas.payen) - résolu.
+- 0005567: [Interface] Skin Mél pour Pégase (thomas.payen) - résolu.
+- 0005334: [Driver Event] Problème de lecture des disponibilités sur des occurrences modifiées (thomas.payen) - résolu.
+- 0005158: [Driver Event] Affichage événement journée entière issu de Pégase (thomas.payen) - résolu.
+- 0005571: [Driver Event] Mettre à jour l'ORM en v0.5.0.20 (thomas.payen) - résolu.
+- 0005569: [General] [PHP 7.3] Object est un nom réservé (thomas.payen) - résolu.
 
 [6 bogues]
+
+Pégase - 1.0.7 (Publiée 09/10/2018) [ Afficher les bogues ]
+===================================
+- 0005174: [General] Gestion du timezone depuis les applications externes (thomas.payen) - résolu.
+- 0004760: [Interface] Dépliage de l'affichage des participants en cas d'actualisation (thomas.payen) - résolu.
+- 0005073: [Interface] Réouverture des sondages libre Pegase (thomas.payen) - résolu.
+- 0005100: [Driver Event] Mise à jour de l'ORM (thomas.payen) - résolu.
+- 0004861: [General] Ajout d'un paramètre de timezone (thomas.payen) - résolu.
+- 0005079: [Interface] Lors de l'édition des propositions, prévenir si les props ne sont pas enregistré au changement de page (thomas.payen) - résolu.
+- 0005078: [Mobile] Tri des dates dans l'affichage mobile (thomas.payen) - résolu.
+- 0005001: [Interface] Skin MCE (thomas.payen) - résolu.
+
+[8 bogues]
+
+Pégase - 1.0.6 (Publiée 29/05/2017) [ Afficher les bogues ]
+===================================
+- 0004593: [General] Changement de ministère - Changement de bandeau (thomas.payen) - résolu.
+- 0004948: [General] Modifier les libellés "Je serai présent" (thomas.payen) - résolu.
+- 0004652: [Messages] problème caractères accentués (thomas.payen) - résolu.
+- 0004233: [General] Cerbériser/cassifier Pégase (thomas.payen) - résolu.
+- 0004512: [General] Export Csv (thomas.payen) - résolu.
+- 0004565: [Driver BDD] Problème de création de l'utilisateur dans la base pégase (thomas.payen) - résolu.
+- 0004546: [General] Création d'un fichier composer (thomas.payen) - résolu.
+- 0004269: [General] Permettre la suppression des provisoires quelque soit l'état du sondage (thomas.payen) - fermé.
+- 0004465: [General] Possibilité de restaurer un sondage (thomas.payen) - fermé.
+- 0003906: [Interface] Page d'accueil: Afficher plus de sondages (thomas.payen) - fermé.
+- 0004511: [Interface] Modification Options avancées Page d'accueil (thomas.payen) - fermé.
+
+[11 bogues]
 
 Pégase - 1.0.5 (Publiée 04/10/2016) [ Afficher les bogues ]
 ===================================

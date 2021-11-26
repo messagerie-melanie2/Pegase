@@ -33,7 +33,7 @@ class Pegase extends \Program\Drivers\Driver {
      * @param string $password
      * @return bool true si auth ok, false sinon
      */
-    function authenticate($username, $password) {
+    function authenticate($username, $password, $timezone = null) {
         $infos = \Program\Lib\Backend\Ldap\Ldap::GetUserInfos($username);
         if (isset($infos)) {
             if (\Program\Lib\Backend\Ldap\Ldap::GetInstance(\Config\Ldap::$AUTH_LDAP)->authenticate($infos['dn'], $password)) {
@@ -42,6 +42,9 @@ class Pegase extends \Program\Drivers\Driver {
                 if (isset($user)
                         && isset($user->user_id)) {
                     $user->last_login = date("Y-m-d H:i:s");
+                    if (isset($timezone)) {
+                      $user->timezone = $timezone;
+                    }
                     if ($user->fullname != $infos['cn'][0]) $user->fullname = $infos['cn'][0];
                     if (isset($infos['mineqmelmailemission'])) {
                         if ($user->email != $infos['mineqmelmailemission'][0]) $user->email = $infos['mineqmelmailemission'][0];
@@ -55,15 +58,18 @@ class Pegase extends \Program\Drivers\Driver {
                 }
                 else {
                     $user = new \Program\Data\User(
-                                    array(
-                                        "username" => $username,
-                                        "fullname" => $infos['cn'][0],
-                                        "email" => isset($infos['mineqmelmailemission']) ? $infos['mineqmelmailemission'][0] : $infos['mail'][0],
-                                        "last_login" => date("Y-m-d H:i:s"),
-                                        "language" => "fr_FR",
-                                        "auth" => 1,
-                                    )
-                            );
+                            array(
+                                "username" => $username,
+                                "fullname" => $infos['cn'][0],
+                                "email" => isset($infos['mineqmelmailemission']) ? $infos['mineqmelmailemission'][0] : $infos['mail'][0],
+                                "last_login" => date("Y-m-d H:i:s"),
+                                "language" => "fr_FR",
+                                "auth" => 1,
+                            )
+                    );
+                    if (isset($timezone)) {
+                      $user->timezone = $timezone;
+                    }
                     // Création de l'utilisateur dans la base de données
                     $user_id = $this->addUser($user);
                     if (!is_null($user_id)) {
@@ -218,6 +224,8 @@ class Pegase extends \Program\Drivers\Driver {
         $user->__initialize_haschanged();
         return $user;
     }
+
+    
 
     /**
      * Création d'un utilisateur

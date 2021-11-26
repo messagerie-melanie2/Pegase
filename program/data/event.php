@@ -40,7 +40,7 @@ namespace Program\Data;
  *
  * @package Data
  */
-class Event extends Object {
+class Event extends MagicObject {
     // STATUS Fields
     const STATUS_TENTATIVE = 'TENTATIVE';
     const STATUS_CONFIRMED = 'CONFIRMED';

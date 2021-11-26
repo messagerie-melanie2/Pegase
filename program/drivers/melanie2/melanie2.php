@@ -31,9 +31,10 @@ class Melanie2 extends \Program\Drivers\Driver {
      * si l'utilisateur n'existe pas, le créer
      * @param string $username
      * @param string $password
+     * @param string $timezone
      * @return bool true si auth ok, false sinon
      */
-    function authenticate($username, $password) {
+  function authenticate($username, $password, $timezone = null) {
         if (\Program\Lib\Request\Session::is_set('SSO')) {
             // Récupération de l'utilisateur
             $user = $this->getAuthUser($username);
@@ -58,16 +59,27 @@ class Melanie2 extends \Program\Drivers\Driver {
                 if (isset($user)
                     && isset($user->user_id)) {
                       $user->last_login = date("Y-m-d H:i:s");
-                      if ($user->fullname != $infos['cn'][0]) $user->fullname = $infos['cn'][0];
-                      if (isset($infos['mineqmelmailemission'])) {
-                        if ($user->email != $infos['mineqmelmailemission'][0]) $user->email = $infos['mineqmelmailemission'][0];
-                      } elseif (isset($infos['mail'])) {
-                        if ($user->email != $infos['mail'][0]) $user->email = $infos['mail'][0];
+                      if (isset($timezone)
+                          && $user->timezone != $timezone) {
+                        $user->timezone = $timezone;
                       }
-                      if (!\Program\Lib\Request\Session::is_setUsername())
+                      if ($user->fullname != $infos['cn'][0]) {
+                        $user->fullname = $infos['cn'][0];
+                      }
+                      if (isset($infos['mineqmelmailemission'])) {
+                        if ($user->email != $infos['mineqmelmailemission'][0]) {
+                          $user->email = $infos['mineqmelmailemission'][0];
+                        }
+                      } elseif (isset($infos['mail'])) {
+                        if ($user->email != $infos['mail'][0]) {
+                          $user->email = $infos['mail'][0];
+                        }
+                      }
+                      if (!\Program\Lib\Request\Session::is_setUsername()) {
                         $this->modifyUser($user);
-                        \Program\Data\User::set_current_user($user);
-                        return true;
+                      }                        
+                      \Program\Data\User::set_current_user($user);
+                      return true;
                     }
                     else {
                       $user = new \Program\Data\User(
@@ -79,7 +91,10 @@ class Melanie2 extends \Program\Drivers\Driver {
                               "language" => "fr_FR",
                               "auth" => 1,
                           )
-                          );
+                      );
+                      if (isset($timezone)) {
+                        $user->timezone = $timezone;
+                      }
                       // Création de l'utilisateur dans la base de données
                       $user_id = $this->addUser($user);
                       if (!is_null($user_id)) {
@@ -268,6 +283,26 @@ class Melanie2 extends \Program\Drivers\Driver {
         // RAZ des has changed de l'objet
         $user->__initialize_haschanged();
         return $user;
+    }
+
+    /**
+     * Ajout d'un token à un utilisateur
+     * @param string $username
+     * @param string $token
+     * @return true si ok, false sinon
+    */
+    function addTokenUser($username, $token) {
+        $query = "UPDATE users SET token = :token WHERE username = :username;";
+        $params = array(
+            "username" => $username,
+            "token" => $token,
+        );
+        // Execution de la requête
+        if (\Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

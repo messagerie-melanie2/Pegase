@@ -35,7 +35,7 @@ namespace Program\Data;
  *
  * @package Data
  */
-class Calendar extends Object {
+class Calendar extends MagicObject {
     /**
      * Constructeur par défaut de la classe Calendar
      * @param array $data Données à charger dans l'objet

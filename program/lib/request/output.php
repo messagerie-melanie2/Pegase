@@ -58,7 +58,10 @@ class Output {
 		// Test si une skin est passée en GET
 		if (isset ( $_GET ['_skin'] ) && file_exists ( __DIR__ . "/../../../skins/" . Request::getInputValue ( "_skin", POLL_INPUT_GET ) )) {
 			self::$skin = Request::getInputValue ( "_skin", POLL_INPUT_GET );
-			self::set_env ( "mobile", false );
+      if (self::$skin == "default_mobile")
+        self::set_env ( "mobile", true );
+      else
+			  self::set_env ( "mobile", false );
 		}		// Test si on passe en skin courrielleur
 		elseif (Request::isCourrielleur ()) {
 			self::$skin = 'courrielleur';
@@ -473,7 +476,7 @@ class Output {
 	 * @return string
 	 */
 	public static function format_prop_poll(\Program\Data\Poll $poll, $prop_value, $tohtml = true) {
-		if ($poll->type == "date") {
+		if ($poll->type == "date" || $poll->type == "rdv" ) {
 			$values = explode ( ' - ', $prop_value );
 			$time = strtotime ( $values [0] );
 			$month = Localization::g ( date ( "F", $time ), $tohtml );

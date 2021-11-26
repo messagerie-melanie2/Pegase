@@ -4,16 +4,20 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitc0d96b7578f205981b0a9bcfb73e278a
+class ComposerStaticInit9bfe03c4f4296f971970d93cb5ff4518
 {
     public static $files = array (
-        '3a36fb0a6bafb8b516d4768ba4636f67' => __DIR__ . '/..' . '/messagerie-melanie2/ORM-M2/includes/includes_conf.php',
+        '3a36fb0a6bafb8b516d4768ba4636f67' => __DIR__ . '/..' . '/messagerie-melanie2/orm-m2/includes/includes_conf.php',
     );
 
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
             'Sabre\\VObject\\' => 14,
+        ),
+        'P' => 
+        array (
+            'Psr\\Log\\' => 8,
         ),
         'L' => 
         array (
@@ -26,9 +30,13 @@ class ComposerStaticInitc0d96b7578f205981b0a9bcfb73e278a
         array (
             0 => __DIR__ . '/..' . '/sabre/vobject/lib',
         ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
         'LibMelanie\\' => 
         array (
-            0 => __DIR__ . '/..' . '/messagerie-melanie2/ORM-M2/src',
+            0 => __DIR__ . '/..' . '/messagerie-melanie2/orm-m2/src',
         ),
     );
 
@@ -43,10 +51,12 @@ class ComposerStaticInitc0d96b7578f205981b0a9bcfb73e278a
         'CAS_Languages_ChineseSimplified' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Languages/ChineseSimplified.php',
         'CAS_Languages_English' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Languages/English.php',
         'CAS_Languages_French' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Languages/French.php',
+        'CAS_Languages_Galego' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Languages/Galego.php',
         'CAS_Languages_German' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Languages/German.php',
         'CAS_Languages_Greek' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Languages/Greek.php',
         'CAS_Languages_Japanese' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Languages/Japanese.php',
         'CAS_Languages_LanguageInterface' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Languages/LanguageInterface.php',
+        'CAS_Languages_Portuguese' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Languages/Portuguese.php',
         'CAS_Languages_Spanish' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Languages/Spanish.php',
         'CAS_OutOfSequenceBeforeAuthenticationCallException' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/OutOfSequenceBeforeAuthenticationCallException.php',
         'CAS_OutOfSequenceBeforeClientException' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/OutOfSequenceBeforeClientException.php',
@@ -76,16 +86,18 @@ class ComposerStaticInitc0d96b7578f205981b0a9bcfb73e278a
         'CAS_Request_Exception' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Request/Exception.php',
         'CAS_Request_MultiRequestInterface' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Request/MultiRequestInterface.php',
         'CAS_Request_RequestInterface' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Request/RequestInterface.php',
+        'CAS_Session_PhpSession' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/Session/PhpSession.php',
         'CAS_TypeMismatchException' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS/TypeMismatchException.php',
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'phpCAS' => __DIR__ . '/..' . '/jasig/phpcas/source/CAS.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitc0d96b7578f205981b0a9bcfb73e278a::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitc0d96b7578f205981b0a9bcfb73e278a::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitc0d96b7578f205981b0a9bcfb73e278a::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit9bfe03c4f4296f971970d93cb5ff4518::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit9bfe03c4f4296f971970d93cb5ff4518::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit9bfe03c4f4296f971970d93cb5ff4518::$classMap;
 
         }, null, ClassLoader::class);
     }

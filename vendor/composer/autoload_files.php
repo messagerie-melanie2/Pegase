@@ -6,5 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    '3a36fb0a6bafb8b516d4768ba4636f67' => $vendorDir . '/messagerie-melanie2/ORM-M2/includes/includes_conf.php',
+    '3a36fb0a6bafb8b516d4768ba4636f67' => $vendorDir . '/messagerie-melanie2/orm-m2/includes/includes_conf.php',
 );

@@ -51,7 +51,7 @@ use Program\Lib\Request\Session as s;
         </div>
         <br>
         <div id="edit">
-    		<form action="<?= o::url("edit_end", o::get_env("action"), array('u' => p::get_current_poll()->poll_uid)) ?>" method="post" class="pure-form pure-form-aligned">
+    		<form action="<?= o::url("edit_end", o::get_env("action"), array('u' => p::get_current_poll()->poll_uid)) ?>" method="post" onsubmit="setFormSubmitting()" class="pure-form pure-form-aligned">
     			<fieldset>
     			    <div id="props_list">
     		            <?= e::ShowProps() ?>

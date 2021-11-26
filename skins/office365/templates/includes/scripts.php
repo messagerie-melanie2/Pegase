@@ -27,24 +27,24 @@ use Program\Lib\Request\Output as o,
 <link href='skins/<?= o::get_env('skin') ?>/css/lib/tooltipster.css' rel='stylesheet' />
 <link href='skins/<?= o::get_env('skin') ?>/css/src/style.css?s=<?= BUILD ?>' rel='stylesheet' />
 <link href='skins/<?= o::get_env('skin') ?>/css/src/custom.css?s=<?= BUILD ?>' rel='stylesheet' />
-<script src='javascript/lib/jquery-1.11.0.min.js'></script>
-<script src='javascript/lib/jquery.tooltipster.min.js'></script>
-<script src='javascript/src/app.js?s=<?= BUILD ?>'></script>
-<script src='javascript/src/tooltip.js?s=<?= BUILD ?>'></script>
+<script src='js/lib/jquery-1.11.0.min.js'></script>
+<script src='js/lib/jquery.tooltipster.min.js'></script>
+<script src='js/src/app.js?s=<?= BUILD ?>'></script>
+<script src='js/src/tooltip.js?s=<?= BUILD ?>'></script>
 <?php if (o::get_env("page") == 'edit_date') { ?>
-    <link href='javascript/lib/fullcalendar/fullcalendar.css' rel='stylesheet' />
-    <link href='javascript/lib/fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
-    <script src='javascript/lib/jquery-ui.custom.min.js'></script>
-    <script src='javascript/lib/fullcalendar/fullcalendar.min.js'></script>
-    <script src='javascript/src/calendar.js?s=1408131534'></script>
+    <link href='js/lib/fullcalendar/fullcalendar.css' rel='stylesheet' />
+    <link href='js/lib/fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+    <script src='js/lib/jquery-ui.custom.min.js'></script>
+    <script src='js/lib/fullcalendar/fullcalendar.min.js'></script>
+    <script src='js/src/calendar.js?s=1408131534'></script>
 <?php } elseif (o::get_env("page") == 'edit_prop') { ?>
-    <script src='javascript/src/proposals.js'></script>
+    <script src='js/src/proposals.js'></script>
 <?php } elseif (o::get_env("page") == 'edit') { ?>
-    <script src='javascript/src/edit.js'></script>   
+    <script src='js/src/edit.js'></script>   
 <?php } elseif (o::get_env("page") == 'show') { ?>
-    <script src='javascript/src/show.js'></script>
+    <script src='js/src/show.js'></script>
 <?php } elseif (o::get_env("page") == 'main') { ?>
-    <script src='javascript/src/main.js'></script>
+    <script src='js/src/main.js'></script>
 <?php } elseif (o::get_env("page") == 'login' && c::$CREATE_USER) { ?>
     <link href='skins/<?= o::get_env('skin') ?>/css/src/login_register.css' rel='stylesheet' />
 <?php } ?>

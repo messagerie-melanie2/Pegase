@@ -59,7 +59,7 @@ use Program\Lib\Request\Session as s;
         <br>
         <div id="calendar" title="<?= l::g('Select dates by clicking in the calendar') ?>" style="width: 90%; margin-left: 5%;" class="customtooltip_top"></div>
         <div id="edit">
-    		<form action="<?= o::url("edit_end", o::get_env("action"), array('u' => p::get_current_poll()->poll_uid)) ?>" method="post" class="pure-form pure-form-aligned">
+    		<form action="<?= o::url("edit_end", o::get_env("action"), array('u' => p::get_current_poll()->poll_uid)) ?>" method="post" onsubmit="setFormSubmitting()" class="pure-form pure-form-aligned">
     			<fieldset>
     			    <div class="pure-controls" style="margin-left: 40%;">
     		        	<button type="submit" class="pure-button pure-button-submit customtooltip_bottom" title="<?= l::g('Clic to save the proposals of the poll') ?>"><?= l::g('Save the poll') ?></button>

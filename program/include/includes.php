@@ -29,19 +29,19 @@ if (! defined('CONFIGURATION_APP_LIBM2')) {
   define('CONFIGURATION_APP_LIBM2', 'roundcube');
 }
 
-require_once 'program/lib/defs/defs.php';
-require_once 'config/env.php';
+require_once __DIR__."/../lib/defs/defs.php";
+require_once __DIR__."/../../config/env.php";
 
 // Chargement de la configuration en fonction de l'environnement
-require_once 'program/include/include_conf.php';
+require_once __DIR__."/../include/include_conf.php";
 
 // Utilisation d'un autoloader
 // http://fr.php.net/manual/fr/function.spl-autoload-register.php
-require_once 'program/include/autoload.php';
+require_once __DIR__."/../include/autoload.php";
 
 // Inclusion de la localisation
-require_once 'program/include/include_localization.php';
+require_once __DIR__."/../include/include_localization.php";
 
 // Charge les vendor
-require_once 'vendor/autoload.php';
+require_once __DIR__."/../../vendor/autoload.php";
 

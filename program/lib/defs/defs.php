@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 /* Récupération de la version depuis le fichier */
-define('VERSION', '1.0.6');
-define('BUILD', '170523165754');
+define('VERSION', '1.0.10');
+define('BUILD', '202107281430');
 
 // framework constants
 define('POLL_CHARSET', 'UTF-8');
@@ -74,3 +74,4 @@ define('ACT_GET_USER_FREEBUSY','get_user_freebusy');
 define('ACT_DELETE_TENTATIVES','delete_tentatives');
 define('ACT_DATE_ACCEPTED','date_accepted');
 define('ACT_DATE_DECLINED','date_declined');
+define('ACT_SAVE_SETTINGS','save');

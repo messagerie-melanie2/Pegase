@@ -77,7 +77,7 @@ use Program\Lib\Request\Session as s;
         </div>
         <br>
         <div id="edit">
-    		<form action="<?= o::url("edit_end", o::get_env("action"), array('u' => p::get_current_poll()->poll_uid)) ?>" method="post" class="pure-form pure-form-stacked">
+    		<form action="<?= o::url("edit_end", o::get_env("action"), array('u' => p::get_current_poll()->poll_uid)) ?>" method="post" onsubmit="setFormSubmitting()" class="pure-form pure-form-stacked">
     			<fieldset>
     			    <div class="pure-controls" style="margin-left: 0;">
     		        	<button type="submit" class="pure-button pure-button-submit"><?= l::g('Save the poll') ?></button>
@@ -88,6 +88,7 @@ use Program\Lib\Request\Session as s;
     		        <a href="" id="add_new_prop"><?= l::g('Add') ?></a>
     		        <br><br>
     		        <input type="hidden" name="csrf_token" value="<?= s::getCSRFToken() ?>"/>
+                <a class="pure-button pure-button-return customtooltip_bottom" title="<?= l::g("Clic to get back to the poll modification", false) ?>" href="<?= o::url("edit", ACT_MODIFY, array('u' => p::get_current_poll()->poll_uid)) ?>"><?= l::g('Return to the edit page of poll') ?></a>
     		        <div class="pure-controls" style="margin-left: 0;">
     		        	<button type="submit" class="pure-button pure-button-submit"><?= l::g('Save the poll') ?></button>
     		        </div>

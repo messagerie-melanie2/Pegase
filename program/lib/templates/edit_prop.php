@@ -52,7 +52,9 @@ class Edit_prop {
 	        o::set_env("error", "You have to be connected");
 	        return;
 	    }
-	    Edit::EditPoll("prop");
+	    if (!Edit::EditPoll("prop")) {
+	      return;
+	    }
 	    if (!\Program\Data\Poll::isset_current_poll()) {
 	        o::set_env("page", "error");
 	        o::set_env("error", "Current poll is not defined");
@@ -86,6 +88,7 @@ class Edit_prop {
 	    o::add_label(array(
     	    'Edit proposition',
     	    'Are you sure ? Not saved proposals are lost',
+	        'Proposals have changed, if you leave the page, the changes will be lost',
 	    ));
 	}
 	/**
