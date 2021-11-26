@@ -12,9 +12,8 @@ Les données de sondage sont stockées dans une base de données PostgreSQL et l
 Version
 -------
 
-Version 0.9.1
-Build 1505061856
-https://github.com/messagerie-melanie2/Pegase/releases/tag/v0.9.1
+Version 1.0.11
+Build 202111031641
 
 Pré-requis
 ------------
