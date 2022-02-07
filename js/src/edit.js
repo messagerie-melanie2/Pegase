@@ -24,7 +24,6 @@
  */
 $(document).ready(function () {
   hideOrShowField()
-
   testMinAttendees()
 
   $(document).on('change', '#edit_poll_type', function () {
@@ -83,6 +82,9 @@ function switch_poll_type(args) {
 function hideOrShowField() {
   let showField = poll.env.ALL_FIELDS.filter(x => poll.env.SHOW_FIELDS[$('#edit_poll_type').val()].includes(x));
   let checkField = poll.env.ALL_FIELDS.filter(x => poll.env.CHECK_FIELDS[$('#edit_poll_type').val()].includes(x));
+  let requiredField =  poll.env.REQUIRED_FIELDS[$('#edit_poll_type').val()];
+  let notRequiredField =  poll.env.NOT_REQUIRED_FIELDS[$('#edit_poll_type').val()];
+
   showField.forEach(field => {
     $('label[for="' + field + '"]').show();
     $('#' + field).show();
@@ -100,6 +102,19 @@ function hideOrShowField() {
     $('#' + field).hide();
     $('#' + field).prop("checked", false);
   });
+
+  if (requiredField) {
+    requiredField.forEach(field => {
+      console.log('required',field);
+      $('#' + field).prop("required", true);
+    });
+  }
+
+  if (notRequiredField) {
+    notRequiredField.forEach(field => {
+      $('#' + field).prop("required", false);
+    });
+  }
 }
 
 

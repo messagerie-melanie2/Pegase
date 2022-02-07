@@ -26,8 +26,10 @@ $(document)
   .ready(
     function () {
       // Masque automatiquement les participants
-      if ((!window.sessionStorage.getItem('hide_attendees') && $(".prop_others_users_elements").length > 6) || window.sessionStorage.getItem('hide_attendees') == "true" && poll.env.poll_type != 'rdv') {
+      // (!window.sessionStorage.getItem('hide_attendees') && $(".prop_others_users_elements").length > 6) || 
+      if (window.sessionStorage.getItem('hide_attendees') == "true" && poll.env.poll_type != 'rdv') {
         hide_attendees(null);
+        console.log('hide');
       }
       var ajax_freebusy = true;
       // Utiliser ajax pour des actions spécifiques

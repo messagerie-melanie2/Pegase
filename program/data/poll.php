@@ -39,7 +39,7 @@ use Program\Lib\Utils\Utils as u;
  * @property string $poll_uid Identifiant unique du sondage
  * @property string $title Titre du sondage
  * @property string $max_attendees_per_prop Nombre de participants par proposition du sondage
- * @property boolean $prop_in_agenda Définit si les propositions sont ajoutés à l'Agenda de l'organisateur
+ * @property boolean $prop_in_agenda Définit si les propositions provisoires sont ajoutés à l'Agenda de l'organisateur
  * @property string $location Emplacement du sondage
  * @property string $description Description du sondage
  * @property int $organizer_id Organisateur du sondage

@@ -71,7 +71,12 @@ use Program\Lib\Templates\Show as s;
 					<div class="poll_title" title="<?= l::g('Created by') . ' ' . o::tohtml(o::get_env("poll_organizer")->fullname) . ' ' . o::date_format(strtotime(p::get_current_poll()->created)) . '. ' . l::g('Last modification time') . ' ' . o::date_format(strtotime(p::get_current_poll()->modified)) ?>">
 						<?= o::tohtml(p::get_current_poll()->title) ?></div>
             <div class="poll_organizer"><?= l::g('Created by') ?> <?= o::tohtml(o::get_env("poll_organizer")->fullname) ?></div>
-					<div class="poll_location"><?= o::tohtml(p::get_current_poll()->location) ?></div>
+            <?php if (!empty(p::get_current_poll()->location)) { ?>
+              <div class="poll_location">
+                <span class="label"><?= l::g('Edit location') ?> :</span>
+                <span class="location"><?= o::tohtml(p::get_current_poll()->location) ?></span>
+              </div>
+            <?php } ?>
 					<?php if (!empty(p::get_current_poll()->description)) { ?>
 						<div class="poll_description">
 							<span class="label"><?= l::g('Description') ?> :</span>

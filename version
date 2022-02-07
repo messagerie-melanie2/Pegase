@@ -1,6 +1,12 @@
-Pégase - Version 1.0.11
-Pégase - Build 202111031641
+Pégase - Version 1.0.12
+Pégase - Build 20220207174000
 Pégase - Liste des changements
+
+Pégase - 1.0.12 (Pas encore publiée) [ Afficher les bogues ]
+===================================
+- 0006322: [Général][Pégase] Affichage du titre des évènements provisoires
+- 0006321: [Général][Prise de rdv] : un même participant peu bloquer plusieurs créneaux
+-	0006310: [Général][Prise de rdv] : lors de la réservation d'un créneau le participant n'a pas de mail de confirmation 
 
 Pégase - 1.0.11 (Pas encore publiée) [ Afficher les bogues ]
 ===================================

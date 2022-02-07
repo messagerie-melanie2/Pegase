@@ -882,11 +882,13 @@ class Show
         } else {
           $Response = \Program\Drivers\Driver::get_driver()->getPollUserResponse(\Program\Data\User::get_current_user()->user_id, \Program\Data\Poll::get_current_poll()->poll_id);
           $Response = unserialize($Response->response);
-          if (array_keys($Response)[0] == $prop_value) {
-            $href = \Program\Lib\HTML\html::a(array("class" => "pure-button pure-button-validate-prop-rdv customtooltip_bottom", "title" => Localization::g("Validated proposal", false) . " : " . $prop_value), Localization::g(""));
-            $href .= \Program\Lib\HTML\html::a(array("onclick" => o::command("unvalidate_prop_rdv(check_$prop_key)"), "class" => "pure-button pure-button-unvalidate-prop customtooltip_bottom", "title" => Localization::g("Clic to unvalidate this proposal", false) . " : " . $prop_value,), "");
-          } else {
-            $href = \Program\Lib\HTML\html::a(array("onclick" => "validate_prop_rdv(check_$prop_key)", "class" => "pure-button pure-button-validate-prop customtooltip_bottom", "title" => Localization::g("Clic to validate this proposal", false) . " : " . $prop_value), Localization::g("Validate proposal"));
+          foreach ($Response as $key => $value) {
+            if ($key == $prop_value) {
+              $href = \Program\Lib\HTML\html::a(array("class" => "pure-button pure-button-validate-prop-rdv customtooltip_bottom", "title" => Localization::g("Validated proposal", false) . " : " . $prop_value), Localization::g(""));
+              $href .= \Program\Lib\HTML\html::a(array("onclick" => o::command("unvalidate_prop_rdv(check_$prop_key)"), "class" => "pure-button pure-button-unvalidate-prop customtooltip_bottom", "title" => Localization::g("Clic to unvalidate this proposal", false) . " : " . $prop_value,), "");
+            } else {
+              $href = \Program\Lib\HTML\html::a(array("onclick" => "validate_prop_rdv(check_$prop_key)", "class" => "pure-button pure-button-validate-prop customtooltip_bottom", "title" => Localization::g("Clic to validate this proposal", false) . " : " . $prop_value), Localization::g("Validate proposal"));
+            }
           }
 
           $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check_$prop_key", "name" => "check_$prop_key", "value" => "$prop_value", "class" => "prop_rdv"));
@@ -1577,16 +1579,24 @@ class Show
           $response->__initialize_haschanged();
           $response->response = serialize($resp);
 
-          //On envoi un mail si le participant à changé de réponse
-          if (\Program\Data\Poll::get_current_poll()->type == 'rdv' && unserialize($response->response) != null) {
-            if (isset(\Config\IHM::$SEND_MAIL) && \Config\IHM::$SEND_MAIL && $user_id != o::get_env("poll_organizer")->user_id) {
-              \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, $response, o::get_env("poll_organizer"));
-            }
-          }
+          //On vérifie que le nombre de participant ne soit pas dépassé
           if (self::check_max_attendees($response)) {
             if (!\Program\Drivers\Driver::get_driver()->modifyPollUserResponse($response)) {
               o::set_env("error", "Error when changing the response");
               return;
+            }
+          }
+
+          //On envoi un mail si le participant à changé de réponse
+          if (\Program\Data\Poll::get_current_poll()->type == 'rdv' && unserialize($response->response) != null) {
+            if (isset(\Config\IHM::$SEND_MAIL) && \Config\IHM::$SEND_MAIL && $user_id != o::get_env("poll_organizer")->user_id) {
+              //Mail de changement de réponse à l'organisateur
+              \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, array_key_first(unserialize($response->response)), o::get_env("poll_organizer"));
+
+              if (\Program\Data\User::isset_current_user()) {
+                \Program\Lib\Mail\Mail::SendValidateProposalUserMail(\Program\Data\Poll::get_current_poll(), \Program\Data\User::get_current_user(), array_key_first(unserialize($response->response)));
+              }
+              //Mail de validation pour l'utilisateur
             }
           }
         } elseif (isset($user_id)) {
@@ -1609,21 +1619,34 @@ class Show
             $response->calendar_id = $calendar_id;
             $response->calendar_name = $_calendar_name;
           }
+          foreach ($resp as $key => $value) {
+            if ($key != $calendar_id) {
+              $response_date = $key;
+            }
+          }
+
           if (self::check_max_attendees($response)) {
             if (!\Program\Drivers\Driver::get_driver()->addPollUserResponse($response)) {
               o::set_env("error", "Error when saving the response");
               return;
             }
           }
-          if (isset(\Config\IHM::$SEND_MAIL) && \Config\IHM::$SEND_MAIL && $user_id != o::get_env("poll_organizer")->user_id) {
-            \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, $response, o::get_env("poll_organizer"));
+          if (\Program\Data\Poll::get_current_poll()->type == 'rdv' && unserialize($response->response) != null) {
+            if (isset(\Config\IHM::$SEND_MAIL) && \Config\IHM::$SEND_MAIL && $user_id != o::get_env("poll_organizer")->user_id) {
+              //Mail de changement de réponse à l'organisateur
+              \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, $response_date, o::get_env("poll_organizer"));
+
+              if (\Program\Data\User::isset_current_user()) {
+                //Mail de validation pour l'utilisateur
+                \Program\Lib\Mail\Mail::SendValidateProposalUserMail(\Program\Data\Poll::get_current_poll(), \Program\Data\User::get_current_user(), $response_date);
+              }
+            }
           }
         }
         if (\Program\Data\Poll::get_current_poll()->type == 'rdv') {
           \Program\Lib\Utils\Utils::add_tentative_calendar($response->calendar_id, $prop_keys);
-
           if (Session::is_set("user_noauth_id") && Session::is_set("user_noauth_name") && Session::is_set("user_noauth_poll_id") && Session::get("user_noauth_poll_id") == \Program\Data\Poll::get_current_poll()->poll_id) {
-            Session::set("user_noauth_old_response", array_key_first(unserialize($response->response)));
+            Session::set("user_noauth_old_response", $response_date);
           }
         }
         if (!o::get_env("error")) {
@@ -1706,7 +1729,6 @@ class Show
           \Program\Lib\Utils\Utils::add_tentative_calendar($response_user->username, $prop_keys, $response_user);
           //On envoi un mail au participant
           \Program\Lib\Mail\Mail::SendDeletedResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $response_user);
-
         } elseif (isset($modify_responses[$response->user_id])) {
           // Si la réponse doit être modifiée
           if (array_intersect_key(unserialize($response->response), $modify_responses[$response->user_id]) == null) {

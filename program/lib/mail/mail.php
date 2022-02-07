@@ -238,7 +238,7 @@ class Mail
    * @param \Program\Data\User $organizer organisateur du sondage à qui la notification est envoyé
    * @return boolean
    */
-  public static function SendResponseNotificationMail(\Program\Data\Poll $poll, $user_name, \Program\Data\Response $response, \Program\Data\User $organizer)
+  public static function SendResponseNotificationMail(\Program\Data\Poll $poll, $user_name, $response, \Program\Data\User $organizer)
   {
     Log::l(Log::DEBUG, "Mail::SendResponseNotificationMail()");
     $subject = Localization::g("Response notification mail subject", false);
@@ -262,18 +262,77 @@ class Mail
     $body = str_replace("%%user_fullname%%", $user_name, $body);
 
     if (\Program\Data\Poll::get_current_poll()->type == 'rdv') {
-      $array_response = unserialize($response->response);
-      foreach ($array_response as $key => $value) {
-        $user_response = $key;
-        break;
-      }
-      $body = str_replace("%%user_response%%", $user_response, $body);
+      $body = str_replace("%%user_response%%", Output::format_prop_poll($poll, $response, false), $body);
     }
 
     return self::SendMail($from, $to, $subject, null, null, null, $body, $message_id, $in_reply_to);
   }
+
   /**
-   * Méthode d'envoi du message de notification quand une proposition du sondage est modifiée par l'organisateur
+   * Méthode d'envoi du message de notification quand une réponse du sondage est validée par un participant
+   *
+   * @param \Program\Data\Poll $poll sondage validé
+   * @param \Program\Data\User $user participant du sondage
+   * @return boolean
+   */
+  public static function SendValidateProposalUserMail(\Program\Data\Poll $poll, \Program\Data\User $user, $modify_response)
+  {
+    Log::l(Log::DEBUG, "Mail::SendValidateProposalMail()");
+    $subject = Localization::g("Validate proposal organizer mail subject", false);
+    $message_id = md5($poll->organizer_id . time() . "SendValidateProposalUserMail") . $poll->poll_uid . '-' . strtotime($poll->created) . "@" . \Config\IHM::$TITLE;
+    $in_reply_to = md5($poll->organizer_id) . $poll->poll_uid . '-' . strtotime($poll->created) . "@" . \Config\IHM::$TITLE;
+    $from = \Config\IHM::$FROM_MAIL;
+    $to = "undisclosed-recipients:;";
+    $bcc = "";
+    $body = file_get_contents(__DIR__ . '/templates/' . \Config\IHM::$DEFAULT_LOCALIZATION . '/validate_proposal_user.html');
+
+    // Replace elements
+    $subject = str_replace("%%app_name%%", \Config\IHM::$TITLE, $subject);
+    $subject = str_replace("%%poll_title%%", $poll->title, $subject);
+    $subject = str_replace("%%validate_proposal%%", Output::format_prop_poll($poll, $modify_response, false), $subject);
+    $body = str_replace("%%app_name%%", \Config\IHM::$TITLE, $body);
+    $body = str_replace("%%app_url%%", Output::get_main_url(), $body);
+    $body = str_replace("%%poll_title%%", $poll->title, $body);
+    // Gestion de l'emplacement
+    if (!empty($poll->location)) {
+      $location = "\r\n\r\n" . Localization::g('Edit location', false) . ": " . $poll->location;
+      $html_location = "<br><div><b>" . Localization::g('Edit location', false) . " : </b>" . str_replace("\r\n", "<br>", htmlentities($poll->location)) . "</div>";
+    } else {
+      $location = '';
+      $html_location = '';
+    }
+    $body = str_replace("%%poll_location%%", $location, $body);
+    $body = str_replace("%%html_poll_location%%", $html_location, $body);
+    // Gestion de la description
+    if (!empty($poll->description)) {
+      $description = "\r\n\r\n" . Localization::g('Edit description', false) . ":\r\n" . $poll->description;
+      $html_description = "<br><div><b>" . Localization::g('Edit description', false) . " : </b></div><div>" . str_replace("\r\n", "<br>", htmlentities($poll->description)) . "</div>";
+    } else {
+      $description = '';
+      $html_description = '';
+    }
+    $body = str_replace("%%poll_description%%", $description, $body);
+    $body = str_replace("%%html_poll_description%%", $html_description, $body);
+    $body = str_replace("%%poll_url%%", Output::get_poll_url($poll), $body);
+    $body = str_replace("%%validate_proposal%%", Output::format_prop_poll($poll, $modify_response), $body);
+   
+    if (!empty($user->email)) {
+      $name = $user->auth ? $user->fullname : $user->username;
+      if ($bcc != "") {
+        $bcc .= "\r\n ";
+      }
+      $bcc .= '=?UTF-8?B?' . base64_encode('"' . $name . '"') . '?=' . "\r\n <" . $user->email . ">";
+
+      if ($bcc == "") {
+        return false;
+      }
+    }
+
+    return self::SendMail($from, $to, $subject, $bcc, null, null, $body, $message_id, $in_reply_to);
+  }
+
+  /**
+   * Méthode d'envoi du message de notification quand une réponse du sondage est modifiée par l'organisateur
    *
    * @param \Program\Data\Poll $poll sondage validé
    * @param \Program\Data\User $user participant du sondage
@@ -344,7 +403,7 @@ class Mail
 
     return self::SendMail($from, $to, $subject, $bcc, null, null, $body, $message_id, $in_reply_to);
   }
- /**
+  /**
    * Méthode d'envoi du message de notification quand un participant du sondage est supprimé par l'organisateur
    *
    * @param \Program\Data\Poll $poll sondage validé

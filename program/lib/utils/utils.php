@@ -50,10 +50,10 @@ class Utils
           $event_uid = \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, null, \Program\Data\Event::STATUS_TENTATIVE, null, $cal);
         } elseif (\Program\Data\Poll::get_current_poll()->type == 'rdv') {
           //On l'ajoute en confirmé dans l'agenda de l'organisateur  
-          if (\Program\Data\Poll::get_current_poll()->prop_in_agenda) {
-            //Uniquement s'il souhaite les afficher dans son agenda
-            \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), null, null, null, true);
-          }
+          // if (\Program\Data\Poll::get_current_poll()->prop_in_agenda) {
+          //Uniquement s'il souhaite les afficher dans son agenda
+          \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), null, null, null, true);
+          // }
           //On l'ajoute en confirmé dans l'agenda de l'utilisateur passé en paramètre (null par défaut)
           if (\Program\Data\Poll::get_current_poll()->organizer_id != $user->user_id) {
             $event_uid = \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, $user, null, \Program\Data\Event::PARTSTAT_ACCEPTED, $cal, true);
@@ -64,8 +64,8 @@ class Utils
           $events[$proposals[$prop_key]] = $event_uid;
         }
       }
-      //Dans le cas d'une modification de réponse par un utilisateur non authentifié on supprime la proposition uniquement dans l'agenda de l'organisateur
-      elseif (Session::is_set("user_noauth_old_response")) {
+      // Dans le cas d'une modification de réponse par un utilisateur non authentifié on supprime la proposition uniquement dans l'agenda de l'organisateur
+      elseif (Session::is_set("user_noauth_old_response") && !\Program\Data\User::isset_current_user()) {
         if ($proposals[$prop_key] == Session::get("user_noauth_old_response")) {
           // L'événement existe, il faut donc le supprimer
           if (\Program\Lib\Event\Drivers\Driver::get_driver()->event_exists($proposals[$prop_key], (isset($events[$proposals[$prop_key]]) ? $events[$proposals[$prop_key]] : null), null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), null, $cal)) {
@@ -80,6 +80,8 @@ class Utils
                 } else {
                   \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposal, null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), \Program\Data\Event::STATUS_TENTATIVE, null, null, null);
                 }
+              } else {
+                \Program\Lib\Event\Drivers\Driver::get_driver()->delete_event($proposals[$prop_key], (isset($events[$proposals[$prop_key]]) ? $events[$proposals[$prop_key]] : null), null, $user, $cal);
               }
             }
           }
@@ -100,14 +102,24 @@ class Utils
                     \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), null, null, null, true);
                   } else {
                     //Si aucun participant on remet l'évènement en provisoire
-                    \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposal, null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), \Program\Data\Event::STATUS_TENTATIVE, null, null, null);
+                    \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposal, null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), \Program\Data\Event::STATUS_TENTATIVE);
+                  }
+                } else {
+                  \Program\Lib\Event\Drivers\Driver::get_driver()->delete_event($proposals[$prop_key], (isset($events[$proposals[$prop_key]]) ? $events[$proposals[$prop_key]] : null), null, $user, $cal);
+                  \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), null, null, null, true);
+                  if (isset($events[$proposal])) {
+                    if (\Program\Lib\Event\Drivers\Driver::get_driver()->delete_event($proposal,  $events[$proposals[$prop_key]], null, null, $cal)) {
+                      // Supprime la date de la liste des events
+                      unset($events[$proposal]);
+                    }
                   }
                 }
+
                 if (isset($user)) {
                   \Program\Lib\Event\Drivers\Driver::get_driver()->delete_event($proposals[$prop_key], (isset($events[$proposals[$prop_key]]) ? $events[$proposals[$prop_key]] : null), null, $user, $cal);
                   if (isset($events[$proposal])) {
                     unset($events[$proposal]);
-                }
+                  }
                 }
               } else {
                 unset($events[$proposals[$prop_key]]);

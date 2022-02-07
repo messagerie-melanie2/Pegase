@@ -424,7 +424,6 @@ a.pure-button-delete-date {
     color: var(--main-text-color);
 }
 
-#head .poll_location,
 #head .poll_organizer{
     font-size: 14px;
     color: var(--proposal-title-text-color);
@@ -494,18 +493,21 @@ a.pure-button-delete-date {
     cursor: pointer;
 }
 
-#head .poll_description {
+#head .poll_description, 
+#head .poll_location {
     position: relative;
     margin-top: 20px;
     margin-left: -45px;
 }
 
-#head .poll_description .label {
+#head .poll_description .label, 
+#head .poll_location .label {
     font-size: 12px;
     display: block;
 }
 
-#head .poll_description .description {
+#head .poll_description .description, 
+#head .poll_location .location {
     display: block;
     font-size: 14px;
     color: var(--proposal-title-text-color);

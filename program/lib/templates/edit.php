@@ -63,6 +63,8 @@ class Edit {
 		o::set_env("ALL_FIELDS", \Config\IHM::$ALL_FIELDS);
 		o::set_env("SHOW_FIELDS", \Config\IHM::$SHOW_FIELDS);
 		o::set_env("CHECK_FIELDS", \Config\IHM::$CHECK_FIELDS);
+		o::set_env("REQUIRED_FIELDS", \Config\IHM::$REQUIRED_FIELDS);
+		o::set_env("NOT_REQUIRED_FIELDS", \Config\IHM::$NOT_REQUIRED_FIELDS);
 		o::set_env("MIN_ATTENDEES", max(\Program\Data\Poll::get_nb_attendees_per_prop(\Program\Data\Poll::get_current_poll())));
 		self::LockPoll ();
 	}

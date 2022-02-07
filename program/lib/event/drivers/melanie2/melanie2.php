@@ -400,7 +400,6 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
         $_calendar->id = self::$user->uid;
       }
       // Si le calendrier existe et que les droits sont bons (lecture)
-      $test = $_calendar->load();
       if (!$_calendar->load() || !$_calendar->asRight(\LibMelanie\Config\ConfigMelanie::READ)) {
         return [];
       }
@@ -632,9 +631,9 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
 
     if (isset($attendees_title) && $poll->organizer_id == $user->user_id) {
       $attendees_title = implode('-', $attendees_title);
-      self::$event->title =  $poll->title . " : " . $attendees_title;
+      self::$event->title =  self::$event->title . ' ' .  $poll->title . " : " . $attendees_title;
     } else {
-      self::$event->title = $poll->title;
+      self::$event->title = self::$event->title . ' ' . $poll->title;
     }
 
     self::$event->description = $description;
