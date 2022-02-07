@@ -1,0 +1,17 @@
+{
+	"name" : "messagerie-melanie2/pegase",
+	"description" : "Pegase the open doodle-like for Mélanie2",
+	"license" : "GPL-3.0+",
+	"repositories" : [{
+			"type" : "vcs",
+			"url" : "https://github.com/messagerie-melanie2/ORM-M2.git"
+		}
+	],
+	"require" : {
+		"php" : ">=7.0.0",
+		"sabre/vobject" : "3.3.4",
+		"jasig/phpcas" : "~1.4.0",
+		"messagerie-melanie2/orm-m2" : "~0.6.1.20"
+	},
+	"minimum-stability" : "stable"
+}
