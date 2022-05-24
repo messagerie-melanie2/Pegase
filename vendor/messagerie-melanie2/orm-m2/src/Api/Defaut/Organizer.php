@@ -170,7 +170,7 @@ class Organizer extends MceObject {
         $User = $this->__getNamespace() . '\\User';
         $user = new $User();
         $user->email = $owner_email;
-        if ($user->load('uid')) {
+        if ($user->load(['uid'])) {
           $this->owner_uid = $user->uid;
         }
       }
@@ -321,16 +321,19 @@ class Organizer extends MceObject {
       $User = $this->__getNamespace() . '\\User';
       $user = new $User();
       $user->email = $email;
-      if ($user->load(['uid', 'fullname'])) {
+      if ($user->load(['uid', 'fullname', 'is_mailbox'])) {
         if ($user->is_objectshare) {
           $this->objectmelanie->organizer_uid = $user->objectshare->uid;
           $name = $user->objectshare->mailbox->fullname;
+          // MANTIS 0006314: Le en attente ne fonctionne pas lorsque l'invitation part d'une BALP
+          $this->extern = false;
         }
         else {
           $this->objectmelanie->organizer_uid = $user->uid;
           $name = $user->fullname;
+          // MANTIS 0006288: Lorsqu'on recherche si l'organisateur est externe, valider l'objectClass mineqMelBoite
+          $this->extern = !$user->is_mailbox;
         }
-        $this->extern = false;
         if (isset($name)) {
           $this->setMapName($name);
         }
@@ -367,7 +370,7 @@ class Organizer extends MceObject {
           $User = $this->__getNamespace() . '\\User';
           $user = new $User();
           $user->uid = $this->objectmelanie->organizer_uid;
-          if ($user->load('email')) {
+          if ($user->load(['email'])) {
             $this->organizer_email = $user->email;
             $this->extern = false;
           }
@@ -419,7 +422,7 @@ class Organizer extends MceObject {
           $User = $this->__getNamespace() . '\\User';
           $user = new $User();
           $user->uid = $this->objectmelanie->organizer_uid;
-          if ($user->load('fullname')) {
+          if ($user->load(['fullname'])) {
             $this->organizer_name = $user->fullname;
             $this->extern = false;
           }

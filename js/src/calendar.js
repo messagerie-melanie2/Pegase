@@ -77,12 +77,19 @@ $(document)
             select: function (start, end) {
               let allDay = !start.hasTime();
               let end2 = end.clone();
+              let startToDate = start.clone().toDate();
               if (allDay) {
                 end2 = end2.subtract(1, 'days')
+                startToDate = start.clone();
               }
 
-              if (!dateExist(start.toDate(), end2.toDate(), allDay)) {
-                var id = addNewDate(start.toDate(), end2.toDate(), allDay);
+              if (!dateExist(startToDate, end2.toDate(), allDay)) {
+                if (allDay) {
+                  var id = addNewDate(start, null, allDay);
+                }
+                else {
+                  var id = addNewDate(start.toDate(), end2.toDate(), allDay);
+                }
 
                 var event = {
                   id: id,
@@ -103,7 +110,7 @@ $(document)
               if (calEvent.id.indexOf(poll.env.date_rdv) == -1)
                 return;
               let found = poll.env.validate_proposal_key ? poll.env.validate_proposal_key.find(prop => prop == calEvent.id) : null;
-              if (!found) {                
+              if (!found) {
                 var layer = "<div id='events-layer' class='fc-transparent' style='position:absolute; width:100%; height:80%; top:2px; text-align:right; z-index:100; right: 2px;'> <a> <img border='0' width='12px' src='skins/"
                   + poll.env.skin
                   + "/images/1395421411_white_delete.png' title='"
@@ -177,9 +184,9 @@ $(document)
 
           });
 
-          $(window).resize(function () {
-            $('#calendar').fullCalendar('option', 'height', $('#calendar').height() - 50);
-          });
+      $(window).resize(function () {
+        $('#calendar').fullCalendar('option', 'height', $('#calendar').height() - 50);
+      });
       $("#calendar .fc-button-group .fc-agendaDay-button").click(function () {
         if ($("#calendar .fc-view-container").is(":hidden")) {
           $("#calendar .fc-button-group .fc-list-button").removeClass('fc-state-active');
@@ -463,7 +470,7 @@ function getAllEvents() {
         events.push({
           id: id,
           title: poll.env.poll_title,
-          start: dateForm(date[0]),
+          start: moment(date[0]).format(),
           allDay: date[0].length == 10
         });
       }
@@ -617,7 +624,12 @@ function getNewDate() {
  * @returns {Boolean}
  */
 function dateExist(start, end, allDay) {
-  var date = getDateFromData(start, end, allDay);
+  if (allDay) {
+    var date = start.format();
+  }
+  else {
+    var date = getDateFromData(start, end, allDay);
+  }
   var exist = false;
   $("." + poll.env.date_rdv).each(function () {
     if (this.value == date) {
@@ -630,7 +642,12 @@ function dateExist(start, end, allDay) {
  * Ajout une nouvelle date
  */
 function addNewDate(start, end, allDay) {
-  var date = getDateFromData(start, end, allDay);
+  if (allDay) {
+    var date = start.format();
+  }
+  else {
+    var date = getDateFromData(start, end, allDay);
+  }
   // Parcourir les valeurs pour en trouver une vide
   var id;
   if (poll.env.mobile) {
@@ -674,9 +691,14 @@ function updateEvent(event) {
     }
   }
 
-  var date = getDateFromData(event.start.toDate(), end2, event.allDay);
-
-  $("."+poll.env.date_rdv).each(function () {
+  if (event.allDay) {
+    var date = event.start.format();
+  }
+  else {
+    var date = getDateFromData(event.start.toDate(), end2, event.allDay);
+  }
+  
+  $("." + poll.env.date_rdv).each(function () {
     if (this.id == event.id) {
       $(this).attr("value", date);
       this.value = date;
@@ -740,7 +762,7 @@ function deleteDate(id) {
  */
 function deleteEvent(event) {
   // Suppression de l'évènement
-  $("."+poll.env.date_rdv).each(function () {
+  $("." + poll.env.date_rdv).each(function () {
     if (this.id == event.id) {
       // $(this).attr("value", "");
       // $(this).value = "";

@@ -60,7 +60,7 @@ class Addressbook extends MceObject {
   /**
    * Constructeur de l'objet
    * 
-   * @param User $user          
+   * @param User|string $user ou $id
    */
   function __construct($user = null) {
     // Défini la classe courante
@@ -71,8 +71,13 @@ class Addressbook extends MceObject {
     $this->objectmelanie = new AddressbookMelanie();
     // Définition des objets associés
     if (isset($user)) {
-      $this->user = $user;
-      $this->objectmelanie->user_uid = $this->user->uid;
+      if (is_object($user)) {
+        $this->user = $user;
+        $this->objectmelanie->user_uid = $this->user->uid;
+      }
+      else {
+        $this->objectmelanie->id = $user;
+      }
     }
   }
   
@@ -120,6 +125,7 @@ class Addressbook extends MceObject {
     }
     return $ret;
   }
+
   /**
    * Récupère la liste de tous les contacts
    * need: $this->id
@@ -129,6 +135,56 @@ class Addressbook extends MceObject {
   public function getAllContacts() {
     M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->getAllContacts()");
     $_contacts = $this->objectmelanie->getAllContacts();
+    if (!isset($_contacts))
+      return null;
+    $contacts = [];
+    $Contact = $this->__getNamespace() . '\\Contact';
+    foreach ($_contacts as $_contact) {
+      $contact = new $Contact($this->user, $this);
+      $contact->setObjectMelanie($_contact);
+      $contacts[$_contact->id] = $contact;
+    }
+    // Détruit les variables pour libérer le plus rapidement de la mémoire
+    unset($_contacts);
+    // TODO: Test - Nettoyage mémoire
+    //gc_collect_cycles();
+    return $contacts;
+  }
+
+  /**
+   * Récupère la liste de tous les groupes
+   * need: $this->id
+   * 
+   * @return Contact[]
+   */
+  public function getAllGroups() {
+    M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->getAllGroups()");
+    $_contacts = $this->objectmelanie->getAllGroups();
+    if (!isset($_contacts))
+      return null;
+    $contacts = [];
+    $Contact = $this->__getNamespace() . '\\Contact';
+    foreach ($_contacts as $_contact) {
+      $contact = new $Contact($this->user, $this);
+      $contact->setObjectMelanie($_contact);
+      $contacts[$_contact->id] = $contact;
+    }
+    // Détruit les variables pour libérer le plus rapidement de la mémoire
+    unset($_contacts);
+    // TODO: Test - Nettoyage mémoire
+    //gc_collect_cycles();
+    return $contacts;
+  }
+
+  /**
+   * Récupère la liste de tous les groupes et contacts
+   * need: $this->id
+   * 
+   * @return Contact[]
+   */
+  public function getAllGroupsAndContacts() {
+    M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->getAllGroupsAndContacts()");
+    $_contacts = $this->objectmelanie->getAllGroupsAndContacts();
     if (!isset($_contacts))
       return null;
     $contacts = [];

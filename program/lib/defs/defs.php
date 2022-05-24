@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 /* Récupération de la version depuis le fichier */
-define('VERSION', '1.0.10');
-define('BUILD', '202107281430');
+define('VERSION', '1.0.13');
+define('BUILD', '20220420152200');
 
 // framework constants
 define('POLL_CHARSET', 'UTF-8');

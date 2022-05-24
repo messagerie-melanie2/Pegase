@@ -21,8 +21,6 @@
  */
 namespace LibMelanie\Config;
 
-use LibMelanie\Ldap\Ldap;
-
 /**
  * Configuration du mapping vers MCE
  *
@@ -76,6 +74,10 @@ class MappingMce {
 		  "WorkspaceShare"		=> "dwp_shares",
 		  "WorkspaceHashtag"	=> "dwp_hashtags",
 		  "WorkspaceHashtagRef"	=> "dwp_hashtags_workspaces",
+		  "News"				=> "dwp_news",
+		  "Rss"					=> "dwp_rss",
+		  "NewsShare"			=> "dwp_news_share",
+		  "Notification"		=> "dwp_notifications",
 	  ];
 	  // Init Primary Keys
 	  self::$Primary_Keys = [
@@ -99,6 +101,10 @@ class MappingMce {
 		  "WorkspaceShare"		=> ['workspace', 'user'],
 		  "WorkspaceHashtag"	=> ['label'],
 		  "WorkspaceHashtagRef"	=> ['hashtag', 'workspace'],
+		  "News"				=> ["uid"],
+		  "Rss"					=> ["uid"],
+		  "NewsShare"			=> ["user", "service"],
+		  "Notification"		=> ["uid", "owner"],
 	  ];
 	  // Init Data Mapping
 	  self::$Data_Mapping = [
@@ -397,6 +403,50 @@ class MappingMce {
 		  "WorkspaceHashtagRef" => [
 				"hashtag"	=> [self::name => "hashtag_id", self::type => self::integer],
 				"workspace"	=> [self::name => "workspace_id", self::type => self::integer],
+		  ],
+		  // Gestion des news dans le bureau numérique
+		  "News" => [
+				"id" 			=> [self::name => "news_id", self::type => self::integer],
+				"uid" 			=> [self::name => "news_uid"],
+				"title" 		=> [self::name => "news_title"],
+				"description" 	=> [self::name => "news_description"],
+				"created" 		=> [self::name => "news_created", self::type => self::date],
+				"modified"		=> [self::name => "news_modified", self::type => self::date],
+				"service" 		=> [self::name => "news_service"],
+				"service_name" 	=> [self::name => "news_service_name"],
+				"creator" 		=> [self::name => "news_creator_id"],
+		  ],
+		  // Gestion des flux rss dans le bureau numérique
+		  "Rss"	=> [
+				"id" 		=> [self::name => "rss_id", self::type => self::integer],
+				"uid" 		=> [self::name => "rss_uid"],
+				"title" 	=> [self::name => "rss_title"],
+				"url" 		=> [self::name => "rss_url"],
+				"source" 	=> [self::name => "rss_source", self::type => self::string, self::size => 20],
+				"service" 	=> [self::name => "rss_service"],
+				"creator" 	=> [self::name => "rss_creator_id"],
+		  ],
+		  // Gestion des droits sur les news dans le bureau numérique
+		  "NewsShare" => [
+				"id" 		=> [self::name => "news_share_id", self::type => self::integer],
+				"service" 	=> [self::name => "news_share_service"],
+				"user" 		=> [self::name => "news_share_user_id"],
+				"right" 	=> [self::name => "news_share_right", self::type => self::string, self::size => 1], // 'a' or 'p'
+		  ],
+		  // Gestion des notifications dans le bureau numérique
+		  "Notification" => [
+				"id" 			=> [self::name => "notification_id", self::type => self::integer],
+				"uid" 			=> [self::name => "notification_uid"],
+				"owner" 		=> [self::name => "notification_owner"],
+				"from" 			=> [self::name => "notification_from"],
+				"title" 		=> [self::name => "notification_title"],
+				"content" 		=> [self::name => "notification_content"],
+				"category" 		=> [self::name => "notification_category"],
+				"action" 		=> [self::name => "notification_action"],
+				"created" 	    => [self::name => "notification_created", self::type => self::timestamp],
+				"modified" 	    => [self::name => "notification_modified", self::type => self::timestamp],
+				"isread"		=> [self::name => "notification_isread", self::type => self::integer],
+				"isdeleted"		=> [self::name => "notification_isdeleted", self::type => self::integer],
 		  ],
 	  ];
 	}

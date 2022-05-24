@@ -88,6 +88,14 @@ abstract class Group extends MceObject {
    * @ignore
    */
   const LOAD_FILTER = null;
+
+  /**
+   * Filtre pour la méthode load() avec un email
+   * 
+   * @ignore
+   */
+  const LOAD_FROM_EMAIL_FILTER = null;
+
   /**
    * Attributs par défauts pour la méthode load()
    * 
@@ -157,6 +165,9 @@ abstract class Group extends MceObject {
    */
   public function load($attributes = null) {
     M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->load() [" . $this->_server . "]");
+    if (isset($attributes) && is_string($attributes)) {
+      $attributes = [$attributes];
+    }
     if (isset($this->_isLoaded) && !isset($attributes)) {
       return $this->_isLoaded;
     }
@@ -165,12 +176,16 @@ abstract class Group extends MceObject {
       $attributes = static::LOAD_ATTRIBUTES;
     }
     $filter = static::LOAD_FILTER;
+    $filterFromEmail = static::LOAD_FROM_EMAIL_FILTER;
     if (isset(\LibMelanie\Config\Ldap::$SERVERS[$this->_server])) {
       if (isset(\LibMelanie\Config\Ldap::$SERVERS[$this->_server]['get_list_filter'])) {
         $filter = \LibMelanie\Config\Ldap::$SERVERS[$this->_server]['get_list_filter'];
       }
+      if (isset(\LibMelanie\Config\Ldap::$SERVERS[$this->_server]['get_list_from_email_filter'])) {
+        $filterFromEmail = \LibMelanie\Config\Ldap::$SERVERS[$this->_server]['get_list_from_email_filter'];
+      }
     }
-    $ret = $this->objectmelanie->load($attributes, $filter);
+    $ret = $this->objectmelanie->load($attributes, $filter, $filterFromEmail);
     if ($useIsLoaded) {
       $this->_isLoaded = $ret;
     }
@@ -210,10 +225,13 @@ abstract class Group extends MceObject {
     if (!isset($this->_members)) {
       $this->_members = [];
       $classUser = $this->__getNamespace() . '\\User';
-      foreach ($this->objectmelanie->members as $member) {
-        $_member = new $classUser();
-        $_member->uid = $member;
-        $this->_members[$member] = $_member;
+      $members = $this->objectmelanie->members;
+      if (is_array($members)) {
+        foreach ($members as $member) {
+          $_member = new $classUser();
+          $_member->uid = $member;
+          $this->_members[$member] = $_member;
+        }
       }
     }
     return $this->_members;

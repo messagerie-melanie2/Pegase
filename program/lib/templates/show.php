@@ -882,6 +882,7 @@ class Show
         } else {
           $Response = \Program\Drivers\Driver::get_driver()->getPollUserResponse(\Program\Data\User::get_current_user()->user_id, \Program\Data\Poll::get_current_poll()->poll_id);
           $Response = unserialize($Response->response);
+          if ($Response) {
           foreach ($Response as $key => $value) {
             if ($key == $prop_value) {
               $href = \Program\Lib\HTML\html::a(array("class" => "pure-button pure-button-validate-prop-rdv customtooltip_bottom", "title" => Localization::g("Validated proposal", false) . " : " . $prop_value), Localization::g(""));
@@ -890,6 +891,10 @@ class Show
               $href = \Program\Lib\HTML\html::a(array("onclick" => "validate_prop_rdv(check_$prop_key)", "class" => "pure-button pure-button-validate-prop customtooltip_bottom", "title" => Localization::g("Clic to validate this proposal", false) . " : " . $prop_value), Localization::g("Validate proposal"));
             }
           }
+        }
+        else {
+          $href = \Program\Lib\HTML\html::a(array("onclick" => "validate_prop_rdv(check_$prop_key)", "class" => "pure-button pure-button-validate-prop customtooltip_bottom", "title" => Localization::g("Clic to validate this proposal", false) . " : " . $prop_value), Localization::g("Validate proposal"));
+        }
 
           $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check_$prop_key", "name" => "check_$prop_key", "value" => "$prop_value", "class" => "prop_rdv"));
 
@@ -1526,9 +1531,11 @@ class Show
         if (\Program\Data\User::isset_current_user()) {
           $user_id = \Program\Data\User::get_current_user()->user_id;
           $user_name = isset(\Program\Data\User::get_current_user()->fullname) ? \Program\Data\User::get_current_user()->fullname : \Program\Data\User::get_current_user()->username;
+          $user_email = isset(\Program\Data\User::get_current_user()->email) ? \Program\Data\User::get_current_user()->email : null;
         } elseif (Session::is_set("user_noauth_id") && Session::is_set("user_noauth_name") && Session::is_set("user_noauth_poll_id") && Session::get("user_noauth_poll_id") == \Program\Data\Poll::get_current_poll()->poll_id) {
           $user_id = Session::get("user_noauth_id");
           $user_name = Session::get("user_noauth_name");
+          $user_email = Session::get("user_noauth_email");
         } elseif (isset($username)) {
           $user_firstname = Request::getInputValue("user_firstname", POLL_INPUT_POST);
           $user_department = Request::getInputValue("user_department", POLL_INPUT_POST);
@@ -1562,7 +1569,6 @@ class Show
         $resp = array();
         $prop_keys = array();
         foreach ($_POST as $key => $post) {
-
           if ($key != "user_username" && $key != "user_firstname" && $key != "user_department" && $key != "user_commune" && $key != "user_email" && $key != "user_phone_number" && $key != "user_object" && $key != "user_siren" && $key != "hidden_modify" && $key != "csrf_token") {
             $resp[Request::getInputValue($key, POLL_INPUT_POST)] = true;
             $prop_keys[] = str_replace('check_', '', $key);
@@ -1588,13 +1594,13 @@ class Show
           }
 
           //On envoi un mail si le participant à changé de réponse
-          if (\Program\Data\Poll::get_current_poll()->type == 'rdv' && unserialize($response->response) != null) {
+          if (unserialize($response->response) != null) {
             if (isset(\Config\IHM::$SEND_MAIL) && \Config\IHM::$SEND_MAIL && $user_id != o::get_env("poll_organizer")->user_id) {
               //Mail de changement de réponse à l'organisateur
               \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, array_key_first(unserialize($response->response)), o::get_env("poll_organizer"));
 
-              if (\Program\Data\User::isset_current_user()) {
-                \Program\Lib\Mail\Mail::SendValidateProposalUserMail(\Program\Data\Poll::get_current_poll(), \Program\Data\User::get_current_user(), array_key_first(unserialize($response->response)));
+              if (\Program\Data\User::isset_current_user() && \Program\Data\Poll::get_current_poll()->type == 'rdv') {
+                \Program\Lib\Mail\Mail::SendValidateProposalUserMail(\Program\Data\Poll::get_current_poll(), $user_name, $user_email, array_key_first(unserialize($response->response)));
               }
               //Mail de validation pour l'utilisateur
             }
@@ -1631,14 +1637,15 @@ class Show
               return;
             }
           }
-          if (\Program\Data\Poll::get_current_poll()->type == 'rdv' && unserialize($response->response) != null) {
+          if (unserialize($response->response) != null) {
             if (isset(\Config\IHM::$SEND_MAIL) && \Config\IHM::$SEND_MAIL && $user_id != o::get_env("poll_organizer")->user_id) {
               //Mail de changement de réponse à l'organisateur
               \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, $response_date, o::get_env("poll_organizer"));
 
-              if (\Program\Data\User::isset_current_user()) {
-                //Mail de validation pour l'utilisateur
-                \Program\Lib\Mail\Mail::SendValidateProposalUserMail(\Program\Data\Poll::get_current_poll(), \Program\Data\User::get_current_user(), $response_date);
+              if(\Program\Data\Poll::get_current_poll()->type == 'rdv')
+              {
+                  //Mail de validation pour l'utilisateur
+                  \Program\Lib\Mail\Mail::SendValidateProposalUserMail(\Program\Data\Poll::get_current_poll(), $user_name, $user_email, $response_date);
               }
             }
           }
@@ -1729,9 +1736,9 @@ class Show
           \Program\Lib\Utils\Utils::add_tentative_calendar($response_user->username, $prop_keys, $response_user);
           //On envoi un mail au participant
           \Program\Lib\Mail\Mail::SendDeletedResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $response_user);
-        } elseif (isset($modify_responses[$response->user_id])) {
+        } elseif (isset($modify_responses[$response->user_id]) && $modify_responses[$response->user_id]) {
           // Si la réponse doit être modifiée
-          if (array_intersect_key(unserialize($response->response), $modify_responses[$response->user_id]) == null) {
+          // if (array_intersect_key(unserialize($response->response), $modify_responses[$response->user_id]) == null) {
             $response->response = serialize($modify_responses[$response->user_id]);
             \Program\Drivers\Driver::get_driver()->modifyPollUserResponse($response);
             if (\Program\Data\Poll::get_current_poll()->type == 'rdv') {
@@ -1740,7 +1747,7 @@ class Show
               \Program\Lib\Utils\Utils::add_tentative_calendar($response_user->username, $prop_keys[$response_user->user_id], $response_user);
               //On envoi un mail au participant
               \Program\Lib\Mail\Mail::SendModifyResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $response_user, array_key_first($modify_responses[$response->user_id]));
-            }
+            // }
           }
         } else {
           // Si pas de résultat, on doit surement RAZ

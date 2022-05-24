@@ -1,12 +1,12 @@
 <?php return array (
   'root' => 
   array (
-    'pretty_version' => '1.0.10.x-dev',
-    'version' => '1.0.10.9999999-dev',
+    'pretty_version' => '1.0.13.x-dev',
+    'version' => '1.0.13.9999999-dev',
     'aliases' => 
     array (
     ),
-    'reference' => 'd5cc12df413bd64b082679158c759ee53c1bc69d',
+    'reference' => '5ea5f9ceb50cba56cee7e9c889e6e16298c82bdb',
     'name' => 'messagerie-melanie2/pegase',
   ),
   'versions' => 
@@ -22,21 +22,21 @@
     ),
     'messagerie-melanie2/orm-m2' => 
     array (
-      'pretty_version' => '0.6.1.22',
-      'version' => '0.6.1.22',
+      'pretty_version' => '0.6.2.3',
+      'version' => '0.6.2.3',
       'aliases' => 
       array (
       ),
-      'reference' => '0ccac9e7ca84cb8cc6f716e42419e47fe9b47b54',
+      'reference' => '6b25a0840df3cfcdd38956fd012dfcc00b5b4673',
     ),
     'messagerie-melanie2/pegase' => 
     array (
-      'pretty_version' => '1.0.10.x-dev',
-      'version' => '1.0.10.9999999-dev',
+      'pretty_version' => '1.0.13.x-dev',
+      'version' => '1.0.13.9999999-dev',
       'aliases' => 
       array (
       ),
-      'reference' => 'd5cc12df413bd64b082679158c759ee53c1bc69d',
+      'reference' => '5ea5f9ceb50cba56cee7e9c889e6e16298c82bdb',
     ),
     'psr/log' => 
     array (

@@ -275,7 +275,7 @@ class Mail
    * @param \Program\Data\User $user participant du sondage
    * @return boolean
    */
-  public static function SendValidateProposalUserMail(\Program\Data\Poll $poll, \Program\Data\User $user, $modify_response)
+  public static function SendValidateProposalUserMail(\Program\Data\Poll $poll, $user_name, $user_email, $modify_response)
   {
     Log::l(Log::DEBUG, "Mail::SendValidateProposalMail()");
     $subject = Localization::g("Validate proposal organizer mail subject", false);
@@ -316,17 +316,14 @@ class Mail
     $body = str_replace("%%poll_url%%", Output::get_poll_url($poll), $body);
     $body = str_replace("%%validate_proposal%%", Output::format_prop_poll($poll, $modify_response), $body);
    
-    if (!empty($user->email)) {
-      $name = $user->auth ? $user->fullname : $user->username;
       if ($bcc != "") {
         $bcc .= "\r\n ";
       }
-      $bcc .= '=?UTF-8?B?' . base64_encode('"' . $name . '"') . '?=' . "\r\n <" . $user->email . ">";
+      $bcc .= '=?UTF-8?B?' . base64_encode('"' . $user_name . '"') . '?=' . "\r\n <" . $user_email . ">";
 
       if ($bcc == "") {
         return false;
       }
-    }
 
     return self::SendMail($from, $to, $subject, $bcc, null, null, $body, $message_id, $in_reply_to);
   }

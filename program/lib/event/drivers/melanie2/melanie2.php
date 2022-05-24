@@ -215,8 +215,9 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
    * @param \Program\Data\Calendar $calendar [Optionnel] Calendrier si ce n'est pas le courant
    * @param boolean $selected_date Date retenue par l'organisateur ?
    * @return string UID de l'événement créé si OK, null sinon
+   * @return \Program\Data\Calendar $organizer_calendar [Optionnel] Calendrier de l'organisateur
    */
-  public function add_to_calendar($date, $poll = null, $user = null, $status = null, $part_status = null, $calendar = null, $selected_date = false, $user_title = null)
+  public function add_to_calendar($date, $poll = null, $user = null, $status = null, $part_status = null, $calendar = null, $selected_date = false, $organizer_calendar = null)
   {
     try {
       // Récupération du sondage
@@ -256,7 +257,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
       }
 
       // Initialisation de l'événement
-      $this->init_event($date, $poll, $user, $status, $part_status, $selected_date, $user_title);
+      $this->init_event($date, $poll, $user, $status, $part_status, $selected_date, $organizer_calendar);
       // Définition des élèments manquants de l'évènement
       self::$event->setUserMelanie(self::$user);
       self::$event->setCalendarMelanie($_calendar->getObjectMelanie());
@@ -485,7 +486,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
    * @param string $part_status \Program\Data\Event::PARTSTAT_* [Optionnel] Statut de participant pour la génération de la réunion
    * @param boolean $selected_date Date retenue par l'organisateur ?
    */
-  private function init_event($date, $poll, $user = null, $status = null, $part_status = null, $selected_date = false,  $user_title = null)
+  private function init_event($date, $poll, $user = null, $status = null, $part_status = null, $selected_date = false, $organizer_calendar = null)
   {
     // Récupération de la date de début et de la date de fin
     list($start, $end, $allday) = $this->date_to_start_end($date, $poll->timezone);
@@ -518,24 +519,14 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
     }
     // Permet de savoir si l'évenement de l'organisateur existe pour l'ajout des participants
     $organizer_event_exists = true;
-    if ($poll->organizer_id != $user->user_id) {
-      // Generation de l'événement pour l'agenda par défaut de l'organisateur
-      $organizer_user = new Api\Melanie2\User();
-      $organizer_user->uid = $poll_organizer->username;
-      $organizer_calendar = $organizer_user->getDefaultCalendar();
-      $organizer_event = new Api\Melanie2\Event($organizer_user, $organizer_calendar);
-      $organizer_event->uid = self::$event->uid;
-      // Chargement de l'évenement de l'organisateur
-      $organizer_event_exists = $organizer_event->load();
-    }
-    if (!isset($status) && $organizer_event_exists) {
-      $organizer = new Api\Melanie2\Organizer(self::$event);
-      $organizer->email = $poll_organizer->email;
-      $organizer->name = $poll_organizer->fullname;
-      $organizer->uid = $poll_organizer->username;
-      $organizer->extern = false;
-      self::$event->organizer = $organizer;
-    }
+    $organizer = new Api\Melanie2\Organizer(self::$event);
+    $organizer->email = $poll_organizer->email;
+    $organizer->name = $poll_organizer->fullname;
+    $organizer->uid = $poll_organizer->username;
+    $organizer->calendar = $organizer_calendar;
+    $organizer->extern = false;
+    self::$event->organizer = $organizer;
+    
     // Modification de l'événement provisoire
     if (isset($status) && strtolower($status) == Api\Melanie2\Event::STATUS_TENTATIVE && !$selected_date) {
       self::$event->title = "[" . \Config\IHM::$TITLE . " " . Localization::g(ucfirst(strtolower($status)), false) . "] " . self::$event->title;
@@ -629,7 +620,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
       }
     }
 
-    if (isset($attendees_title) && $poll->organizer_id == $user->user_id) {
+    if (isset($attendees_title) && $poll->organizer_id == $user->user_id && $poll->type == 'rdv') {
       $attendees_title = implode('-', $attendees_title);
       self::$event->title =  self::$event->title . ' ' .  $poll->title . " : " . $attendees_title;
     } else {

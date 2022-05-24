@@ -1,3 +1,106 @@
+ORM M2 - 0.6.2.3
+------
+- Fix sur la fonctionnalité de s'inviter pour un participant
+
+ORM M2 - 0.6.2.2
+------
+- 0006295: [En attente] Identifier des changements de lieu non majeur
+- 0006752: Lors du saveAttendees, forcer la date de l'événement de l'organisateur
+- 0006751: MR MCE 0000007 Allow ldap servers that forbid anonymous binds
+
+ORM M2 - 0.6.2.1
+------
+- 0006686: Problème de sequence en ICS
+- 0006698: Incrémenter la séquence des participants dans le cas d'une suppression par l'organisateur
+- 0006730: [VCard] Gestion des membres par uid
+- 0006750: [VCard] Problème lorsque la propriété TYPE n'est pas présente
+- 0006729: Ajouter des méthodes getAllGroups et getAllGroupsAndContacts dans Addressbook
+- 0006721: Lors de la création de l'occurence chez l'organisateur, ne pas récupérer les dates du participants
+
+ORM M2 - 0.6.2
+------
+- 0006191: Mode en attente lorsque le participant est une liste
+
+ORM M2 - 0.6.1.37
+------
+- Fix sur les caractères non supportés par Lightning
+
+ORM M2 - 0.6.1.36
+------
+- API DGFIP dédiée
+
+ORM M2 - 0.6.1.35
+------
+- 0006578: Problème d'optimisation du load() des pièces jointes
+
+ORM M2 - 0.6.1.34
+------
+- Correctifs sur les index pour les notifications
+- Correctifs dans le Driver MI pour les groupes
+- Pour les notifications se baser sur created
+
+ORM M2 - 0.6.1.33
+------
+- Mise au propre des configurations défaut
+- Ajout du script de traitement des droits sur les groupes
+
+ORM M2 - 0.6.1.32
+------
+- 0006528: Mise à jour du schéma LDAP pour les groupes dans Api\Mce\Group
+- 0006525: Création de la table pour le stockage des notifications du Bnum
+- 0006526: Création d'un nouvel objet Notification
+- 0006527: Création des méthodes pour gérer les notifications dans l'objet User
+
+ORM M2 - 0.6.1.31
+------
+- Correctif sur le calcul du isPublisher d'une news s'il s'agit d'un sous service
+- Mise à jour des init et update SQL pour mieux gérer les schémas
+
+ORM M2 - 0.6.1.30
+------
+- 0006512: Ajouter le support de la sequence dans le en attente
+
+ORM M2 - 0.6.1.29
+------
+- Fix getUserRss method pour les News/Rss
+- Fixing queries comment header
+- Ajout du support isNewsPublisher pendant un load
+
+ORM M2 - 0.6.1.28
+------
+- 0006328: Ajouter une lib pour genérer des UUID
+- 0006329: Indexes manquant sur les tables *_sync
+- 0006319: Schéma de base de données pour s'informer dans le Bnum
+- 0006320: Ajouter les objets News, Rss et NewsShare
+
+ORM M2 - 0.6.1.27
+------
+- HOTFIX 0006314: Le en attente ne fonctionne pas lorsque l'invitation part d'une BALP
+
+ORM M2 - 0.6.1.26
+------
+- 0006302: [Api/Gn] Pour les groupes les membres doivent se récupérer différemment
+- 0006306: Problème de chargement d'une liste de tâches basé uniquement sur l'id
+- 0006305: Après un getList le isLoaded n'est pas initialisé pour l'objet récupéré
+- 0006303: Si le paramètre du constructeur de Calendar, Addressbook et Taskslist est un string, positionner l'id
+- 0006304: Ajouter un __toString() dans MagicObject et MceObject
+- 0006301: La méthode loadExceptions charge toutes les exceptions de tous les agendas
+
+ORM M2 - 0.6.1.25
+------
+- 0006294: Ajouter l'information dans un participant quand il a été enregistré en attente
+
+ORM M2 - 0.6.1.24
+------
+- 0006289: Dans le IF pour savoir si l'événement est l'événement de l'organisateur ajouter le test s'il est externe
+- 0006291: Permettre un type booleanLdap sur une entrée multivaluée
+- 0006292: Ajouter une propriété is_mailbox dans l'objet User
+- 0006288: Lorsqu'on recherche si l'organisateur est externe, valider l'objectClass mineqMelBoite
+
+ORM M2 - 0.6.1.23
+------
+- Mise à jour du schéma de base de données initial
+
 ORM M2 - 0.6.1.22
 ------
 - 0006244: Problème dans le calcul de la date de fin à partir du count pour une modification

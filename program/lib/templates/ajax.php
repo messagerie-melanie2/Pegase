@@ -286,7 +286,13 @@ class Ajax
       }
     }
     if (isset($proposals[$prop_key]) && isset($validate_proposals[$proposals[$prop_key]])) {
-      $event_uid = \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, null, null, $part_status, $cal);
+      //On ajoute le calendrier de l'organisateur si l'organisateur valide la date
+      if (\Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
+      $event_uid = \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, null, null, $part_status, $cal, false, $cal);
+      }
+      else {
+        $event_uid = \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, null, null, $part_status, $cal);
+      }
       if (!is_null($event_uid)) {
         self::$message = "Event has been saved in your calendar";
         $events[$proposals[$prop_key]] = $event_uid;
@@ -355,14 +361,14 @@ class Ajax
               $resp = unserialize($response->response);
               if (isset($resp[$proposals[$prop_key]]) && !isset($events[$proposals[$prop_key]])) {
                 // La proposition est validée, acceptée mais pas dans le calendrier, il faut la créer en provisoire
-                $event_uid = \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, $user, \Program\Data\Event::STATUS_TENTATIVE, null, $response->calendar_id, true);
+                $event_uid = \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, $user, \Program\Data\Event::STATUS_TENTATIVE, null, $response->calendar_id, true, $cal);
                 // Enregistre l'event_uid dans la table des events
                 if (!is_null($event_uid)) {
                   $events[$proposals[$prop_key]] = $event_uid;
                 }
               } else if (isset($resp[$proposals[$prop_key]])) {
                 // Modifier le nom de la proposition
-                \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, $user, \Program\Data\Event::STATUS_TENTATIVE, null, $response->calendar_id, true);
+                \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, $user, \Program\Data\Event::STATUS_TENTATIVE, null, $response->calendar_id, true, $cal);
               }
 
               // Enregistre les modifications sur le eventslist de l'utilisateur

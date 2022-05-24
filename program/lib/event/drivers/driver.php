@@ -406,8 +406,10 @@ abstract class Driver {
    * @param boolean $selected_date
    *          Date retenue par l'organisateur ?
    * @return string UID de l'événement créé si OK, null sinon
+   * @return \Program\Data\Calendar $organizer_calendar [Optionnel] Calendrier de l'organisateur
+   * 
    */
-  abstract function add_to_calendar($date, $poll = null, $user = null, $status = null, $part_status = null, $calendar = null, $selected_date = false);
+  abstract function add_to_calendar($date, $poll = null, $user = null, $status = null, $part_status = null, $calendar = null, $selected_date = false, $organizer_calendar = null);
   
   /**
    * Liste les calendriers accessibles pour l'utilisateur (en lecture/écriture)

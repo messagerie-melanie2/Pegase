@@ -1,4 +1,4 @@
--- Schema du 20180924
+-- Schema du 20220224
 
 --
 -- Name: update_addressbook_ctag(); Type: FUNCTION
@@ -457,6 +457,130 @@ CREATE TABLE pamela_mailcount
   address_ip character varying(16) NOT NULL DEFAULT '0.0.0.0'::character varying
 );
 
+
+--
+-- Sequence "dwp_rss_seq"
+-- Name: dwp_rss_seq; Type: SEQUENCE;
+--
+
+CREATE SEQUENCE dwp_rss_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+--
+-- Table "dwp_rss"
+-- Name: dwp_rss; Type: TABLE;
+--
+
+CREATE TABLE dwp_rss
+(
+	rss_id bigint DEFAULT nextval('dwp_rss_seq'::text) PRIMARY KEY,
+	rss_uid text NOT NULL UNIQUE,
+	rss_title text NOT NULL,
+	rss_url text NOT NULL,
+	rss_source varchar(20) NOT NULL,
+	rss_service text NOT NULL,
+	rss_creator_id text NOT NULL
+);
+
+
+--
+-- Sequence "dwp_news_seq"
+-- Name: dwp_news_seq; Type: SEQUENCE;
+--
+
+CREATE SEQUENCE dwp_news_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+--
+-- Table "dwp_news"
+-- Name: dwp_news; Type: TABLE;
+--
+
+CREATE TABLE dwp_news
+(
+	news_id bigint DEFAULT nextval('dwp_news_seq'::text) PRIMARY KEY,
+	news_uid text NOT NULL UNIQUE,
+	news_title text NOT NULL,
+	news_description text,
+	news_created timestamp with time zone DEFAULT now() NOT NULL,
+	news_modified timestamp with time zone DEFAULT now() NOT NULL,
+	news_service text NOT NULL,
+	news_service_name text NOT NULL,
+	news_creator_id text NOT NULL
+);
+
+
+--
+-- Sequence "dwp_news_share_seq"
+-- Name: dwp_news_share_seq; Type: SEQUENCE;
+--
+
+CREATE SEQUENCE dwp_news_share_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+--
+-- Table "dwp_news_share"
+-- Name: dwp_news_share; Type: TABLE;
+--
+
+CREATE TABLE dwp_news_share
+(
+	news_share_id bigint DEFAULT nextval('dwp_news_share_seq'::text) PRIMARY KEY,
+	news_share_service text NOT NULL,
+	news_share_right varchar(1) NOT NULL, -- 'a' or 'p' or 'q'
+	news_share_user_id text NOT NULL
+);
+
+--
+-- Sequence "dwp_notifications_seq"
+-- Name: dwp_notifications_seq; Type: SEQUENCE;
+--
+
+CREATE SEQUENCE dwp_notifications_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+--
+-- Table "dwp_notifications"
+-- Name: dwp_notifications; Type: TABLE;
+--
+
+CREATE TABLE dwp_notifications
+(
+	notification_id bigint DEFAULT nextval('dwp_notifications_seq'::text) PRIMARY KEY,
+	notification_uid text NOT NULL,
+	notification_owner text NOT NULL,
+	notification_from text,
+	notification_title text NOT NULL,
+	notification_content text NOT NULL,
+	notification_category text NOT NULL,
+	notification_action text,
+    notification_created integer NOT NULL,
+	notification_modified integer NOT NULL,
+	notification_isread boolean NOT NULL,
+	notification_isdeleted boolean NOT NULL
+);
+
+
 --
 -- Name: horde_datatree_pkey; Type: CONSTRAINT
 --
@@ -706,7 +830,62 @@ CREATE INDEX pamela_mailcount_send_time_idx ON pamela_mailcount USING btree (sen
 -- Name: pamela_mailcount_uid_idx; Type: INDEX
 --
 
-CREATE INDEX pamela_mailcount_uid_idx ON pamela_mailcount USING btree (uid COLLATE pg_catalog."default");
+CREATE INDEX pamela_mailcount_uid_idx ON pamela_mailcount USING btree (uid);
+
+
+--
+-- Name: kronolith_sync_calendar_token; Type: INDEX
+--
+
+CREATE INDEX kronolith_sync_calendar_token ON kronolith_sync USING btree (calendar_id, token DESC);
+
+
+--
+-- Name: nag_sync_taskslist_token; Type: INDEX
+--
+
+CREATE INDEX nag_sync_taskslist_token ON nag_sync USING btree (taskslist_id, token DESC);
+
+
+--
+-- Name: turba_sync_addressbook_token; Type: INDEX
+--
+
+CREATE INDEX turba_sync_addressbook_token ON turba_sync USING btree (addressbook_id, token DESC);
+
+
+--
+-- Name: dwp_rss_service_idx; Type: INDEX
+--
+
+CREATE INDEX dwp_rss_service_idx ON dwp_rss (rss_service);
+
+
+--
+-- Name: dwp_news_service_idx; Type: INDEX
+--
+
+CREATE INDEX dwp_news_service_idx ON dwp_news (news_service);
+
+
+--
+-- Name: dwp_news_share_user_id_idx; Type: INDEX
+--
+
+CREATE INDEX dwp_news_share_user_id_idx ON dwp_news_share (news_share_user_id);
+
+--
+-- Name: dwp_notifications_owner_idx; Type: INDEX
+--
+
+CREATE INDEX dwp_notifications_owner_idx ON dwp_notifications (notification_owner);
+
+
+--
+-- Name: dwp_notifications_created_modified_owner_idx; Type: INDEX
+--
+
+CREATE INDEX dwp_notifications_created_modified_owner_idx ON dwp_notifications (notification_created DESC, notification_modified DESC, notification_owner);
 
 
 --
@@ -736,7 +915,7 @@ CREATE TRIGGER trigger_taskslist_ctag AFTER INSERT OR DELETE OR UPDATE ON nag_ta
 
 -- DROP SEQUENCE workspaces_seq;
 
-CREATE SEQUENCE public.workspaces_seq
+CREATE SEQUENCE workspaces_seq
     START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
@@ -749,7 +928,7 @@ CREATE SEQUENCE public.workspaces_seq
 --
 -- DROP TABLE dwp_workspaces;
 
-CREATE TABLE public.dwp_workspaces
+CREATE TABLE dwp_workspaces
 (
 	workspace_id bigint DEFAULT nextval('workspaces_seq'::text) PRIMARY KEY,
 	workspace_uid varchar(40) NOT NULL,
@@ -767,8 +946,6 @@ CREATE TABLE public.dwp_workspaces
 	workspace_settings text
 );
 
-CREATE INDEX dwp_workspaces_uid_idx ON public.dwp_workspaces (workspace_uid);
-
 --
 -- Table "dwp_shares"
 -- Name: dwp_shares; Type: TABLE; Schema: public; Owner: horde
@@ -776,15 +953,13 @@ CREATE INDEX dwp_workspaces_uid_idx ON public.dwp_workspaces (workspace_uid);
 
 -- DROP TABLE dwp_shares;
 
-CREATE TABLE public.dwp_shares
+CREATE TABLE dwp_shares
 (
 	workspace_id bigint NOT NULL
-		REFERENCES public.dwp_workspaces (workspace_id) ON UPDATE CASCADE ON DELETE CASCADE,
+		REFERENCES dwp_workspaces (workspace_id) ON UPDATE CASCADE ON DELETE CASCADE,
 	user_uid varchar(255) NOT NULL,
 	rights varchar(1) NOT NULL
 );
-
-CREATE INDEX dwp_shares_user_idx ON public.dwp_shares (user_uid);
 
 --
 -- Sequence "hashtags_seq"
@@ -793,7 +968,7 @@ CREATE INDEX dwp_shares_user_idx ON public.dwp_shares (user_uid);
 
 -- DROP SEQUENCE hashtags_seq;
 
-CREATE SEQUENCE public.hashtags_seq
+CREATE SEQUENCE hashtags_seq
     START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
@@ -807,14 +982,11 @@ CREATE SEQUENCE public.hashtags_seq
 
 -- DROP TABLE dwp_hashtags;
 
-CREATE TABLE public.dwp_hashtags
+CREATE TABLE dwp_hashtags
 (
 	hashtag_id bigint DEFAULT nextval('hashtags_seq'::text) PRIMARY KEY,
 	hashtag varchar(255) NOT NULL
 );
-
-CREATE INDEX dwp_hashtags_hashtag_idx ON public.dwp_hashtags (hashtag);
-
 
 --
 -- Table "dwp_hashtags_workspaces"
@@ -823,12 +995,32 @@ CREATE INDEX dwp_hashtags_hashtag_idx ON public.dwp_hashtags (hashtag);
 
 -- DROP TABLE dwp_hashtags_workspaces;
 
-CREATE TABLE public.dwp_hashtags_workspaces
+CREATE TABLE dwp_hashtags_workspaces
 (
 	hashtag_id bigint NOT NULL
-		REFERENCES public.dwp_hashtags (hashtag_id) ON UPDATE CASCADE ON DELETE CASCADE,
+		REFERENCES dwp_hashtags (hashtag_id) ON UPDATE CASCADE ON DELETE CASCADE,
 	workspace_id bigint NOT NULL
-		REFERENCES public.dwp_workspaces (workspace_id) ON UPDATE CASCADE ON DELETE CASCADE
+		REFERENCES dwp_workspaces (workspace_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- Index pour les LIKE sur les hashtags : https://www.cybertec-postgresql.com/en/postgresql-more-performance-for-like-and-ilike-statements/
+
+--
+-- Name: dwp_hashtags_hashtag_idx; Type: INDEX
+--
+CREATE INDEX dwp_hashtags_hashtag_idx ON dwp_hashtags (hashtag);
+
+--
+-- Name: dwp_shares_user_idx; Type: INDEX
+--
+CREATE INDEX dwp_shares_user_idx ON dwp_shares (user_uid);
+
+--
+-- Name: dwp_workspaces_modified_idx; Type: INDEX
+--
+CREATE INDEX dwp_workspaces_modified_idx ON dwp_workspaces (modified DESC);
+
+--
+-- Name: dwp_workspaces_uid_idx; Type: INDEX
+--
+CREATE INDEX dwp_workspaces_uid_idx ON dwp_workspaces (workspace_uid);

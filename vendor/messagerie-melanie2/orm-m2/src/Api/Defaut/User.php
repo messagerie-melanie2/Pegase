@@ -29,6 +29,7 @@ use LibMelanie\Api\Defaut\Calendar;
 use LibMelanie\Api\Defaut\Taskslist;
 use LibMelanie\Api\Defaut\Users\Share;
 use LibMelanie\Config\Config;
+use LibMelanie\Config\MappingMce;
 
 /**
  * Classe utilisateur par defaut
@@ -94,6 +95,25 @@ abstract class User extends MceObject {
    * @var Workspace[]
    */
   protected $_sharedWorkspaces;
+
+  /**
+   * Liste des news que l'utilisateur peut consulter
+   * 
+   * @var News\News[]
+   */
+  protected $_userNews;
+  /**
+   * Liste des rss que l'utilisateur peut consulter
+   * 
+   * @var News\Rss[]
+   */
+  protected $_userRss;
+  /**
+   * Liste des droits de l'utilisateur sur les news et rss
+   * 
+   * @var News\NewsShare[]
+   */
+  protected $_userNewsShares;
 
   /**
    * Calendrier par défaut de l'utilisateur
@@ -170,6 +190,26 @@ abstract class User extends MceObject {
    * @var ObjectShare[]
    */
   protected $_objectsSharedGestionnaire;
+
+  /**
+   * Liste des boites partagées accessibles à l'utilisateur
+   * 
+   * @var User[]
+   */
+  protected $_shared;
+  /**
+   * Liste des boites partagées accessibles en emission à l'utilisateur
+   * 
+   * @var User[]
+   */
+  protected $_sharedEmission;
+  /**
+   * Liste des boites partagées accessibles en gestionnaire à l'utilisateur
+   * 
+   * @var User[]
+   */
+  protected $_sharedGestionnaire;
+
   /**
    * Liste des partages pour l'objet courant
    * 
@@ -535,7 +575,7 @@ abstract class User extends MceObject {
    */
   public function getShared($attributes = null) {
     M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->getShared() [" . $this->_server . "]");
-    if (!isset($this->_objectsShared)) {
+    if (!isset($this->_shared)) {
       if (isset($attributes) && is_string($attributes)) {
         $attributes = [$attributes];
       }
@@ -548,14 +588,14 @@ abstract class User extends MceObject {
         $filter = \LibMelanie\Config\Ldap::$SERVERS[$this->_server]['get_user_bal_partagees_filter'];
       }
       $list = $this->objectmelanie->getBalp($attributes, $filter);
-      $this->_objectsShared = [];
+      $this->_shared = [];
       foreach ($list as $key => $object) {
-        $this->_objectsShared[$key] = new static($this->_server);
-        $this->_objectsShared[$key]->setObjectMelanie($object);
+        $this->_shared[$key] = new static($this->_server);
+        $this->_shared[$key]->setObjectMelanie($object);
       }
       $this->executeCache();
     }
-    return $this->_objectsShared;
+    return $this->_shared;
   }
 
   /**
@@ -600,7 +640,7 @@ abstract class User extends MceObject {
    */
   public function getSharedEmission($attributes = null) {
     M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->getSharedEmission() [" . $this->_server . "]");
-    if (!isset($this->_objectsSharedEmission)) {
+    if (!isset($this->_sharedEmission)) {
       if (isset($attributes) && is_string($attributes)) {
         $attributes = [$attributes];
       }
@@ -613,14 +653,14 @@ abstract class User extends MceObject {
         $filter = \LibMelanie\Config\Ldap::$SERVERS[$this->_server]['get_user_bal_emission_filter'];
       }
       $list = $this->objectmelanie->getBalpEmission($attributes, $filter);
-      $this->_objectsSharedEmission = [];
+      $this->_sharedEmission = [];
       foreach ($list as $key => $object) {
-        $this->_objectsSharedEmission[$key] = new static($this->_server);
-        $this->_objectsSharedEmission[$key]->setObjectMelanie($object);
+        $this->_sharedEmission[$key] = new static($this->_server);
+        $this->_sharedEmission[$key]->setObjectMelanie($object);
       }
       $this->executeCache();
     }
-    return $this->_objectsSharedEmission;
+    return $this->_sharedEmission;
   }
 
   /**
@@ -665,7 +705,7 @@ abstract class User extends MceObject {
    */
   public function getSharedGestionnaire($attributes = null) {
     M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->getSharedGestionnaire() [" . $this->_server . "]");
-    if (!isset($this->_objectsSharedGestionnaire)) {
+    if (!isset($this->_sharedGestionnaire)) {
       if (isset($attributes) && is_string($attributes)) {
         $attributes = [$attributes];
       }
@@ -678,14 +718,14 @@ abstract class User extends MceObject {
         $filter = \LibMelanie\Config\Ldap::$SERVERS[$this->_server]['get_user_bal_gestionnaire_filter'];
       }
       $list = $this->objectmelanie->getBalpGestionnaire($attributes, $filter);
-      $this->_objectsSharedGestionnaire = [];
+      $this->_sharedGestionnaire = [];
       foreach ($list as $key => $object) {
-        $this->_objectsSharedGestionnaire[$key] = new static($this->_server);
-        $this->_objectsSharedGestionnaire[$key]->setObjectMelanie($object);
+        $this->_sharedGestionnaire[$key] = new static($this->_server);
+        $this->_sharedGestionnaire[$key]->setObjectMelanie($object);
       }
       $this->executeCache();
     }
-    return $this->_objectsSharedGestionnaire;
+    return $this->_sharedGestionnaire;
   }
 
   /**
@@ -1092,6 +1132,351 @@ abstract class User extends MceObject {
     $this->_userWorkspaces = null;
     $this->_sharedWorkspaces = null;
     $this->executeCache();
+  }
+
+  /**
+   * Permet de lister les droits de l'utilisateur sur les news et les flux rss
+   * 
+   * @return News\NewsShare[]
+   */
+  public function getUserNewsShares() {
+    M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->getUserNews()");
+    // Si le DN de l'utilisateur n'est pas positionné
+    if (!isset($this->uid)) {
+      return null;
+    }
+    if (!isset($this->_userNewsShares)) {
+      $newsShare = new News\NewsShare($this);
+      $this->_userNewsShares = $newsShare->getList();
+    }
+    return $this->_userNewsShares;
+  }
+
+  /**
+   * Nettoyer les donnés en cache 
+   * (appelé lors de la modification d'un NewsShare)
+   */
+  public function cleanNewsShare() {
+    $this->_userNewsShares = null;
+    $this->executeCache();
+  }
+
+  /**
+   * Permet de lister les services associés à l'utilisateur
+   * 
+   * @param boolean $sharedServices [Optionnal] Permet de lister les services associés aux droits de l'utilisateurs
+   * 
+   * @return array Liste des services de l'utilisateur
+   */
+  protected function _get_user_services($sharedServices = true) {
+    // Supprimer la base dn du dn pour limiter les services
+    if (isset(\LibMelanie\Config\Ldap::$SERVERS[$this->_server]) 
+        && isset(\LibMelanie\Config\Ldap::$SERVERS[$this->_server]['base_dn'])) {
+      $userDn = trim(str_replace(\LibMelanie\Config\Ldap::$SERVERS[$this->_server]['base_dn'], '', $this->dn), ',');
+    }
+    else {
+      $userDn = $this->dn;
+    }
+
+    $services = [];
+
+    // Parcourir les services pour construire l'arbre
+    foreach (explode(',', $userDn) as $_s) {
+      $services[] = substr($userDn, strrpos($userDn, $_s));
+    }
+
+    if ($sharedServices) {
+      // Récupérer les droits de l'utilisateur pour avoir la liste des services visibles
+      foreach ($this->getUserNewsShares() as $share) {
+        // Ajouter les services sur lesquels l'utilisateur a des droits de publication
+        if (in_array($share->right, [News\NewsShare::RIGHT_ADMIN_PUBLISHER, News\NewsShare::RIGHT_PUBLISHER]) && !in_array($share->service, $services)) {
+          $services[] = $share->service;
+        }
+      }
+    }
+
+    return $services;
+  }
+
+  /**
+   * Permet de parcourir les news et définir si l'utilisateur courant en est un publisher
+   * 
+   * @param News\News[]|News\Rss[] [in/out]
+   */
+  protected function _set_news_is_publisher(&$news) {
+    // Ajouter une informations pour les news publisher
+    $shares = $this->getUserNewsShares();
+    $publisherServices = [];
+    foreach ($shares as $share) {
+      if (in_array($share->right, [News\NewsShare::RIGHT_ADMIN_PUBLISHER, News\NewsShare::RIGHT_PUBLISHER])) {
+        $publisherServices[] = $share->service;
+      }
+    }
+
+    // Si l'utilisateur est publisher d'une news on ajoute une info
+    foreach ($news as $k => $n) {
+      if ($this->_is_in_services($n->service, $publisherServices)) {
+        $news[$k]->publisher = true;
+      }
+      else {
+        $news[$k]->publisher = false;
+      }
+    }
+  }
+
+  /**
+   * Permet de définir si l'utilisateur courant en est un publisher de la news
+   * 
+   * @param News\News|News\Rss [in/out]
+   */
+  public function isNewsPublisher(&$news) {
+    // Ajouter une informations pour les news publisher
+    $shares = $this->getUserNewsShares();
+    $publisherServices = [];
+    foreach ($shares as $share) {
+      if (in_array($share->right, [News\NewsShare::RIGHT_ADMIN_PUBLISHER, News\NewsShare::RIGHT_PUBLISHER])) {
+        $publisherServices[] = $share->service;
+      }
+    }
+
+    // Si le service de la news fait parti des services publisher du User
+    if ($this->_is_in_services($news->service, $publisherServices)) {
+      $news->publisher = true;
+    }
+    else {
+      $news->publisher = false;
+    }
+  }
+
+  /**
+   * Parcours la liste des services pour déterminer si le service en fait parti
+   * Il peut également être un sous service d'un service de la liste et donc en faire partie
+   * 
+   * @param string $service
+   * @param array $servicesList
+   * 
+   * @return boolean
+   */
+  protected function _is_in_services($service, $servicesList) {
+    foreach ($servicesList as $s) {
+      if (strpos($service, $s) !== false) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Retourne toutes les news de l'utilisateur liées à son service ou à ses droits
+   * 
+   * @return News\News
+   */
+  public function getUserNews() {
+    M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->getUserNews()");
+    // Si le DN de l'utilisateur n'est pas positionné
+    if (!isset($this->dn)) {
+      return null;
+    }
+    if (!isset($this->_userNews)) {
+      $news = new News\News();
+      $news->service = $this->_get_user_services();
+      $this->_userNews = $news->getList([], "", [], "modified", false);
+
+      // Ajouter une informations pour les news publisher
+      $this->_set_news_is_publisher($this->_userNews);
+    }
+    return $this->_userNews;
+  }
+
+  /**
+   * Récupère les deux dernières news associées à l'utilisateur
+   * Retourne la news la plus récente du service le plus éloigné de l'utilisateur (service national)
+   * et la news la plus récente du service le plus proche de l'utilisateur
+   * 
+   * @return array 2 news au maximum, la plus proche et la plus loin
+   */
+  public function getUserLastTwoNews() {
+    M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->getUserLastTwoNews()");
+
+    // Récupère les services associés à l'utilisateur
+    $_services = $this->_get_user_services(false);
+
+    // Récupérer les services comme clé du tableau
+    $newsByService = array_fill_keys($_services, false);
+
+    // Parcourir les news pour alimenter le tableau $newsByService
+    foreach ($this->getUserNews() as $news) {
+      if ($newsByService[$news->service] === false) {
+        $newsByService[$news->service] = $news;
+      }
+    }
+
+    // Récupérer la première et la dernière news
+    $first = null; 
+    $last = null;
+
+    foreach ($newsByService as $news) {
+      if ($news === false) {
+        continue;
+      }
+      if (!isset($first)) {
+        $first = $news;
+      }
+      else {
+        $last = $news;
+      }
+    }
+    return [$first, $last];
+  }
+
+  /**
+   * Nettoyer les donnés en cache 
+   * (appelé lors de la modification d'une news)
+   */
+  public function cleanNews() {
+    $this->_userNews = null;
+    $this->executeCache();
+  }
+
+  /**
+   * Retourne tous les rss de l'utilisateur liées à son service ou à ses droits
+   * 
+   * @return News\Rss
+   */
+  public function getUserRss() {
+    M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->getUserRss()");
+    // Si le DN de l'utilisateur n'est pas positionné
+    if (!isset($this->dn)) {
+      return null;
+    }
+    if (!isset($this->_userRss)) {
+      $rss = new News\Rss();
+      $rss->service = $this->_get_user_services();
+      $this->_userRss = $rss->getList();
+
+      // Ajouter une informations pour les news publisher
+      $this->_set_news_is_publisher($this->_userRss);
+    }
+    return $this->_userRss;
+  }
+
+  /**
+   * Nettoyer les donnés en cache 
+   * (appelé lors de la modification d'un rss)
+   */
+  public function cleanRss() {
+    $this->_userRss = null;
+    $this->executeCache();
+  }
+
+  /**
+   * Récupération des notifications de l'utilisateur
+   * Si $last est positionné, récupère les notifications depuis le dernier timestamp
+   * 
+   * @param integer $last [Optionnel] Dernier timestamp de récupération des notifications
+   * 
+   * @return Notification[] Liste des notifications de l'utilisateur
+   */
+  public function getNotifications($last = null) {
+    M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->getNotifications($last)");
+
+    // Initialisation de l'objet pour récupérer les notifications
+    $_notif = new Notification($this);
+    $_operators = [];
+
+    // Un last est positionné
+    if (isset($last)) {
+      $_notif->modified = $last;
+      $_operators['modified'] = MappingMce::supeq;
+    }
+    
+    return $_notif->getList(null, null, $_operators, 'created', false);
+  }
+
+  /**
+   * Passe la notification de l'utilisateur en read (ou non si $read = false)
+   * 
+   * @param string|Notification $notification Notification ou uid de la notification
+   * @param boolean $read Passer en lu ?
+   * 
+   * @return boolean
+   */
+  public function readNotification($notification, $read = true) {
+    M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->readNotification()");
+
+    // La notification est un uid
+    if (is_string($notification)) {
+      $uid = $notification;
+      $notification = new Notification($this);
+      $notification->uid = $uid;
+    }
+
+    // On load puis on modifie
+    if ($notification->load()) {
+      $notification->isread = $read;
+      $notification->modified = time();
+
+      $ret = $notification->save();
+
+      return !is_null($ret);
+    }
+    return false;
+  }
+
+  /**
+   * Supprime la notification de l'utilisateur
+   * 
+   * @param string|Notification $notification Notification ou uid de la notification
+   * 
+   * @return boolean
+   */
+  public function deleteNotification($notification) {
+    M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->deleteNotification()");
+
+    // La notification est un uid
+    if (is_string($notification)) {
+      $uid = $notification;
+      $notification = new Notification($this);
+      $notification->uid = $uid;
+    }
+
+    return $notification->delete();
+  }
+
+  /**
+   * Ajoute la notification pour l'utilisateur
+   * 
+   * @param Notification $notification Notification
+   * 
+   * @return string|boolean Uid de la nouvelle notification si Ok, false sinon
+   */
+  public function addNotification($notification) {
+    M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->addNotification()");
+
+    // Positionne le owner de la notification
+    if (!isset($notification->owner)) {
+      $notification->owner = $this->uid;
+    }
+
+    // Positionne l'uid de la notification
+    if (!isset($notification->uid)) {
+      $notification->uid = \LibMelanie\Lib\UUID::v4();
+    }
+
+    // Position le modified de la notification
+    $notification->created = time();
+    $notification->modified = $notification->created;
+    $notification->isdeleted = false;
+    $notification->isread = false;
+
+    // Sauvegarde la notification
+    $ret = $notification->save();
+
+    // Gestion du retour
+    if (!is_null($ret)) {
+      return $notification->uid;
+    }
+    return false;
   }
 
   /**
@@ -1836,5 +2221,14 @@ abstract class User extends MceObject {
    */
   protected function getMapIs_listab() {
     return $this->objectmelanie->type == Config::get(Config::LDAP_TYPE_LISTAB);
+  }
+
+  /**
+   * Mapping is_mailbox field
+   * 
+   * @return boolean true s'il s'agit bien d'une boite (valeur par défaut pour la MCE)
+   */
+  protected function getMapIs_mailbox() {
+    return true;
   }
 }

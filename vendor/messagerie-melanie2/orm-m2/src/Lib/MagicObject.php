@@ -522,14 +522,23 @@ abstract class MagicObject implements Serializable {
                 }
               }
             }
-            if (is_array($value)) {
-              $value = $value[0] ?: null;              
+            // MANTIS 0006291: Permettre un type booleanLdap sur une entrée multivaluée
+            if (is_array($value) && isset(MappingMce::$Data_Mapping[$this->objectType][$name][MappingMce::trueLdapValue])) {
+              $value = in_array(MappingMce::$Data_Mapping[$this->objectType][$name][MappingMce::trueLdapValue], $value);
             }
-            if (isset(MappingMce::$Data_Mapping[$this->objectType][$name][MappingMce::trueLdapValue])) {
-              $value = $value === MappingMce::$Data_Mapping[$this->objectType][$name][MappingMce::trueLdapValue];
+            else if (is_array($value) && isset(MappingMce::$Data_Mapping[$this->objectType][$name][MappingMce::falseLdapValue])) {
+              $value = !in_array(MappingMce::$Data_Mapping[$this->objectType][$name][MappingMce::falseLdapValue], $value);
             }
             else {
-              $value = $value == '1' || $value == 'oui' ? true : false;
+              if (is_array($value)) {
+                $value = $value[0] ?: null;
+              }
+              if (isset(MappingMce::$Data_Mapping[$this->objectType][$name][MappingMce::trueLdapValue])) {
+                $value = $value === MappingMce::$Data_Mapping[$this->objectType][$name][MappingMce::trueLdapValue];
+              }
+              else {
+                $value = $value == '1' || $value == 'oui' ? true : false;
+              }
             }
 		        break;
 		    }
@@ -693,4 +702,13 @@ abstract class MagicObject implements Serializable {
 			return true;
 		}
 	}
+
+  /**
+	 * Méthode toString pour afficher le contenu des données de la classe
+	 * 
+	 * @return string
+	 */
+  public function __toString() {
+    return $this->get_class . ": {\r\n\tobjectType: ".$this->objectType.",\r\n\tisExist: ".$this->isExist.",\r\n\tisLoaded: ".$this->isLoaded.",\r\n\tdata: " . str_replace("\n", "\n\t", var_export($this->data, true)) . ",\r\n\thaschanged: " . str_replace("\n", "\n\t", var_export($this->haschanged, true)) . "\r\n}";
+  }
 }
