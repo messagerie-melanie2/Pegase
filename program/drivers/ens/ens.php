@@ -260,6 +260,26 @@ class ENS extends \Program\Drivers\Driver {
     }
 
     /**
+     * Ajout d'un token à un utilisateur
+     * @param string $username
+     * @param string $token
+     * @return true si ok, false sinon
+    */
+    function addTokenUser($username, $token) {
+        $query = "UPDATE users SET token = :token WHERE username = :username;";
+        $params = array(
+            "username" => $username,
+            "token" => $token,
+        );
+        // Execution de la requête
+        if (\Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$WRITE_SERVER)->executeQuery($query, $params)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Création d'un utilisateur
      * @param \Program\Data\User $user
      * @return $user_id si OK, null sinon

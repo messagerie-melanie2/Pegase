@@ -340,6 +340,7 @@ class EventToICS {
           $vevent->STATUS = ICS::STATUS_CONFIRMED;
           break;
         case Event::STATUS_NONE :
+        case Event::STATUS_TELEWORK :
           break;
         case Event::STATUS_CANCELLED :
           $vevent->STATUS = ICS::STATUS_CANCELLED;
@@ -493,6 +494,9 @@ class EventToICS {
             case Attendee::RESPONSE_NEED_ACTION :
               $partstat = ICS::PARTSTAT_NEEDS_ACTION;
               break;
+            case Attendee::RESPONSE_DELEGATED :
+              $partstat = ICS::PARTSTAT_DELEGATED;
+              break;
             case Attendee::RESPONSE_TENTATIVE :
               $partstat = ICS::PARTSTAT_TENTATIVE;
               break;
@@ -524,9 +528,37 @@ class EventToICS {
           if (!empty($attendee_name)) {
             $params[ICS::CN] = self::cleanUTF8String($attendee_name);
           }
+          // Type
+          if (isset($attendee->type) && $attendee->type != Attendee::TYPE_INDIVIDUAL) {
+            // Individual est le type par défaut, pas besoin de le définir
+            switch ($attendee->type) {
+              case Attendee::TYPE_GROUP:
+                $params[ICS::CUTYPE] = ICS::CUTYPE_GROUP;
+                break;
+              case Attendee::TYPE_RESOURCE:
+                $params[ICS::CUTYPE] = ICS::CUTYPE_RESOURCE;
+                break;
+              case Attendee::TYPE_ROOM:
+                $params[ICS::CUTYPE] = ICS::CUTYPE_ROOM;
+                break;
+              case Attendee::TYPE_UNKNOWN:
+                $params[ICS::CUTYPE] = ICS::CUTYPE_UNKNOWN;
+                break;
+            }
+          }
           // 0006294: Ajouter l'information dans un participant quand il a été enregistré en attente
           if (is_bool($attendee->is_saved)) {
             $params[ICS::X_MEL_EVENT_SAVED] = $attendee->is_saved;
+          }
+          // delegated-from
+          $delegated_from = $attendee->delegated_from;
+          if (isset($delegated_from)) {
+            $params[ICS::DELEGATED_FROM] = $delegated_from;
+          }
+          // delegated-to
+          $delegated_to = $attendee->delegated_to;
+          if (isset($delegated_to)) {
+            $params[ICS::DELEGATED_TO] = $delegated_to;
           }
           // Add attendee
           $vevent->add(ICS::ATTENDEE, 'mailto:' . $attendee->email, $params);
@@ -538,8 +570,24 @@ class EventToICS {
         $vevent->add(ICS::X_CALDAV_CALENDAR_ID, $calendar->id);
         $vevent->add(ICS::X_CALDAV_CALENDAR_OWNER, $calendar->owner);
         // MANTIS 4002: Ajouter le creator dans la description lors de la génération de l'ICS
-        if ($event->owner != $calendar->owner && !empty($event->owner) && strpos($vevent->DESCRIPTION, "[" . $event->owner . "]") === false) {
-          $vevent->DESCRIPTION = "[" . $event->owner . "]\n\n" . $vevent->DESCRIPTION;
+        if (Config::get(Config::ALWAYS_SHOW_EVENT_CREATOR) || $event->owner != $calendar->owner && !empty($event->owner)) {
+          if ($event->owner == $user->uid) {
+            $creatorText = Config::get(Config::SHARED_EVENT_CREATOR_SELF);
+          }
+          else {
+            $creatorText = Config::get(Config::SHARED_EVENT_CREATOR);
+          }
+          
+          if (isset($creatorText) 
+              && (strpos($creatorText, '%%uid%%') === false || isset($event->owner))
+              && (strpos($creatorText, '%%email%%') === false || isset($event->creator_email))
+              && (strpos($creatorText, '%%name%%') === false || isset($event->creator_name))) {
+            $creatorText = str_replace(
+                ['%%uid%%', '%%email%%', '%%name%%', '%%date%%'], 
+                [$event->owner, $event->creator_email, $event->creator_name, date(Config::get(Config::SHARED_EVENT_CREATION_DATE_FORMAT), $event->created)], 
+                $creatorText);
+            $vevent->DESCRIPTION = "[$creatorText]\n\n" . $vevent->DESCRIPTION;
+          }
         }
       }
       // Sequence

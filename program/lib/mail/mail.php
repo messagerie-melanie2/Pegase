@@ -260,9 +260,22 @@ class Mail
     $body = str_replace("%%poll_title%%", $poll->title, $body);
     $body = str_replace("%%poll_url%%", Output::get_poll_url($poll), $body);
     $body = str_replace("%%user_fullname%%", $user_name, $body);
+    //si sondage avec motif
+    $reason = "";
+    if ($poll->reason)
+      $reason =  "Pour le motif : <b> " . $response->reason . "</b>";
+    $body = str_replace("%%reason%%", $reason, $body);
+    if ($response->phone_number != '' || $response->postal_address != ''){
+      $infos = " <br>";
+      if($response->phone_number != '')
+        $infos = $infos . "Téléphone : <b>" . $response->phone_number . "</b><br>";
+      if($response->postal_address != '')
+        $infos = $infos . "Adresse : <b>" . $response->postal_address . "</b><br>";
+    }
+    $body = str_replace("%%userinfo%%", $infos, $body);
 
     if (\Program\Data\Poll::get_current_poll()->type == 'rdv') {
-      $body = str_replace("%%user_response%%", Output::format_prop_poll($poll, $response, false), $body);
+      $body = str_replace("%%user_response%%", Output::format_prop_poll($poll, array_keys(unserialize($response->response))[0], false), $body);
     }
 
     return self::SendMail($from, $to, $subject, null, null, null, $body, $message_id, $in_reply_to);
@@ -977,6 +990,83 @@ class Mail
     // Ajoute la liste des participants
     $body = str_replace("%%attendees_list%%", $attendees, $body);
     $body = str_replace("%%html_attendees_list%%", str_replace("\r\n", "<br>", htmlentities($attendees)), $body);
+    return self::SendMail($from, $to, $subject, null, null, null, $body, $message_id, $in_reply_to, $as_attachment);
+  }
+
+  /**
+   * Méthode d'envoi du message avec ics quand un participant choisit un rdv
+   * @param \Program\Data\Poll $poll sondage validé
+   * @param string $prop_key identifiant du rdv choisit par l'utilisateur
+   * @param \Program\Data\Response $response reponse au sondage
+   * 
+   */
+  public static function SendRdvICSMail(\Program\Data\Poll $poll, $prop_key, $response){
+    Log::l(Log::DEBUG, "Mail::SendRdvICSMail()");
+    $subject = Localization::g("Validate appointment attendee mail subject", true);
+    $message_id = md5($poll->organizer_id . time() . "SendRdvICSMail") . $poll->poll_uid . '-' . strtotime($poll->created) . "@" . \Config\IHM::$TITLE;
+    $in_reply_to = md5($poll->organizer_id) . $poll->poll_uid . '-' . strtotime($poll->created) . "@" . \Config\IHM::$TITLE;
+    $from = \Config\IHM::$FROM_MAIL;
+    $receiver = \Program\Data\User::get_current_user();
+    if($poll->auth_only){
+      $to = '=?UTF-8?B?' . base64_encode('"' . $receiver->fullname . '"') . '?=' . "\r\n <" . $receiver->email . ">";
+    }else{
+      $to = Request::getInputValue('user_email', POLL_INPUT_POST);
+    }
+    
+
+    $body= file_get_contents(__DIR__ . '/templates/' . \Config\IHM::$DEFAULT_LOCALIZATION . '/response_notification_rdv_invitee.html');
+    $as_attachment = true;
+    $proposals = unserialize($poll->proposals);
+    $ics = \Program\Lib\Event\Drivers\Driver::get_driver()->generate_ics(key(unserialize($response->response)));
+    //$boundary = '-----=' . md5(uniqid(mt_rand()));
+    
+    // Replace elements
+    $subject = str_replace("%%app_name%%", \Config\IHM::$TITLE, $subject);
+    $body = str_replace("%%ics%%", $ics, $body);
+    //$body = str_replace("%%boundary%%", $boundary, $body);
+    $body = str_replace("%%user_response%%", key(unserialize($response->response)), $body);
+    $body = str_replace("%%app_name%%", \Config\IHM::$TITLE, $body);
+    $body = str_replace("%%app_url%%", Output::get_main_url(), $body);
+    $body = str_replace("%%poll_title%%", $poll->title, $body);
+    $body = str_replace("%%poll_download_ics_url%%", Output::get_download_ics_url($poll, $prop_key, \Program\Data\Event::PARTSTAT_ACCEPTED), $body);
+    //si sondage avec motif
+    $reason = "";
+    if ($poll->reason)
+      $reason =  "Pour le motif : <b> " . $response->reason . "</b>.";
+    $body = str_replace("%%reason%%", $reason, $body);
+    if ($response->phone_number != '' || $response->postal_address != ''){
+      $infos = "Vos informations de contact : ";
+      if($response->phone_number != '')
+        $infos = $infos . "<br>Téléphone : <b>" . $response->phone_number . "</b>";
+      if($response->postal_address != '')
+        $infos = $infos . "<br>Adresse : <b>" . $response->postal_address . "</b>";
+    }
+    $body = str_replace("%%infos%%", $infos, $body);
+
+    //gestion de la localisation
+    if (!empty($poll->location)) {
+      $location = "\r\n\r\n" . Localization::g('Edit location', false) . ": " . $poll->location;
+      $html_location = "<br><div><b>" . Localization::g('Edit location', false) . " : </b>" . str_replace("\r\n", "<br>", htmlentities($poll->location)) . "</div>";
+    } else {
+      $location = '';
+      $html_location = '';
+    }
+    $body = str_replace("%%poll_location%%", $location, $body);
+    $body = str_replace("%%html_poll_location%%", $html_location, $body);
+    //gestion de la description
+    if (!empty($poll->description)) {
+      $description = "\r\n\r\n" . Localization::g('Edit description', false) . ":\r\n" . $poll->description;
+      $html_description = "<br><div><b>" . Localization::g('Edit description', false) . " : </b></div><div>" . str_replace("\r\n", "<br>", htmlentities($poll->description)) . "</div>";
+    } else {
+      $description = '';
+      $html_description = '';
+    }
+    $body = str_replace("%%poll_description%%", $description, $body);
+    $body = str_replace("%%html_poll_description%%", $html_description, $body);
+    $body = str_replace("%%poll_url%%", Output::get_poll_url($poll), $body);
+
+    $mailstring = "$from $to $subject $body $message_id $in_reply_to"; 
+    //Log::l(Log::INFO, $mailstring);
     return self::SendMail($from, $to, $subject, null, null, null, $body, $message_id, $in_reply_to, $as_attachment);
   }
 

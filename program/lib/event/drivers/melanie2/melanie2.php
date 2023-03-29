@@ -57,16 +57,16 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
   public $CAN_GENERATE_ICS = true;
 
   /**
-   * Evenement Melanie2
+   * Evenement Mel
    *
-   * @var \LibMelanie\Api\Melanie2\Event
+   * @var \LibMelanie\Api\Mel\Event
    */
   private static $event;
 
   /**
-   * Evenement Melanie2
+   * Evenement Mel
    *
-   * @var \LibMelanie\Api\Melanie2\User
+   * @var \LibMelanie\Api\Mel\User
    */
   private static $user;
 
@@ -126,11 +126,11 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
 
     if (!isset(self::$user) || self::$user->uid != $user->username) {
       // Création de l'utilisateur M2
-      self::$user = new Api\Melanie2\User();
+      self::$user = new Api\Mel\User();
       self::$user->uid = $user->username;
     }
     // Récupération du calendrier
-    $_calendar = new Api\Melanie2\Calendar(self::$user);
+    $_calendar = new Api\Mel\Calendar(self::$user);
     if (isset($calendar) && is_object($calendar)) {
       $_calendar->id = $calendar->id;
     } else if (isset($calendar)) {
@@ -150,7 +150,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
       try {
         // Si récurrence, on utilise l'objet VObject
         $vcalendar = $_event->vcalendar;
-        if ($_event->recurrence->type != Api\Melanie2\Recurrence::RECURTYPE_NORECUR) {
+        if ($_event->recurrence->type != Api\Mel\Recurrence::RECURTYPE_NORECUR) {
           $vcalendar->expand($start, $end, $this->get_user_timezone($user));
         }
         // Parcourir les évènements
@@ -239,11 +239,11 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
 
       if (!isset(self::$user) || self::$user->uid != $user->username) {
         // Création de l'utilisateur M2
-        self::$user = new Api\Melanie2\User();
+        self::$user = new Api\Mel\User();
         self::$user->uid = $user->username;
       }
       // Récupération du calendrier
-      $_calendar = new Api\Melanie2\Calendar(self::$user);
+      $_calendar = new Api\Mel\Calendar(self::$user);
       if (isset($calendar) && is_object($calendar)) {
         $_calendar->id = $calendar->id;
       } else if (isset($calendar)) {
@@ -293,7 +293,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
 
     if (!isset(self::$user) || self::$user->uid != $user->username) {
       // Création de l'utilisateur M2
-      self::$user = new Api\Melanie2\User();
+      self::$user = new Api\Mel\User();
       self::$user->uid = $user->username;
     }
 
@@ -388,11 +388,11 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
 
       if (!isset(self::$user) || self::$user->uid != $user->username) {
         // Création de l'utilisateur M2
-        self::$user = new Api\Melanie2\User();
+        self::$user = new Api\Mel\User();
         self::$user->uid = $user->username;
       }
       // Récupération du calendrier
-      $_calendar = new Api\Melanie2\Calendar(self::$user);
+      $_calendar = new Api\Mel\Calendar(self::$user);
       if (isset($calendar) && is_object($calendar)) {
         $_calendar->id = $calendar->id;
       } else if (isset($calendar)) {
@@ -405,7 +405,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
         return [];
       }
       // Création de l'évènement
-      $event = new Api\Melanie2\Event(self::$user, $_calendar);
+      $event = new Api\Mel\Event(self::$user, $_calendar);
       $event->uid = isset($event_uid) ? $event_uid : $this->generate_event_uid($date, $poll);
       if (!$event->load() || isset($status) && strtolower($status) != $event->status) {
         return false;
@@ -451,11 +451,11 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
 
       if (!isset(self::$user) || self::$user->uid != $user->username) {
         // Création de l'utilisateur M2
-        self::$user = new Api\Melanie2\User();
+        self::$user = new Api\Mel\User();
         self::$user->uid = $user->username;
       }
       // Récupération du calendrier
-      $_calendar = new Api\Melanie2\Calendar(self::$user);
+      $_calendar = new Api\Mel\Calendar(self::$user);
       if (isset($calendar) && is_object($calendar)) {
         $_calendar->id = $calendar->id;
       } else if (isset($calendar)) {
@@ -468,7 +468,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
         return [];
       }
       // Création de l'évènement
-      $event = new Api\Melanie2\Event(self::$user, $_calendar);
+      $event = new Api\Mel\Event(self::$user, $_calendar);
       $event->uid = isset($event_uid) ? $event_uid : $this->generate_event_uid($date, $poll);
       return $event->delete();
     } catch (\Exception $ex) {
@@ -491,7 +491,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
     // Récupération de la date de début et de la date de fin
     list($start, $end, $allday) = $this->date_to_start_end($date, $poll->timezone);
     // Création de l'évènement
-    self::$event = new Api\Melanie2\Event();
+    self::$event = new Api\Mel\Event();
     if ($user->timezone != $poll->timezone) {
       $start->setTimezone(new \DateTimeZone($user->timezone));
       $end->setTimezone(new \DateTimeZone($user->timezone));
@@ -502,13 +502,13 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
     self::$event->timezone = $user->timezone;
     self::$event->uid = $this->generate_event_uid($date, $poll);
 
-    self::$event->class = Api\Melanie2\Event::CLASS_PUBLIC;
+    self::$event->class = Api\Mel\Event::CLASS_PUBLIC;
     if (isset($status)) {
       self::$event->status = strtolower($status);
-    } else if (isset($part_status) && strtolower($part_status) == Api\Melanie2\Attendee::RESPONSE_DECLINED) {
-      self::$event->status = Api\Melanie2\Event::STATUS_NONE;
+    } else if (isset($part_status) && strtolower($part_status) == Api\Mel\Attendee::RESPONSE_DECLINED) {
+      self::$event->status = Api\Mel\Event::STATUS_NONE;
     } else {
-      self::$event->status = Api\Melanie2\Event::STATUS_CONFIRMED;
+      self::$event->status = Api\Mel\Event::STATUS_CONFIRMED;
     }
 
     self::$event->modified = time();
@@ -519,7 +519,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
     }
     // Permet de savoir si l'évenement de l'organisateur existe pour l'ajout des participants
     $organizer_event_exists = true;
-    $organizer = new Api\Melanie2\Organizer(self::$event);
+    $organizer = new Api\Mel\Organizer(self::$event);
     $organizer->email = $poll_organizer->email;
     $organizer->name = $poll_organizer->fullname;
     $organizer->uid = $poll_organizer->username;
@@ -528,14 +528,14 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
     self::$event->organizer = $organizer;
     
     // Modification de l'événement provisoire
-    if (isset($status) && strtolower($status) == Api\Melanie2\Event::STATUS_TENTATIVE && !$selected_date) {
+    if (isset($status) && strtolower($status) == Api\Mel\Event::STATUS_TENTATIVE && !$selected_date) {
       self::$event->title = "[" . \Config\IHM::$TITLE . " " . Localization::g(ucfirst(strtolower($status)), false) . "] " . self::$event->title;
       $description = Localization::g('This event has status tentative, you can view more information about the poll by opening this link', false) . " : " . Output::get_poll_url($poll);
       $description .= "\n\n" . Localization::g('You can delete tentative events of this poll by opening this link', false) . " : " . Output::get_delete_tentatives_poll_url($poll);
       self::$event->attendees = [];
       if (isset($poll->description))
         $description .= "\n\n" . $poll->description;
-    } else if (isset($status) && strtolower($status) == Api\Melanie2\Event::STATUS_TENTATIVE && $selected_date) {
+    } else if (isset($status) && strtolower($status) == Api\Mel\Event::STATUS_TENTATIVE && $selected_date) {
       self::$event->title = "[" . Localization::g('Keep date', false) . "] " . self::$event->title;
       $description = Localization::g('This event has status tentative, you can view more information about the poll by opening this link', false) . " : " . Output::get_poll_url($poll);
       if (isset($poll->description))
@@ -554,14 +554,14 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
         if (!isset($resp[$date]) && \Program\Data\Poll::get_current_poll()->type == 'rdv') {
           continue;
         } else {
-          $attendee = new Api\Melanie2\Attendee();
+          $attendee = new Api\Mel\Attendee();
           if (isset($user) && $response->user_id == $user->user_id) {
             $user_resp = $user;
           } else {
             $user_resp = \Program\Drivers\Driver::get_driver()->getUser($response->user_id);
           }
           //Affichage des participants dans le titre du sondage
-          if ($poll->type == "rdv" && strtolower($status) != Api\Melanie2\Event::STATUS_TENTATIVE) {
+          if ($poll->type == "rdv" && strtolower($status) != Api\Mel\Event::STATUS_TENTATIVE) {
             if ($user_resp->fullname) {
               $username = explode(" ", $user_resp->fullname)[0];
             } else {
@@ -578,10 +578,10 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
               $name = isset($user_resp->fullname) && $user_resp->fullname != "" ? $user_resp->fullname : $user_resp->username;
             }
             $attendee->email = $user_resp->email;
-            $attendee->role = Api\Melanie2\Attendee::ROLE_REQ_PARTICIPANT;
+            $attendee->role = Api\Mel\Attendee::ROLE_REQ_PARTICIPANT;
             $attendee->name = $name;
             // Unserialize les réponses de l'utilisateur
-            $attendee->response = Api\Melanie2\Attendee::RESPONSE_NEED_ACTION;
+            $attendee->response = Api\Mel\Attendee::RESPONSE_NEED_ACTION;
             // Force automatiquement le status du participant
             if ($response->user_id == $user->user_id && isset($part_status)) {
               $attendee->response = strtolower($part_status);
@@ -617,12 +617,30 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
           $description .= "\n\n" . $poll->description;
           $description .= "\n\n" . $attendees_list;
         }
+        if (isset($infos)){
+          $description .= "\n\n" . $infos;
+        }
       }
     }
 
     if (isset($attendees_title) && $poll->organizer_id == $user->user_id && $poll->type == 'rdv') {
       $attendees_title = implode('-', $attendees_title);
       self::$event->title =  self::$event->title . ' ' .  $poll->title . " : " . $attendees_title;
+      $user = \Program\Data\User::get_current_user();
+      //$description .= "\n\n" . $user->phone_number . " " . $user->commune . " " . $user->siren;
+      if ($user == null) {
+        $name = \Program\Lib\Request\Session::get("user_noauth_name") == "" ? Request::getInputValue("user_noauth_name", POLL_INPUT_POST) : \Program\Lib\Request\Session::get("user_noauth_name");
+        $mail = \Program\Lib\Request\Session::get("user_noauth_email") == "" ? Request::getInputValue("user_noauth_email", POLL_INPUT_POST) : \Program\Lib\Request\Session::get("user_noauth_email");
+        $description .= $name . " " . $mail ;
+      } else {
+        $description .= $user->fullname . " " . $user->email ;
+      }
+      $description .= "\n" . Request::getInputValue("adress", POLL_INPUT_POST) . "\n " . Request::getInputValue("phone", POLL_INPUT_POST);
+      if ($user != null)
+        $description .=" " . $user->siren;
+      if ($poll->reason) {
+        $description .= "\nMotif : " . Request::getInputValue("reason", POLL_INPUT_POST);
+      }
     } else {
       self::$event->title = self::$event->title . ' ' . $poll->title;
     }

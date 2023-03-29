@@ -115,6 +115,12 @@ class Edit {
 		if (isset ( $edit_title ) && $edit_title != "") {
 			if (Session::validateCSRFToken ( $csrf_token )) {
 				$edit_max_attendees_per_prop = Request::getInputValue ( "edit_max_attendees_per_prop", POLL_INPUT_POST );
+				$reason = Request::getInputValue("enable_reason", POLL_INPUT_POST);
+				$reasons = Request::getInputValue("reasons", POLL_INPUT_POST);
+				$phone_asked = Request::getInputValue("phone_asked", POLL_INPUT_POST);
+				$phone_required = Request::getInputValue("phone_required", POLL_INPUT_POST);
+				$address_asked = Request::getInputValue("address_asked", POLL_INPUT_POST);
+				$address_required = Request::getInputValue("address_required", POLL_INPUT_POST);
 				$edit_prop_in_agenda = Request::getInputValue ( "edit_prop_in_agenda", POLL_INPUT_POST );
 				$edit_location = Request::getInputValue ( "edit_location", POLL_INPUT_POST );
 				$edit_description = Request::getInputValue ( "edit_description", POLL_INPUT_POST );
@@ -140,6 +146,12 @@ class Edit {
 					if ($type == "rdv") {
 						$poll->max_attendees_per_prop = !empty($edit_max_attendees_per_prop) ? $edit_max_attendees_per_prop : 1;
 						$poll->prop_in_agenda = $edit_prop_in_agenda == "true";
+						$poll->reason = $reason == "true";
+						$poll->reasons = !empty($reasons) ? $reasons : '';
+						$poll->phone_asked = $phone_asked == "true";
+						$poll->phone_required = $phone_required == "true";
+						$poll->address_asked = $address_asked == "true";
+						$poll->address_required = $address_required =="true";
 					}
 				    $poll->auth_only = $edit_only_auth_user == "true";
 				    $poll->if_needed = $edit_if_needed == "true";
@@ -188,6 +200,12 @@ class Edit {
 					else {
 						$poll->max_attendees_per_prop = $edit_max_attendees_per_prop;
 					}
+					$poll->reason = $reason == "true";
+					$poll->reasons = !empty($reasons) ? $reasons : '';
+					$poll->phone_asked = $phone_asked == "true";
+					$poll->phone_required = $phone_required == "true";
+					$poll->address_asked = $address_asked == "true";
+					$poll->address_required = $address_required =="true";
           $poll->prop_in_agenda = $edit_prop_in_agenda == "true";
           \Program\Lib\Utils\Utils::add_rdv_props_to_calendar(unserialize($poll->proposals));
 				}
@@ -202,7 +220,7 @@ class Edit {
 		        if (\Program\Drivers\Driver::get_driver ()->modifyPoll ( $poll )) {
 		          o::set_env ( "message", 'The poll is modified' );
 		          // Envoi du message de notification
-		          if ($send_notification) {
+		          if ($send_notification  && !\Program\Lib\Utils\Utils::is_rdv()) {
 		            \Program\Lib\Mail\Mail::SendModifyPollNotificationMail($poll, $old_title, $old_location, $old_description);
 		          }
 		        }

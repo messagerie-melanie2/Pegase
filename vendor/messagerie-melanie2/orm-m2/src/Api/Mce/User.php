@@ -81,6 +81,18 @@ class User extends Defaut\User {
    */
   const LOAD_FROM_EMAIL_FILTER = "(mail=%%email%%)";
   /**
+   * Filtre pour la méthode load() si c'est un objet de partage
+   * 
+   * @ignore
+   */
+  const LOAD_OBJECTSHARE_FILTER = self::LOAD_FILTER;
+  /**
+   * Filtre pour la méthode load() avec un email si c'est un object de partage
+   * 
+   * @ignore
+   */
+  const LOAD_OBJECTSHARE_FROM_EMAIL_FILTER = self::LOAD_FROM_EMAIL_FILTER;
+  /**
    * Filtre pour la méthode getBalp()
    * 
    * @ignore
@@ -143,6 +155,7 @@ class User extends Defaut\User {
     "postalcode"              => 'postalcode',                    // Code postal
     "locality"                => 'l',                             // Ville
     "title"                   => 'title',                         // Titre
+    "modifiedtime"            => 'mcemodifiedtimestamp',
   ];
   
   /**
@@ -300,7 +313,9 @@ class User extends Defaut\User {
    */
   protected function setMapFullname($fullname) {
     M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->setMapFullname($fullname)");
-    return null;
+    if (!isset(\LibMelanie\Config\Ldap::$OTHER_LDAP)) {
+      $this->objectmelanie->fullname = $fullname;
+    }
   }
   /**
    * Mapping fullname field
@@ -330,7 +345,9 @@ class User extends Defaut\User {
    */
   protected function setMapName($name) {
     M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->setMapName($name)");
-    return null;
+    if (!isset(\LibMelanie\Config\Ldap::$OTHER_LDAP)) {
+      $this->objectmelanie->name = $name;
+    }
   }
   /**
    * Mapping name field
@@ -364,7 +381,9 @@ class User extends Defaut\User {
    */
   protected function setMapStreet($street) {
     M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->setMapStreet($street)");
-    return null;
+    if (!isset(\LibMelanie\Config\Ldap::$OTHER_LDAP)) {
+      $this->objectmelanie->street = $street;
+    }
   }
   /**
    * Mapping street field
@@ -395,7 +414,9 @@ class User extends Defaut\User {
    */
   protected function setMapLocality($locality) {
     M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->setMapLocality($locality)");
-    return null;
+    if (!isset(\LibMelanie\Config\Ldap::$OTHER_LDAP)) {
+      $this->objectmelanie->locality = $locality;
+    }
   }
 
   /**
@@ -426,7 +447,9 @@ class User extends Defaut\User {
    */
   protected function setMapTitle($title) {
     M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->setMapTitle($title)");
-    return null;
+    if (!isset(\LibMelanie\Config\Ldap::$OTHER_LDAP)) {
+      $this->objectmelanie->title = $title;
+    }
   }
 
   /**

@@ -198,6 +198,19 @@ fieldset {
     cursor: default;
 }
 
+#left-panel select#balselect {
+    margin-top: 15px;
+    margin-left: 10px;
+    width: 90%;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--listbox-text-color);
+    background: var(--listbox-bg-color);
+    font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+    border-radius: 3px;
+
+}
+
 #content {
     background-color: var(--main-content-bg-color);
     min-width: 800px;
@@ -309,6 +322,10 @@ a.pure-button {
     padding: 0px 20px;
     height: 30px;
     line-height: 30px;
+}
+
+button.pure-button:hover {
+    background-color: #f2f2f2;
 }
 
 a.pure-button:hover {
@@ -1492,6 +1509,13 @@ background-size: cover;
     right: 34px;
 }
 
+
+.toolbar span#connected_as {
+    position: absolute;
+    right: 145px;
+    top: 18px;
+}
+
 .toolbar a.button.notext {
     text-indent: -9999px;
 }
@@ -1673,7 +1697,14 @@ background-size: cover;
 }
 
 #edit_form #edit_poll_type {
-    display: none;
+    opacity: 0;
+    width: 0px;
+    float: left;
+}
+
+#edit_form #edit_poll_type:focus {
+    opacity: 1;
+    width: 200px;
 }
 
 #edit_form #edit_description {
@@ -1865,4 +1896,24 @@ background-size: cover;
 a.showmore {
     font-size: 70%;
     margin-top: 10px;
+}
+.add-reason-bar{
+    display: flex;
+
+}
+
+.reason-item{
+    width: 60%;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.required{
+    padding-left: 30px;
+}
+
+.voice{
+    display: none;
 }

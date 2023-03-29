@@ -222,6 +222,9 @@ $labels['Open the poll'] = "Ouvrir le sondage";
 $labels['Go back to main page'] = "Retourner sur la page principale";
 $labels['Proposals'] = "Propositions";
 $labels['Invitations'] = "Finalisation";
+$labels['add reasons'] = "Activer l'ajout motifs de rendez-vous";
+$labels['reasons'] = "Liste des motifs séparés par des ; ";
+$labels['duplicate proposals'] = "Dupliquer les rendez-vous proposés la semaine suivante";
 // Information page
 $labels['Poll information page'] = 'Page d\'information sur le sondage';
 $labels['Save'] = 'Enregistrer';
@@ -363,6 +366,12 @@ $labels['I\'ll not be there'] = "Je ne participerai pas";
 $labels['Choose the calendar to use'] = "Choisissez quel agenda utiliser pour la réponse";
 $labels['created by'] = 'créé par';
 $labels['Keep date'] = 'Date retenue';
+$labels['Validate reason'] = 'Confirmer le motif de rendez-vous';
+$labels['reason'] = 'motif';
+$labels['you have selected the date'] = 'Vous avez sélectionné le créneau';
+$labels['confirmation email will be send to'] = "Un email de confirmation va être envoyé à l'adresse suivante";
+$labels['postal address'] = 'Adresse postale';
+$labels['contact info'] = 'Informations de contact complémentaires';
 // Date information
 $labels['Start'] = 'Début';
 $labels['End'] = 'Fin';
@@ -430,6 +439,7 @@ $labels['Unnotified attendees list'] = "Voici la liste des participants qui n'on
 $labels['Attendees were not notified'] = "Les participants n'ont pas été notifiés.";
 $labels['Attendees with email address'] = "Liste des participants avec une adresses e-mail:";
 $labels['Attendees without email address'] = "Liste des participants qui n'ont pas renseigné d'adresse e-mail:";
+$labels['Validate appointment attendee mail subject'] = "%%app_name%% : Vous venez de prendre rendez-vous";
 
 $labels['Modify poll mail subject'] = "%%app_name%% : Le sondage « %%poll_title%% » vient d'être modifié";
 $labels['Modify proposals mail subject'] = "%%app_name%% : Les propositions du sondage « %%poll_title%% » ont changé";

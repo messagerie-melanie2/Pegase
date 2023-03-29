@@ -445,6 +445,26 @@ class User extends MagicObject implements \JsonSerializable
       return false;
   }
 
+  /**
+   * retourne l'utilisateur qui s'est authentifié
+   * @return \Program\Data\User
+   */
+  public static function get_original_user(){
+    if (
+      Session::is_set("original_user_id")
+    ) {
+      $original_user = new User(
+        array(
+          "user_id" => Session::get("original_user_id"),
+          "username" => Session::get("original_username"),
+          "email" => Session::get("original_user_email"),
+          "fullname" => Session::get("original_user_fullname"),
+        )
+      );
+    }
+    return $original_user;
+  }
+
   public function jsonSerialize()
   {
     return [

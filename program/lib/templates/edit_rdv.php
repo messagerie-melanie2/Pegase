@@ -75,6 +75,7 @@ class Edit_rdv
 		o::set_env("can_get_freebusy", \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_GET_FREEBUSY);
 		o::set_env("can_generate_ics", \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_GENERATE_ICS);
         o::set_env("can_write_calendar", \Program\Lib\Event\Drivers\Driver::get_driver()->CAN_WRITE_CALENDAR);
+		o::set_env("is_type_rdv", true);
 
         //Définition de la variable d'environnement pour calendar.js
         o::set_env('date_rdv', 'edit_rdv');
@@ -129,7 +130,7 @@ class Edit_rdv
 			'Are you sure ? Not saved proposals are lost',
 			'Choose date on the calendar',
 			'show calendar', 'hide calendar', 'None', 'Tentative', 'Confirmed', 'Your freebusy',
-			'Loading your events...', 'Proposals have changed, if you leave the page, the changes will be lost',
+			'Loading your events...', 'Proposals have changed, if you leave the page, the changes will be lost','duplicate proposals',
 		));
 		// Ajout de l'environnement
 		o::set_env('poll_title', \Program\Data\Poll::get_current_poll()->title);

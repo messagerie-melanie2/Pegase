@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "da6d60ceb39dc4bec8eea7d22084904e",
+    "content-hash": "d84bba5b1cc7733452f350383946f351",
     "packages": [
         {
             "name": "jasig/phpcas",
@@ -74,16 +74,16 @@
         },
         {
             "name": "messagerie-melanie2/orm-m2",
-            "version": "0.6.2.3",
+            "version": "0.6.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/messagerie-melanie2/ORM-M2.git",
-                "reference": "6b25a0840df3cfcdd38956fd012dfcc00b5b4673"
+                "reference": "c9ea450fd9691d9418ae036b4b86c65ad973ce4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagerie-melanie2/ORM-M2/zipball/6b25a0840df3cfcdd38956fd012dfcc00b5b4673",
-                "reference": "6b25a0840df3cfcdd38956fd012dfcc00b5b4673",
+                "url": "https://api.github.com/repos/messagerie-melanie2/ORM-M2/zipball/c9ea450fd9691d9418ae036b4b86c65ad973ce4b",
+                "reference": "c9ea450fd9691d9418ae036b4b86c65ad973ce4b",
                 "shasum": ""
             },
             "require": {
@@ -125,10 +125,10 @@
                 "Tasks"
             ],
             "support": {
-                "source": "https://github.com/messagerie-melanie2/ORM-M2/tree/0.6.2.3",
+                "source": "https://github.com/messagerie-melanie2/ORM-M2/tree/0.6.5.4",
                 "issues": "https://github.com/messagerie-melanie2/ORM-M2/issues"
             },
-            "time": "2022-05-24T09:05:33+00:00"
+            "time": "2023-02-23T13:08:20+00:00"
         },
         {
             "name": "psr/log",

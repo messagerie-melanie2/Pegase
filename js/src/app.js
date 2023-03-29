@@ -132,6 +132,21 @@ function poll_app() {
 	}
 
 	this.popup = function (aPopupId, aCloseCallback) {
+		if (aPopupId == "confirmation_rdv"){
+			$('#' + aPopupId)
+			.dialog({
+				modal: false,
+				draggable: false,
+				zIndex: 10000,
+				width: '350px',
+				maxHeight: 500,
+				resizable: false,
+				autoOpen: false,
+				position: { my: "center center", at: "center center", of: window },
+				close: aCloseCallback,
+			})
+			.parent().css({ position: "fixed" }).end().dialog('open');
+		}else{
 		$('#' + aPopupId)
 			.dialog({
 				modal: false,
@@ -147,6 +162,8 @@ function poll_app() {
 			.parent().css({ position: "fixed" }).end().dialog('open');
 	}
 }
+}
+
 $(document).ready(function () {
 	$('.message').fadeIn().delay(3000).fadeOut('slow');
 	// List expanded
@@ -242,6 +259,18 @@ $(document).on({
 			}).dialog('open');
 	}
 }, "#help-page-button"); //pass the element as an argument to .on
+
+$(document).on({
+	change: function(){
+		var url = location.href;
+		var regex = new RegExp('username' + '=[^&$]*', 'i');
+		if(regex.test(url)){
+			window.location.search = window.location.search.replace(regex, 'username=' + this.value);
+		}else{
+			window.location.search += "&username=" + this.value;
+		}
+	}
+}, "#balselect");
 
 //Copier l'url du sondage
 function copy_url(args) {

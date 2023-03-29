@@ -34,7 +34,7 @@ use Program\Lib\Request\Session as s;
 		<?php } else { ?>
 			<a class="button addpoll customtooltip_bottom" title="<?= l::g("Create a new poll", false) ?>" href="<?= o::url("edit", ACT_NEW) ?>"><span class="inner"><?= l::g('New poll') ?></span></a>
 			<span id="connected_as">
-				<?= l::g('Connected as') ?> <b title="<?= u::get_current_user()->fullname ?>"><?= s::is_set('SSO') ? u::get_current_user()->email : u::get_current_user()->username ?></b>
+				<?= l::g('Connected as') ?> <b title="<?= u::get_original_user()->fullname ?>"><?= s::is_set('SSO') ? u::get_original_user()->email : u::get_original_user()->username ?></b>
 			</span>
 			<a class="button disconnect customtooltip_bottom" title="<?= l::g("Disconnect from the app", false) ?>" href="<?= o::url("logout") ?>">
 				<?= l::g('Disconnect') ?>

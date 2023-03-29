@@ -33,6 +33,8 @@ use Program\Lib\Request\Session as Session;
 use Program\Lib\Request\Template as t;
 use Program\Lib\Templates\Edit_end as e;
 use Program\Lib\Templates\Show as s;
+use Api\SSO\SSO as sso;
+
 ?>
 <?php t::inc('head') ?>
 
@@ -164,6 +166,76 @@ use Program\Lib\Templates\Show as s;
 			</div>
 		</div>
 	<?php } ?>
+
+	<div class="dialog_popup" id="confirmation_rdv" title="Validation du rendez-vous">
+        <div class="dialog_popup_content">
+          <div class="event_info">
+              <div><?= l::g('you have selected the date') ?> :</div>
+              <div id="rdv_date" style="font-weight:bold"><p></p></div>
+              <div id="email_area">
+                <div><?= l::g('confirmation email will be send to') ?> :</div>
+                <div id="email"style="font-weight:bold"><?= $_SESSION['user_email']?></div>
+              </div>
+              
+
+          </div>
+          <div id="reason">
+            <div><?= l::g('reason')?>:</div>
+            <select name="reasons" id="choose_reason">
+              <?php $reasons = explode(";", p::get_current_poll()->reasons)?>
+              <?php foreach($reasons as $reason){ ?>
+                  <option value="<?= $reason ?>"> <?= $reason ?> </option>
+              <?php } ?>
+            </select>
+          </div>
+          <br>
+          
+          <div class="user_infos">
+          <?php if (u::get_current_user()!=null){ ?>
+            <?php if (u::get_current_user()->is_cerbere){ ?>
+              <?php if(p::get_current_poll()->phone_asked || p::get_current_poll()->address_asked){?>
+                <div style="font-weight:bold"><?= l::g('contact info')?> :</div>
+              <?php } ?>
+              <?php if(p::get_current_poll()->phone_asked){ ?>
+                <div><?= l::g('phone_number') ?><?= p::get_current_poll()->phone_required ? "*": "" ?> : </div>
+                <div id="phone_warning" style="color:red"></div>
+                <?php if(u::get_current_user()->phone_number == null){ ?>
+                  <input type="tel" id="phone" placeholder="">
+                <?php }else{ ?>
+                  <input type="tel" id="phone" value=<?= u::get_current_user()->phone_number?> readonly=true>
+                <?php } ?>
+              <?php } ?>
+              <?php if(p::get_current_poll()->address_asked){ ?>
+                <div><?= l::g('postal address') ?><?= p::get_current_poll()->address_required ? "*": "" ?> : </div>
+                <div id="address_warning" style="color:red"></div>
+                <?php if(u::get_current_user()->commune == null){ ?>
+                  <input type="text" id="postal_addr" placeholder=""  style="width: 100%">
+                <?php }else{ ?>
+                  <input type="text" id="postal_addr" value="<?= u::get_current_user()->commune ?>"  readonly=true style="width: 100%">
+                <?php } ?>
+              <?php } ?>
+              
+            <?php }}else{ ?>
+              <?php if(p::get_current_poll()->phone_asked || p::get_current_poll()->address_asked){?>
+                <div style="font-weight:bold"><?= l::g('contact info')?> :</div>
+              <?php } ?>
+              <?php if(p::get_current_poll()->phone_asked){ ?>
+                <div><?= l::g('phone_number') ?><?= p::get_current_poll()->phone_required ? "*": "" ?> : </div>
+                <div id="phone_warning" style="color:red"></div>
+                <input type="tel" id="phone" placeholder="">
+              <?php } ?>
+              <?php if(p::get_current_poll()->address_asked){ ?>
+                <div><?= l::g('postal address') ?><?= p::get_current_poll()->address_required ? "*": "" ?> : </div>
+                <div id="address_warning" style="color:red"></div>
+                <input type="text" id="postal_addr"  style="width: 100%">
+              <?php } ?>
+            <?php } ?>
+          </div>
+          <input type="hidden" id="stock" value='' >
+          
+          <button  onclick="selectedreason(this.form)" type="submit" class="pure-button pure-button-submit customtooltip_top accept_continue" title="<?= l::g("Validate this proposal") ?>"><?= l::g('Validate this proposal') ?></button>
+        </div>
+      </div>
 
 </body>
 <?php t::inc('foot') ?>

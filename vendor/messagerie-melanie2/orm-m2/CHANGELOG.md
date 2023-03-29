@@ -1,3 +1,111 @@
+ORM M2 - 0.6.5.4
+------
+- 0007534: [VCard] Erreur SQL lors de la création d'une liste sans membre
+- 0007536: Gérer le statut de participant Délégué
+
+ORM M2 - 0.6.5.3
+------
+- 0007510: Ajouter un champ pour le quota nextCloud
+- PR #7 Bugfix/mailbox partage
+
+ORM M2 - 0.6.5.2
+------
+- 0007480: Optimisation LDAP pour les participants
+- 0007479: Optimisation lecture LDAP pour les participants liste
+- 0007495: Support du champ modifiedtime pour les User
+- 0007496: Ajouter le support du fullname et de l'email du creator
+- 0007498: [ICS] Rendre configurable l'affichage du createur dans la description
+
+ORM M2 - 0.6.5.1
+------
+- 0007471: [VCard] Une liste de contacts est basé sur les id
+- 0007472: [MagicObject] La valeur précédente peut être vide il ne faut donc pas la conserver
+
+ORM M2 - 0.6.5
+------
+- 0007426: Avancer la date de fin de récurrence devrait supprimer les occurrences postérieures
+- 0007433: [MagicObject] Conserver la valeur avant modification d'un champ
+- 0007427: Modifier toutes les occurrences devrait également modifier les occurrences modifiées si possible
+
+ORM M2 - 0.6.4.3
+------
+- 0007056: Gestion des itemName sur les objectshares
+- Fix shares pour Api/Gn/User
+
+ORM M2 - 0.6.4.2
+------
+- 0007050: Logguer les commandes ldapsearch, ldapadd, ... dans l'objet Ldap
+- 0007051: Problème dans l'enregistrement d'un utilisateur
+
+ORM M2 - 0.6.4.1
+------
+- Ajout d'un gitattributes pour nettoyer les releases
+
+ORM M2 - 0.6.4
+------
+- 0007042: Pouvoir gérer des absences hebdo internes ou externes
+- 0007045: Problème dans le calcul des itemName
+- MR #5  Correctif Gn
+- Gestion de paramètres dans read_version.php
+
+ORM M2 - 0.6.3.6
+------
+- Nouveau mapping pour le User de Api/Mi
+- Permettre le set des champs other ldap dans le User de Api/Mce
+
+ORM M2 - 0.6.3.5
+------
+- 0006995: [User] Permettre un load() différent sur un objet de partage
+
+ORM M2 - 0.6.3.4
+------
+- Type individuel pour l'ENS
+- Fix sur bind4lookup() dans les deux méthodes LDAP GetUsersList() et GetGroups()
+
+ORM M2 - 0.6.3.3
+------
+- Adaptations API ENS
+- Fix sur l'objet User pour l'API MI
+- Prise en compte (partielle) de la PR #3
+
+ORM M2 - 0.6.3.2
+------
+- 0006984: Ajouter une méthode asRight dans l'objet User
+- 0006971: [ICS] pour les tâches, une alarme de 2 jours est enregistrée sur 1 min
+- Mise à jour du mapping pour le MI
+
+ORM M2 - 0.6.3.1
+------
+- 0006964: Supporter un statut "Télétravail" dans les événements
+
+ORM M2 - 0.6.3
+------
+- 0006920: Utiliser le champs event_attachments_json pour stocker les informations sur les pieces jointes
+- 0005093: Ne plus utiliser la table lightning_attributes
+- 0006850: Supporter la syntaxe MCE/DGFIP pour le gestionnaire d'absence
+- Ajout d'un Api/Ens
+
+ORM M2 - 0.6.2.7
+------
+- 0006899: [Event] pourvoir filtrer par catégorie dans getRangeEvent()
+
+ORM M2 - 0.6.2.6
+------
+- 0006889: [Recurrence] Problème de BYDAY vide retourné en ICS
+- 0006890: Amélioration du mapping des champs de type énumération
+
+ORM M2 - 0.6.2.5
+------
+- 0006864: [Attendee] Problème de valeur de retour en cas d'erreur
+
+ORM M2 - 0.6.2.4
+------
+- 0006800: Pour une invitation interne, un participant ne peut pas modifier l'horaire
+- 0006759: [Event] Ajouter un champ version pour les évolutions de schéma
+- 0006803: [Attendee] Support du CUTYPE
+- 0006802: [Attendee] Ajoute une méthode is_ressource
+- 0006801: [En attente] Gestion des boites partagées
+
 ORM M2 - 0.6.2.3
 ------
 - Fix sur la fonctionnalité de s'inviter pour un participant

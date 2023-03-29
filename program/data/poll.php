@@ -62,6 +62,13 @@ use Program\Lib\Utils\Utils as u;
  * @property date $date_end Dernière date de proposition pour le sondage (sondage de dates)
  * @property date $deadline Date butoir avant la fermeture des votes du sondage
  * @property string $timezone Timezone du sondage
+ * @property boolean $reason Si le sondage propose des motifs
+ * @property string $reasons listes des motifs du sondage
+ * @property boolean $phone_asked Si l'utilisateur peut associer un téléphone à sa réponse
+ * @property boolean $phone_required Si l'utilisateur doit associer un téléphone à sa réponse
+ * @property boolean $address_asked Si l'utilisateur peut associer une adresse à sa réponse
+ * @property boolean $address_required Si l'utilisateur doit associer une adresse à sa réponse
+ * 
  * @property \Program\Data\Response[] $response Réponses du sondage
  *
  * @package Data
@@ -433,7 +440,192 @@ class Poll extends MagicObject implements \JsonSerializable
       // Valeur par défaut
       return date_default_timezone_get();
   }
-
+  /**
+   * Positionne la valeur de paramètre $reason depuis les settings du sondage
+   * @param boolean $reason
+   * @return boolean
+   */
+  protected function __set_reason($reason)
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    $settings['reason'] = $reason;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $reason depuis les settings du sondage
+   * @return boolean
+   */
+  protected function __get_reason()
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['reason']))
+      return $settings['reason'];
+    else
+      // Valeur par défaut
+      return false;
+  }
+  /**
+   * Positionne la valeur de paramètre $reason depuis les settings du sondage
+   * @param string $reasons
+   * @return boolean
+   */
+  protected function __set_reasons($reasons)
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    $settings['reasons'] = $reasons;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $reasons depuis les settings du sondage
+   * @return string
+   */
+  protected function __get_reasons()
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['reasons']))
+      return $settings['reasons'];
+    else
+      // Valeur par défaut
+      return "";
+  }
+  /**
+   * Positionne la valeur de paramètre $phone_asked depuis les settings du sondage
+   * @param boolean $phone_asked
+   * @return boolean
+   */
+  protected function __set_phone_asked($phone_asked)
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false){
+      $settings = array();
+    }
+    $settings['phone_asked'] = $phone_asked;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $phone_asked depuis les settings du sondage
+   * @return boolean
+   */
+  protected function __get_phone_asked()
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['phone_asked']))
+      return $settings['phone_asked'];
+    else
+      // Valeur par défaut
+      return false;
+  }
+  /**
+   * Positionne la valeur de paramètre $phone_required depuis les settings du sondage
+   * @param boolean $phone_required
+   * @return boolean
+   */
+  protected function __set_phone_required($phone_required)
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false){
+      $settings = array();
+    }
+    $settings['phone_required'] = $phone_required;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $phone_required depuis les settings du sondage
+   * @return boolean
+   */
+  protected function __get_phone_required()
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['phone_required']))
+      return $settings['phone_required'];
+    else
+      // Valeur par défaut
+      return false;
+  }
+  /**
+   * Positionne la valeur de paramètre $address_asked depuis les settings du sondage
+   * @param boolean $address_asked
+   * @return boolean
+   */
+  protected function __set_address_asked($address_asked)
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false){
+      $settings = array();
+    }
+    $settings['address_asked'] = $address_asked;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $address_asked depuis les settings du sondage
+   * @return boolean
+   */
+  protected function __get_address_asked()
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['address_asked']))
+      return $settings['address_asked'];
+    else
+      // Valeur par défaut
+      return false;
+  }
+  /**
+   * Positionne la valeur de paramètre $address_required depuis les settings du sondage
+   * @param boolean $address_required
+   * @return boolean
+   */
+  protected function __set_address_required($address_required)
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false){
+      $settings = array();
+    }
+    $settings['address_required'] = $address_required;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $address_required depuis les settings du sondage
+   * @return boolean
+   */
+  protected function __get_address_required()
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['address_required']))
+      return $settings['address_required'];
+    else
+      // Valeur par défaut
+      return false;
+  }
   /**
    * Retourne la valeur du champ date_start
    * Si le date start n'existe pas dans le sondage, il est calculé en fonction des propositions

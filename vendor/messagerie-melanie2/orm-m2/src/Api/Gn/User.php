@@ -35,7 +35,7 @@ use LibMelanie\Config\MappingMce;
  * @subpackage API/GN
  * @api
  * 
- * @property string $dn DN de l'utilisateur dans l'annuaire            
+ * @property string $dn DN de l'utilisateur dans l'annuaire
  * @property string $uid Identifiant unique de l'utilisateur
  * @property string $fullname Nom complet de l'utilisateur
  * @property string $name Nom de l'utilisateur
@@ -67,6 +67,13 @@ use LibMelanie\Config\MappingMce;
  * @method bool exists() Est-ce que l'utilisateur existe dans l'annuaire Mélanie2 (en fonction de l'uid ou l'email)
  */
 class User extends Mce\User {
+  /**
+   * Attributs par défauts pour la méthode load()
+   * 
+   * @ignore
+   */
+  const LOAD_ATTRIBUTES = ['fullname', 'uid', 'name', 'email', 'email_list', 'email_send', 'email_send_list', 'server_routage', 'shares', 'type','mcemailroutingaddress','outofoffices'];
+
 	/**
    * Configuration du mapping qui surcharge la conf
    */
@@ -74,7 +81,9 @@ class User extends Mce\User {
     "dn"                      => 'dn',                            // DN de l'utilisateur
     "uid"                     => 'mail',                          // Identifiant de l'utilisateur
     "fullname"                => 'cn',                            // Nom complet de l'utilisateur
-    "name"                    => 'cn',                            // Nom court de l'utilisateur
+    "name"                    => 'displayname',                   // Display name de l'utilisateur
+    "lastname"                => 'sn',                            // Last name de l'utilisateur
+    "firstname"               => 'givenname',                     // First name de l'utilisateur
     "email"                   => 'mail',                          // Adresse e-mail principale de l'utilisateur en reception
     "email_list"              => [MappingMce::name => 'mailalternateaddress', MappingMce::type => MappingMce::arrayLdap], // Liste d'adresses e-mail en reception pour l'utilisateur
     "email_send"              => 'mail',                          // Adresse e-mail principale de l'utilisateur en emission
@@ -86,7 +95,15 @@ class User extends Mce\User {
     "postalcode"              => 'postalcode',                    // Code postal
     "locality"                => 'l',                             // Ville
     "title"                   => 'title',                         // Titre
+    "memberof"                => [MappingMce::name => 'memberof', MappingMce::type => MappingMce::arrayLdap],
     "outofoffices"            => [MappingMce::name => 'mcevacation', MappingMce::type => MappingMce::arrayLdap], // Affichage du message d'absence de l'utilisateur
+    "mcemailroutingaddress"   => [MappingMce::name => 'mcemailroutingaddress', MappingMce::type => MappingMce::arrayLdap], // routegemceadrressmail host
+    "deliverymode"            => [MappingMce::name => 'deliverymode', MappingMce::type => MappingMce::stringLdap],
+    "codeunite"               => 'codeunite',
+    "displayname"             => 'displayname', 
+    "employeenumber"          => 'employeenumber',
+    "givenname"               => 'givenname',
+    "modifiedtime"            => 'mcemodifiedtimestamp',
   ];
 
   /**
@@ -130,22 +147,8 @@ class User extends Mce\User {
     $this->_shares = $shares;
     $_shares = [];
     foreach ($shares as $share) {
-      $right = '';
-      switch ($share->type) {
-        case Share::TYPE_ADMIN:
-          $right = 'G';
-          break;
-        case Share::TYPE_SEND:
-          $right = 'C';
-          break;
-        case Share::TYPE_WRITE:
-          $right = 'E';
-          break;
-        case Share::TYPE_READ:
-          $right = 'L';
-          break;
-      }
-      $_shares[] = $share->user . ':' . $right;
+        $right = $share->type;
+        $_shares[] = $share->user . ':' . $right;
     }
     $this->objectmelanie->shares = $_shares;
   }
@@ -158,25 +161,12 @@ class User extends Mce\User {
   protected function getMapShares() {
     M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->getMapShares()");
     if (!isset($this->_shares)) {
-      $_shares = $this->objectmelanie->shares;
+      $_shares = $this->objectmelanie->shares??[];
       $this->_shares = [];
       foreach ($_shares as $_share) {
         $share = new Share();
         list($share->user, $right) = \explode(':', $_share, 2);
-        switch (\strtoupper($right)) {
-          case 'G':
-            $share->type = Share::TYPE_ADMIN;
-            break;
-          case 'C':
-            $share->type = Share::TYPE_SEND;
-            break;
-          case 'E':
-            $share->type = Share::TYPE_WRITE;
-            break;
-          case 'L':
-            $share->type = Share::TYPE_READ;
-            break;
-        }
+        $share->type = \strtoupper($right);
         $this->_shares[$share->user] = $share;
       }
     }
@@ -204,8 +194,8 @@ class User extends Mce\User {
       $i = 0;
       foreach ($this->objectmelanie->outofoffices as $oof) {
         $object = new Outofoffice($oof);
-        if ($object->type == Outofoffice::TYPE_ALL) {
-          $key = $object->type.$i++;
+        if (isset($object->days)) {
+          $key = Outofoffice::HEBDO.$i++;
         }
         else {
           $key = $object->type;
@@ -214,7 +204,7 @@ class User extends Mce\User {
       }
     }
     return $objects;
-	}
+  }
 
   /**
    * Positionnement du champ out of offices
@@ -230,5 +220,5 @@ class User extends Mce\User {
       }
     }
     $this->objectmelanie->outofoffices = array_unique($reponses);
-	}
+  }
 }

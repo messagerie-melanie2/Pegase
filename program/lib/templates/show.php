@@ -28,7 +28,9 @@
 namespace Program\Lib\Templates;
 
 // Utilisation des namespaces
-use Program\Lib\Request\Request as Request, Program\Lib\Request\Output as o, Program\Lib\Request\Cookie as Cookie, Program\Lib\Request\Session as Session, Program\Lib\Request\Localization as Localization;
+
+use Config\IHM;
+use Program\Lib\Request\Request as Request, Program\Lib\Request\Output as o, Program\Lib\Request\Cookie as Cookie, Program\Lib\Request\Session as Session, Program\Lib\Request\Localization as Localization, Program\Lib\Utils\Utils as Utils;
 
 /**
  * Classe de gestion de l'affichage du sondage
@@ -135,6 +137,18 @@ class Show
     o::set_env("request_source", \Program\Lib\Request\Request::getInputValue("_s", POLL_INPUT_GET));
     // Ajout des labels
     o::add_label(array('Are you sure you want to delete the poll ?', 'Notify attendees', 'Are you sure you want to delete your response ?', 'Name already exists', 'Clic to validate this proposal', 'Clic to unvalidate this proposal', 'Clic to add this proposal to your calendar', 'This proposals is already in your calendar', 'Remove', 'Do you want to send a message to the attendees ?', 'Would you like to add responses to your calendar as tentative ?', 'Would you like to add responses to your calendar as confirmed ?', 'Username', 'Email address', 'Yes', 'No', 'If needed', 'Adding prop to your calendar...', 'Load freebusy...', 'Would you like to delete tentatives events of this poll from your calendar ?', 'Deleting tentatives...', 'Tentatives correctly deleted', 'Remember to lock the poll when it\'s finished', 'Lock the poll', 'Copied URL'));
+    if(\Program\Data\Poll::get_current_poll()->reason)
+      o::set_env("reasons", (\Program\Data\Poll::get_current_poll()->reasons));
+    if(\Program\Data\Poll::get_current_poll()->phone_asked){
+      o::set_env("phone_asked",(\Program\Data\Poll::get_current_poll()->phone_asked));
+      if(\Program\Data\Poll::get_current_poll()->phone_required)
+        o::set_env("phone_req",(\Program\Data\Poll::get_current_poll()->phone_required));
+    }
+    if(\Program\Data\Poll::get_current_poll()->address_asked){
+      o::set_env("address_asked",(\Program\Data\Poll::get_current_poll()->address_asked));
+      if(\Program\Data\Poll::get_current_poll()->address_required)
+        o::set_env("address_req",(\Program\Data\Poll::get_current_poll()->address_required));
+    }
     // Gestion du téléchargement de l'ICS
     if (
       o::get_env("action") == ACT_DOWNLOAD_ICS
@@ -388,6 +402,10 @@ class Show
       self::view_validation_buttons($last_col);
     }
     $hidden_field_csrf_token = new \Program\Lib\HTML\html_hiddenfield(array("name" => "csrf_token", "value" => Session::getCSRFToken()));
+    $hidden_field_motif_rdv = new \Program\Lib\HTML\html_hiddenfield(array("name" => "motifrdv", "value" =>''));
+    $hidden_field_phone_number = new \Program\Lib\HTML\html_hiddenfield(array("name" => "phone_number", "value" =>''));
+    $hidden_field_postal_address= new \Program\Lib\HTML\html_hiddenfield(array("name" => "postal_address", "value" =>''));;
+
     // Generation du tableau html
     if (o::get_env("action") != ACT_MODIFY_ALL) {
       $html = \Program\Lib\HTML\html::tag(
@@ -399,12 +417,15 @@ class Show
         ),
         \Program\Lib\HTML\html::div(array("id" => "proposals_div"), self::$table->show()) .
           $hidden_field_csrf_token->show() .
+          $hidden_field_motif_rdv->show() .
+          $hidden_field_phone_number->show() .
+          $hidden_field_postal_address->show() .
           ((o::get_env("mobile") || !$last_col) && \Program\Data\Poll::get_current_poll()->locked == 0 && (!\Program\Data\Poll::get_current_poll()->auth_only && \Program\Data\Poll::get_current_poll()->type != 'rdv' || \Program\Data\User::isset_current_user() && \Program\Data\Poll::get_current_poll()->type != 'rdv') ? \Program\Lib\HTML\html::tag("input", array("class" => "pure-button pure-button-save", "id" => "proposals_form_submit", "form" => "proposals_form", "type" => "submit", "value" => Localization::g("Save"))) . " " .
             \Program\Lib\HTML\html::a(array("href" => o::url(null, ACT_DELETE_RESPONSE, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid, "t" => Session::getCSRFToken()), false), "id" => "button_delete_response", "data-role" => "button", "class" => "pure-button pure-button-save customtooltip_bottom", "title" => Localization::g("Clic to delete your response", false)), Localization::g("delete")) : "")
       );
     } else {
       $hidden_field_modify_all = new \Program\Lib\HTML\html_hiddenfield(array("name" => "hidden_modify_all", "value" => \Program\Data\Poll::get_current_poll()->poll_id));
-      $html = \Program\Lib\HTML\html::tag("form", array("id" => "proposals_form", "class" => "pure-form pure-form-aligned", "action" => o::url(null, null, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid), false) . "#poll", "method" => "post"), \Program\Lib\HTML\html::div(array("id" => "proposals_div"), self::$table->show()) . $hidden_field_modify_all->show() . $hidden_field_csrf_token->show() . \Program\Lib\HTML\html::tag("input", array("id" => "proposals_form_modify_submit", "class" => "pure-button pure-button-save", "type" => "submit", "value" => Localization::g("Save"))) . " " . \Program\Lib\HTML\html::a(array("href" => o::url(null, null, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid), false)), Localization::g("Cancel")));
+      $html = \Program\Lib\HTML\html::tag("form", array("id" => "proposals_form", "class" => "pure-form pure-form-aligned", "action" => o::url(null, null, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid), false) . "#poll", "method" => "post"), \Program\Lib\HTML\html::div(array("id" => "proposals_div"), self::$table->show()) . $hidden_field_modify_all->show() . $hidden_field_motif_rdv->show() . $hidden_field_phone_number->show() . $hidden_field_postal_address->show() . $hidden_field_csrf_token->show() . \Program\Lib\HTML\html::tag("input", array("id" => "proposals_form_modify_submit", "class" => "pure-button pure-button-save", "type" => "submit", "value" => Localization::g("Save"))) . " " . \Program\Lib\HTML\html::a(array("href" => o::url(null, null, array("u" => \Program\Data\Poll::get_current_poll()->poll_uid), false)), Localization::g("Cancel")));
     }
     if (\Program\Data\Poll::get_current_poll()->type == 'rdv') {
       $html .= self::GetRdvInformationText();
@@ -883,18 +904,18 @@ class Show
           $Response = \Program\Drivers\Driver::get_driver()->getPollUserResponse(\Program\Data\User::get_current_user()->user_id, \Program\Data\Poll::get_current_poll()->poll_id);
           $Response = unserialize($Response->response);
           if ($Response) {
-          foreach ($Response as $key => $value) {
-            if ($key == $prop_value) {
-              $href = \Program\Lib\HTML\html::a(array("class" => "pure-button pure-button-validate-prop-rdv customtooltip_bottom", "title" => Localization::g("Validated proposal", false) . " : " . $prop_value), Localization::g(""));
-              $href .= \Program\Lib\HTML\html::a(array("onclick" => o::command("unvalidate_prop_rdv(check_$prop_key)"), "class" => "pure-button pure-button-unvalidate-prop customtooltip_bottom", "title" => Localization::g("Clic to unvalidate this proposal", false) . " : " . $prop_value,), "");
-            } else {
-              $href = \Program\Lib\HTML\html::a(array("onclick" => "validate_prop_rdv(check_$prop_key)", "class" => "pure-button pure-button-validate-prop customtooltip_bottom", "title" => Localization::g("Clic to validate this proposal", false) . " : " . $prop_value), Localization::g("Validate proposal"));
+            foreach ($Response as $key => $value) {
+              if ($key == $prop_value) {
+                $href = \Program\Lib\HTML\html::a(array("href" => "#", "class" => "pure-button pure-button-validate-prop-rdv customtooltip_bottom", "title" => Localization::g("Validated proposal", false) . " : " . $prop_value), Localization::g(""));
+                $href .= \Program\Lib\HTML\html::a(array("href" => "#", "onclick" => o::command("unvalidate_prop_rdv(check_$prop_key)"), "class" => "pure-button pure-button-unvalidate-prop customtooltip_bottom", "title" => Localization::g("Clic to unvalidate this proposal", false) . " : " . $prop_value,), "");
+              } else {
+                $href = \Program\Lib\HTML\html::a(array("href" => "#", "onclick" => "validate_prop_rdv(check_$prop_key)", "class" => "pure-button pure-button-validate-prop customtooltip_bottom", "title" => Localization::g("Clic to validate this proposal", false) . " : " . $prop_value), Localization::g("Validate proposal"));
+              }
             }
           }
-        }
-        else {
-          $href = \Program\Lib\HTML\html::a(array("onclick" => "validate_prop_rdv(check_$prop_key)", "class" => "pure-button pure-button-validate-prop customtooltip_bottom", "title" => Localization::g("Clic to validate this proposal", false) . " : " . $prop_value), Localization::g("Validate proposal"));
-        }
+          else {
+            $href = \Program\Lib\HTML\html::a(array("href" => "#", "onclick" => "validate_prop_rdv(check_$prop_key)", "class" => "pure-button pure-button-validate-prop customtooltip_bottom", "title" => Localization::g("Clic to validate this proposal", false) . " : " . $prop_value), Localization::g("Validate proposal"));
+          }
 
           $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check_$prop_key", "name" => "check_$prop_key", "value" => "$prop_value", "class" => "prop_rdv"));
 
@@ -974,10 +995,10 @@ class Show
         self::$table->add(array("title" => $prop_value, "class" => "$class prop_change customtooltip_bottom", "align" => "center"), $checkbox->show($value, ['value' => $prop_value, 'id' => "id$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "id$prop_value", 'class' => 'radio_label label_yes'], Localization::g('Yes')) . $br . $checkbox->show($value, ['value' => "$prop_value:if_needed", 'id' => "idif_needed$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed$prop_value", 'class' => 'radio_label label_if_needed'], Localization::g('If needed')) . $br . $checkbox->show($value, ['value' => false, 'id' => "iddeclined$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined$prop_value", 'class' => 'radio_label label_no'], Localization::g('No')));
       } elseif (\Program\Data\Poll::get_current_poll()->type == 'rdv') {
         if (isset($resp[$prop_value]) && $resp[$prop_value]) {
-          $href = \Program\Lib\HTML\html::a(array("class" => "pure-button pure-button-validate-prop-rdv customtooltip_bottom", "title" => Localization::g("Validated proposal", false) . " : " . $prop_value), Localization::g(""));
-          $href .= \Program\Lib\HTML\html::a(array("onclick" => o::command("unvalidate_prop_rdv(check_$prop_key)"), "class" => "pure-button pure-button-unvalidate-prop customtooltip_bottom", "title" => Localization::g("Clic to unvalidate this proposal", false) . " : " . $prop_value,), "");
+          $href = \Program\Lib\HTML\html::a(array("href" => "#", "class" => "pure-button pure-button-validate-prop-rdv customtooltip_bottom", "title" => Localization::g("Validated proposal", false) . " : " . $prop_value), Localization::g(""));
+          $href .= \Program\Lib\HTML\html::a(array("href" => "#", "onclick" => o::command("unvalidate_prop_rdv(check_$prop_key)"), "class" => "pure-button pure-button-unvalidate-prop customtooltip_bottom", "title" => Localization::g("Clic to unvalidate this proposal", false) . " : " . $prop_value,), "");
         } else {
-          $href = \Program\Lib\HTML\html::a(array("onclick" => "validate_prop_rdv(check_$prop_key)", "class" => "pure-button pure-button-validate-prop customtooltip_bottom", "title" => Localization::g("Clic to validate this proposal", false) . " : " . $prop_value), Localization::g("Validate proposal"));
+          $href = \Program\Lib\HTML\html::a(array("href" => "#", "onclick" => "validate_prop_rdv(check_$prop_key)", "class" => "pure-button pure-button-validate-prop customtooltip_bottom", "title" => Localization::g("Clic to validate this proposal", false) . " : " . $prop_value), Localization::g("Validate proposal"));
         }
 
         $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check_$prop_key", "name" => "check_$prop_key", "value" => "$prop_value", "class" => "prop_rdv"));
@@ -1088,6 +1109,21 @@ class Show
       // Ajout de la nouvelle ligne
       self::$table->add_row(array("class" => "prop_row_elements prop_current_user_elements"));
       self::$table->add(array("class" => "user_list_name user_list_name_connected first_col customtooltip_bottom$authenticate_class", "title" => ($user->auth == 1 ? Localization::g("User authenticate", false) : Localization::g("User not authenticate", false)) . " : $title"), $name);
+    } elseif (\Program\Data\User::isset_current_user() && \Program\Data\User::get_current_user()->user_id == \Program\Data\Poll::get_current_poll()->organizer_id && \Program\Data\Poll::get_current_poll()->type == "rdv"){
+      //affichage de l'adresse et du numéro de téléphone de la personne qui a répondu si on est propriétaire du sondage
+      $phone = $response->phone_number;
+      $address = $response->postal_address;
+      self::$table->add_row(array("class" => "prop_row_elements prop_current_user_elements"));
+      $personnal_infos = "";
+      if(\Program\Data\Poll::get_current_poll()->phone_asked){
+        if($response->phone_number != '')
+          $personnal_infos = $personnal_infos . " , Téléphone : $phone";
+      }
+      if(\Program\Data\Poll::get_current_poll()->address_asked){
+        if($response->postal_address != '')
+          $personnal_infos = $personnal_infos . " , Adresse : $address";
+      }
+      self::$table->add(array("class" => "user_list_name user_list_name_connected first_col customtooltip_bottom$authenticate_class", "title" => ($user->auth == 1 ? Localization::g("User authenticate", false) : Localization::g("User not authenticate", false)) . " : $title $personnal_infos"), $name);
     } else {
       self::$table->add_row(array("class" => "prop_row_elements prop_others_users_elements"));
       self::$table->add(array("class" => "user_list_name first_col customtooltip_bottom$authenticate_class", "title" => ($user->auth == 1 ? Localization::g("User authenticate", false) : Localization::g("User not authenticate", false)) . " : $title"), $name);
@@ -1097,13 +1133,17 @@ class Show
     $resp = unserialize($response->response);
     if (!is_array($resp))
       $resp = array();
+      $reason = "";
+      if(\Program\Data\Poll::get_current_poll()->reason){
+        $reason = " (" . $response->reason . ")";
+      }
     foreach (self::$proposals as $prop_key => $prop_value) {
       $class = "";
       if (isset(self::$validate_proposals[$prop_value]) && \Program\Data\Poll::get_current_poll()->locked == 1) {
         $class = "validate_prop_td";
       }
       if (isset($resp[$prop_value]) && $resp[$prop_value]) {
-        self::$table->add(array("class" => "prop_accepted customtooltip_bottom $class", "align" => "center", "title" => "$prop_value"), Localization::g("Ok"));
+        self::$table->add(array("class" => "prop_accepted customtooltip_bottom $class", "align" => "center", "title" => "$prop_value"), Localization::g("Ok") . $reason);
         if (!isset(self::$nb_resp[$prop_value]))
           self::$nb_resp[$prop_value] = 0;
         if (!isset(self::$nb_resp["$prop_value:if_needed"]))
@@ -1251,7 +1291,7 @@ class Show
         // Ajout des boutons radio
         self::$table->add(array("title" => $prop_value, "class" => "prop_not_responded prop_change customtooltip_bottom", "align" => "center"), $checkbox->show('', ['value' => $prop_value, 'id' => "id$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "id$prop_value", 'class' => 'radio_label label_yes'], Localization::g('Yes')) . $br . $checkbox->show('', ['value' => "$prop_value:if_needed", 'id' => "idif_needed$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "idif_needed$prop_value", 'class' => 'radio_label label_if_needed'], Localization::g('If needed')) . $br . $checkbox->show('', ['value' => false, 'id' => "iddeclined$prop_value"]) . \Program\Lib\HTML\html::label(['for' => "iddeclined$prop_value", 'class' => 'radio_label label_no'], Localization::g('No')));
       } else if (\Program\Data\Poll::get_current_poll()->type == 'rdv') {
-        $href = \Program\Lib\HTML\html::a(array("onclick" => "validate_prop_rdv(check_$prop_key)", "class" => "pure-button pure-button-validate-prop customtooltip_bottom", "title" => Localization::g("Clic to validate this proposal", false) . " : " . $prop_value), Localization::g("Validate proposal"));
+        $href = \Program\Lib\HTML\html::a(array("href" => "#", "onclick" => "validate_prop_rdv(check_$prop_key)", "class" => "pure-button pure-button-validate-prop customtooltip_bottom", "title" => Localization::g("Clic to validate this proposal", false) . " : " . $prop_value), Localization::g("Validate proposal"));
 
         $checkbox = new \Program\Lib\HTML\html_checkbox(array("id" => "check_$prop_key", "name" => "check_$prop_key", "value" => "$prop_value", "class" => "prop_rdv"));
 
@@ -1569,21 +1609,42 @@ class Show
         $resp = array();
         $prop_keys = array();
         foreach ($_POST as $key => $post) {
-          if ($key != "user_username" && $key != "user_firstname" && $key != "user_department" && $key != "user_commune" && $key != "user_email" && $key != "user_phone_number" && $key != "user_object" && $key != "user_siren" && $key != "hidden_modify" && $key != "csrf_token") {
+          if ($key == "motifrdv") {
+            $reason = Request::getInputValue($key, POLL_INPUT_POST);
+          }
+          if ($key == "phone_number") {
+            $phone_number = Request::getInputValue($key, POLL_INPUT_POST);
+          }
+          if ($key == "postal_address"){
+            $postal_address = Request::getInputValue($key, POLL_INPUT_POST);
+          }
+          if ($key != "user_username" && $key != "user_firstname" && $key != "user_department" && $key != "user_commune" && $key != "user_email" && $key != "user_phone_number" && $key != "user_object" && $key != "user_siren" && $key != "hidden_modify" && $key != "csrf_token" && $key != "motifrdv" && $key != "phone_number" && $key != "postal_address" && $key != "calendar_new_response") {
             $resp[Request::getInputValue($key, POLL_INPUT_POST)] = true;
             $prop_keys[] = str_replace('check_', '', $key);
           }
         }
-
-
         $response = \Program\Drivers\Driver::get_driver()->getPollUserResponse($user_id, \Program\Data\Poll::get_current_poll()->poll_id);
+
         // Cas d'une modification pour un utilisateur authentifié
-        if ((\Program\Data\User::isset_current_user() || Session::is_set("user_noauth_id") && Session::is_set("user_noauth_name") && Session::is_set("user_noauth_poll_id")) && isset($hidden_modify) && (\Program\Data\User::isset_current_user() && $hidden_modify == \Program\Data\User::get_current_user()->user_id || Session::is_set("user_noauth_id") && $hidden_modify == Session::is_set("user_noauth_id")) || isset($response->poll_id)) {
+        if (Utils::is_auth()
+             && isset($hidden_modify)
+             && (\Program\Data\User::isset_current_user() 
+             && $hidden_modify == \Program\Data\User::get_current_user()->user_id 
+             || Session::is_set("user_noauth_id") 
+             && $hidden_modify == Session::is_set("user_noauth_id")) 
+             || isset($response->poll_id)) 
+        {
 
           // Enregistrement de la réponse dans bdd
           $response = new \Program\Data\Response(array("user_id" => $user_id, "poll_id" => \Program\Data\Poll::get_current_poll()->poll_id));
           $response->__initialize_haschanged();
           $response->response = serialize($resp);
+          if (isset($reason))
+            $response->reason = $reason;
+          if (isset($postal_address))
+            $response->postal_address = $postal_address;
+          if (isset($phone_number))
+            $response->phone_number = $phone_number;
 
           //On vérifie que le nombre de participant ne soit pas dépassé
           if (self::check_max_attendees($response)) {
@@ -1593,21 +1654,40 @@ class Show
             }
           }
 
-          //On envoi un mail si le participant à changé de réponse
-          if (unserialize($response->response) != null) {
-            if (isset(\Config\IHM::$SEND_MAIL) && \Config\IHM::$SEND_MAIL && $user_id != o::get_env("poll_organizer")->user_id) {
-              //Mail de changement de réponse à l'organisateur
-              \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, array_key_first(unserialize($response->response)), o::get_env("poll_organizer"));
+           // Gestion du calendrier
+           $calendar_id = Request::getInputValue("calendar_new_response", POLL_INPUT_POST);
 
-              if (\Program\Data\User::isset_current_user() && \Program\Data\Poll::get_current_poll()->type == 'rdv') {
-                \Program\Lib\Mail\Mail::SendValidateProposalUserMail(\Program\Data\Poll::get_current_poll(), $user_name, $user_email, array_key_first(unserialize($response->response)));
+          //On envoi un mail si le participant à changé de réponse
+          if (Utils::canSendMail() && !Utils::is_poll_organizer($user_id)){
+            if (unserialize($response->response) != null){
+              if (Utils::is_rdv()){
+                //mail de confirmation au participant
+                \Program\Lib\Mail\Mail::SendRdvICSMail(\Program\Data\Poll::get_current_poll(), $prop_keys[0], $response);
               }
-              //Mail de validation pour l'utilisateur
+              //mail de notification à l'organisateur
+              \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, $response, o::get_env("poll_organizer"));
             }
           }
         } elseif (isset($user_id)) {
           // Enregistrement de la réponse dans bdd
-          $response = new \Program\Data\Response(array("user_id" => $user_id, "poll_id" => \Program\Data\Poll::get_current_poll()->poll_id, "response" => serialize($resp)));
+          if (isset($reason) && $reason!=''){
+            $response = new \Program\Data\Response(array("user_id" => $user_id, "poll_id" => \Program\Data\Poll::get_current_poll()->poll_id, "response" => serialize($resp), "reason" => $reason, "phone_number" => $phone_number , "postal_address"=> $postal_address));
+          }else{
+            $response = new \Program\Data\Response(array("user_id" => $user_id, "poll_id" => \Program\Data\Poll::get_current_poll()->poll_id, "response" => serialize($resp), "phone_number" => $phone_number , "postal_address"=> $postal_address));
+          }
+          
+          //Envoie de mail
+          if(Utils::canSendMail() && !Utils::is_poll_organizer($user_id)){
+            if (unserialize($response->response) != null){
+              if(Utils::is_rdv()){
+                //mail de confirmation au participant
+                \Program\Lib\Mail\Mail::SendRdvICSMail(\Program\Data\Poll::get_current_poll(), $prop_keys[0], $response);
+              }
+              //mail de notification à l'organisateur
+              \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, $response, o::get_env("poll_organizer"));
+            }
+          }
+          
           // Gestion du calendrier
           $calendar_id = Request::getInputValue("calendar_new_response", POLL_INPUT_POST);
           if (isset($calendar_id)) {
@@ -1637,21 +1717,9 @@ class Show
               return;
             }
           }
-          if (unserialize($response->response) != null) {
-            if (isset(\Config\IHM::$SEND_MAIL) && \Config\IHM::$SEND_MAIL && $user_id != o::get_env("poll_organizer")->user_id) {
-              //Mail de changement de réponse à l'organisateur
-              \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, $response_date, o::get_env("poll_organizer"));
-
-              if(\Program\Data\Poll::get_current_poll()->type == 'rdv')
-              {
-                  //Mail de validation pour l'utilisateur
-                  \Program\Lib\Mail\Mail::SendValidateProposalUserMail(\Program\Data\Poll::get_current_poll(), $user_name, $user_email, $response_date);
-              }
-            }
-          }
         }
-        if (\Program\Data\Poll::get_current_poll()->type == 'rdv') {
-          \Program\Lib\Utils\Utils::add_tentative_calendar($response->calendar_id, $prop_keys);
+        if (Utils::is_rdv() && $response->calendar_id != null) {
+          Utils::add_tentative_calendar($response->calendar_id, $prop_keys);
           if (Session::is_set("user_noauth_id") && Session::is_set("user_noauth_name") && Session::is_set("user_noauth_poll_id") && Session::get("user_noauth_poll_id") == \Program\Data\Poll::get_current_poll()->poll_id) {
             Session::set("user_noauth_old_response", $response_date);
           }

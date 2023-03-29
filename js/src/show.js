@@ -329,15 +329,128 @@ $(document)
 
 function validate_prop_rdv(args) {
   //Message de validation si l'utilisateur n'est pas connecté
-  if (!poll.env.user_auth) {
-    if (confirm("Confirmez vous votre choix ?")) {
-      $('#' + args.id).attr('checked', 'checked');
-      $('form').submit();
+  if (poll.env.reasons){
+    $('#' + args.id).attr('checked', 'checked');
+    poll.popup('confirmation_rdv');
+    //Si sondage permettant les utilisateur non authentifiés
+    if(!poll.env.user_auth){
+      //Si l'utilisateur non authentifié n'a pas entré d'adresse mail
+      var regex_mail = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if(regex_mail.test(document.getElementById('user_email').value)){
+        document.getElementById('email').innerHTML = document.getElementById('user_email').value;
+      }else{
+        document.getElementById('email_area').style.display= "none";
+      }   
     }
-  } else {
-    $('#' + args.id).attr('checked', 'checked')
-    $('form').submit();
+    //Récupération du créneau sélectionné pour affichage dans la popup
+    document.getElementById('rdv_date').innerHTML = document.getElementById(args.id).value;
+    $('#stock').val(args.id);
+    //$('#' + args.id).attr('checked', 'checked');
   }
+  else{
+    poll.popup('confirmation_rdv');
+    document.getElementById('reason').style.display = "none";
+    if(!poll.env.user_auth){
+      //Si l'utilisateur non authentifié n'a pas entré d'adresse mail
+      if(document.getElementById('user_email')){
+        var regex_mail = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if(regex_mail.test(document.getElementById('user_email').value)){
+          document.getElementById('email_area').style.display= "block";
+          document.getElementById('email').innerHTML = document.getElementById('user_email').value;
+        }else{
+          document.getElementById('email_area').style.display= "none";
+        }     
+      }
+    }
+    //Récupération du créneau sélectionné pour affichage dans la popup
+    document.getElementById('rdv_date').innerHTML = document.getElementById(args.id).value;
+    $('#stock').val(args.id);
+    reason = document.getElementById("reason");
+    while(reason.firstChild){
+      reason.removeChild(reason.firstChild);
+    }
+    /**if (confirm("Confirmez vous votre choix ?")) {
+      $('#' + args.id).attr('checked', 'checked');
+    }  **/
+  }
+}
+
+function selectedreason(args){
+  id = $('#stock').val();
+  if(poll.env.reasons){
+    $('input[name=motifrdv]').val($('#choose_reason').val());
+  }
+  if($('#phone').val() == '' && poll.env.phone_req){
+    //TODO vérifier l'affichage du msg d'erreur
+    $('#phone_warning').text("champ obligatoire");
+    return false
+  }
+  const phone_regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/i;
+  if(phone_regex.exec($('#phone').val()) === null && poll.env.phone_req && $('#phone').val() !== ''){
+    $('#phone_warning').text("merci d'entrer un format de numéro de téléphone valide");
+    return false
+  }
+
+  if($('#postal_addr').val() == '' && poll.env.address_req){
+    $('#address_warning').text("champ obligatoire");
+    return false
+  }
+  $('input[name=phone_number').val($('#phone').val());
+  $('input[name=postal_address').val($('#postal_addr').val());
+  $('#' + id).attr('checked', 'checked');
+  var phone_number = $('#phone').val();
+  var adress = $('#postal_addr').val();
+  var name = $('#user_username').val();
+  var email = "";
+  if (document.getElementById('user_email')){
+    email = $('#user_email').val();
+  }
+
+  var prop_keys = [];
+  var propkey;
+  $("#proposals_form input:checkbox").each(
+    function () {
+      if ($(this).prop('checked')) {
+        prop_keys.push($(this).attr('name')
+          .replace('check_', ''));
+        propkey = $(this).attr('name')
+        .replace('check_', '');
+      }
+    }
+  );
+  poll.show_loading(poll.labels['Adding prop to your calendar...']);
+  $.ajax({
+    type: 'POST',
+    url: '?_p=ajax&_a=add_tentative_calendar' + (poll.env.calendar_id ? '&_c=' + poll.env.calendar_id : ""),
+    data: {
+      token: poll.env.csrf_token,
+      prop_keys: prop_keys,
+      poll_uid: poll.env.poll_uid,
+      phone: phone_number,
+      adress: adress,
+      reason: $('#choose_reason').val(),
+      user_noauth_name: name,
+      user_noauth_email: email
+    },
+    success: function () {
+      poll.hide_loading();
+      $('form').submit();
+    },
+    error: function (o, status, err) {
+      poll.hide_loading();
+    }
+  }); 
+  /*var args={
+    action: "validate_prop",
+    params: {
+      poll_uid: poll.env.poll_uid,
+      prop_key: propkey,
+      token: poll.env.csrf_token
+    },
+    url:"?_p=ajax_a=validate_prop"
+  };
+  ajax_validate_prop(args);*/
+  return true
 }
 
 function unvalidate_prop_rdv(args) {

@@ -239,4 +239,27 @@ class Session {
 	private static function getUserAgent() {
 		return $_SERVER['HTTP_USER_AGENT'];
 	}
+
+	/**
+	 * positionne en session les infos de l'utilisateur (pour BALP)
+	 * @return bool
+	 */
+	public static function setOriginalUser(){
+		$bool = true;
+		if(!self::is_set("original_username") && !self::is_set("original_user_id") && !self::is_set("original_user_email") && !self::is_set("original_user_fullname"))
+			if(self::is_set("username") && self::is_set("user_id") && self::is_set("user_email") && self::is_set("user_fullname")){
+				self::set("original_username",self::get("username"));
+				self::set("original_user_id", self::get("user_id"));
+				self::set("original_user_email",self::get("user_email"));
+				self::set("original_user_fullname",self::get("user_fullname"));
+			}
+			else{
+				$bool = false;
+			}
+		return $bool;
+	}
+
+	public static function getOriginalUser(){
+		return true;
+	}
 }

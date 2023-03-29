@@ -214,4 +214,19 @@ class Utils
       \Program\Lib\Templates\Edit_end::delete_tentatives_calendar($proposals = unserialize(\Program\Data\Poll::get_current_poll()->proposals));
     }
   }
+
+  public static function canSendMail(){
+    return(isset(\Config\IHM::$SEND_MAIL) && \Config\IHM::$SEND_MAIL);
+  }
+  public static function is_poll_organizer($user_id){
+    return($user_id == o::get_env("poll_organizer")->user_id);
+  }
+
+  public static function is_auth(){
+    return(\Program\Data\User::isset_current_user() || Session::is_set("user_noauth_id") && Session::is_set("user_noauth_name") && Session::is_set("user_noauth_poll_id"));
+  }
+
+  public static function is_rdv(){
+    return (\Program\Data\Poll::get_current_poll()->type == 'rdv');
+  }
 }

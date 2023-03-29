@@ -1,6 +1,31 @@
-Pégase - Version 1.0.13
-Pégase - Build 20220420152200
+Pégase - Version 1.0.15
+Pégase - Build 20230308095300
 Pégase - Liste des changements
+
+Pégase - 1.0.15
+===================================
+ 0007391: [General] [sondage RDV] Nom et adresse mail d'un participant NON AUTH non présents dans l'évènement occupé organisateur (dorian.duveau.i)
+ 0007518: [Messages] Erreur dans le mail envoyé à l'organisateur (dorian.duveau.i)
+ 0007528: [Interface] Loginfooter: Modifier SNUM par DNUM (dorian.duveau.i)
+ 0007516: [Driver Event] Problème de date dans l'ics envoyé aux participants (dorian.duveau.i)
+ 0007423: [General] [sondage prise de rdv] les boutons "Valider" ne répondent pas depuis la skin Courrielleur (dorian.duveau.i)
+ 0007422: [General] [sondage prise de rdv] version 1.0.14 à remonter sur client webMél (dorian.duveau.i)
+ 0007466: [General] Accéder à la dernière version pégase depuis le bouton Courrielleur (dorian.duveau.i)
+ 0007444: [Driver Event] Gérer le nouveau statut "Télétravail" (dorian.duveau.i)
+ 0006973: [Interface] Audit accessibilité (dorian.duveau.i)
+
+Pégase - 1.0.14
+===================================
+- Ajout des BALP
+- 0007035: [General] [sondage de rdv] Absence de la notification mail pour le participant non authentifié (dorian.duveau.i)
+- 0007036: [General] [sondage rdv] Disparition de tous les MOTIFS RDV en voulant en supprimer un seul (dorian.duveau.i)
+- 0007041: [General] [sondage rdv] Mauvaise restitution des intitulés de MOTIFS lorsqu'ils contiennent un espace (dorian.duveau.i)
+- 0007040: [General] [sondage rdv] Anomalie Agenda Organisateur pour une réponse d'un participant NON AUTH (dorian.duveau.i)
+- 0007034: [General] Évolution du mode prise de rendez-vous pour la DREAL ARA (dorian.duveau.i)
+- possibilité de dupliquer les créneaux de rendez-vous d'une semaine à l'autre
+- pour les sondage rdv champs motif de rendez-vous, possibilité de demander un numéro de téléphone et/ou une adresse
+- pop de validation avec choix d'un motif la de la selection d'un creneau de rendez-vous
+- envoi d'un mail récapitulatif à l'utilisateur repondant à un sondage de rendez-vous
 
 Pégase - 1.0.13 (Pas encore publiée) [ Afficher les bogues ]
 ===================================

@@ -268,6 +268,18 @@ abstract class Driver {
      */
     abstract function getResponsesByRange($user_id, $start, $end);
 
+    /**
+     * Permet de récupérer la liste des balp pour l'utilisateur courant
+     * @return array $listebal 
+     */
+    abstract function listBAL();
+    
+    /**
+     * Permet de changer l'utilisateur pour une de ses boites mails
+     * @param string $username
+     */
+    abstract function changeUser($username);
+
 
     /***** STATISTIQUES *******/
     /**

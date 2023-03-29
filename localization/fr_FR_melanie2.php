@@ -42,4 +42,4 @@ $labels['Respect the principles of labeling in force on the internet, namely a s
 
 $labels['© Ministry of the Ecological and Inclusive Transition, © Ministry of Territorial Cohesion and Relations with Local Authorities, © Ministry of Agriculture and Food'] = "© Ministère de la Transition écologique et solidaire, © Ministère de la Cohésion des territoires et des Relations avec les collectivités territoriales, © Ministère de l'Agriculture et de l'Alimentation";
 
-$labels['SNUM - Digital service'] = "SNUM - Service du numérique";
+$labels['SNUM - Digital service'] = "DNUM - Direction du numérique";

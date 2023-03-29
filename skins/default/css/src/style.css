@@ -198,6 +198,19 @@ fieldset {
     cursor: default;
 }
 
+#left-panel select#balselect {
+    margin-top: 15px;
+    margin-left: 10px;
+    width: 90%;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--listbox-text-color);
+    background: var(--listbox-bg-color);
+    font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+    border-radius: 3px;
+
+}
+
 #content {
     background-color: var(--main-content-bg-color);
     min-width: 800px;
@@ -317,6 +330,10 @@ a.pure-button {
     line-height: 30px;
 }
 
+button.pure-button:hover {
+    background-color: #f2f2f2;
+}
+
 a.pure-button:hover {
     background-color: #f2f2f2;
 }
@@ -424,7 +441,8 @@ a.pure-button-delete-date {
     color: var(--main-text-color);
 }
 
-#head .poll_organizer{
+#head .poll_location,
+#head .poll_organizer {
     font-size: 14px;
     color: var(--proposal-title-text-color);
     min-height: 25px;
@@ -656,7 +674,30 @@ a.pure-button-delete-date {
     top: 130px;
     font-size: 10px;
 }
-
+#login_content .box-left .productioninformation {
+    position: relative;
+    font-size: 10px;
+}
+ div#btn-text {
+        margin-left: 12px;
+        font-size: 11px;
+        letter-spacing: 0.2px;
+        
+    }
+    
+#login_content .box-left .productioninformation .button:hover {
+    box-shadow: 0 0 6px #bdc1ca;
+  }
+#login_content .box-left .productioninformation .button:active {
+    background: #1669F2;
+  }
+ div.icon-wrapper {
+    margin-left: 1px;
+    width: 40px;
+    height: 40px;
+    border-radius: 2px;
+    background-color: white;
+ }
 #login_content .box-right {
     position: relative;
     top: 0;
@@ -1705,7 +1746,14 @@ div.background-image {
 }
 
 #edit_form #edit_poll_type {
-    display: none;
+    opacity: 0;
+    width: 0px;
+    float: left;
+}
+
+#edit_form #edit_poll_type:focus {
+    opacity: 1;
+    width: 200px;
 }
 
 #edit_form #edit_description {
@@ -1911,4 +1959,25 @@ a.showmore {
 .email_input {
     background-color: var(--proposal-check-bg-color) !important;
     height: 30px;
+}
+
+.add-reason-bar{
+    display: flex;
+
+}
+
+.reason-item{
+    width: 60%;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.required{
+    padding-left: 30px;
+}
+
+.voice{
+    display: none;
 }

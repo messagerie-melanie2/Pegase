@@ -27,8 +27,22 @@
 use Program\Lib\Request\Localization as l;
 use Program\Lib\Templates\Main as m;
 use Program\Data\User as u;
+use Program\Drivers\Driver as d;
 ?>
 <div id="left-panel">
+	<?php if(count(d::get_driver()->listBAL())>1){?>
+		<?php if(isset($_GET["username"])){
+			d::get_driver()->changeUser($_GET["username"]);
+		}
+		?>
+		<?php $listebal = d::get_driver()->listBAL() ?>
+		<select id="balselect">
+			<?php $u = u::get_current_user()->username?>
+			<?php foreach ($listebal as $bal) { ?>
+				<option value=<?= $bal["uid"] ?> <?=$bal["mailboxuid"] == u::get_current_user()->username ? ' selected="selected"' : '';?>><?= $bal["fullname"] ?></option>
+			<?php } ?>
+		</select>
+	<?php } ?>
 <h2 id="aria-label-left-panel" class="voice"><?=l::g('Left panel')?></h2>
 	<?php if (u::isset_current_user()) { ?>
 		<h3><?= l::g('All polls') ?></h3>

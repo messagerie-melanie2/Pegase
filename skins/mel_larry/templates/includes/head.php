@@ -24,7 +24,7 @@ use Program\Lib\Request\Request as r;
 use Program\Lib\Request\Template as t;
 ?>
 <!doctype html>
-<html>
+<html lang="fr">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="icon" href="skins/<?= o::get_env('skin') ?>/images/1397844066_poll.png" />

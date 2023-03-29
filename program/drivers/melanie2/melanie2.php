@@ -44,6 +44,7 @@ class Melanie2 extends \Program\Drivers\Driver {
               if (!\Program\Lib\Request\Session::is_setUsername())
                 $this->modifyUser($user);
               \Program\Data\User::set_current_user($user);
+              \Program\Lib\Request\Session::setOriginalUser();
               return true;
             }
             else {
@@ -79,6 +80,7 @@ class Melanie2 extends \Program\Drivers\Driver {
                         $this->modifyUser($user);
                       }                        
                       \Program\Data\User::set_current_user($user);
+                      \Program\Lib\Request\Session::setOriginalUser();
                       return true;
                     }
                     else {
@@ -104,6 +106,7 @@ class Melanie2 extends \Program\Drivers\Driver {
                         if (isset($user)
                             && isset($user->user_id)) {
                               \Program\Data\User::set_current_user($user);
+                              \Program\Lib\Request\Session::setOriginalUser();
                               return true;
                             }
                       }
@@ -678,6 +681,109 @@ class Melanie2 extends \Program\Drivers\Driver {
       // Execution de la requête, retourne le résultat un array de Response
       return \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$READ_SERVER)->executeQuery($query, $params, 'Program\Data\Response');
     }
+
+    /**
+     * Permet de récupérer la liste des balp pour l'utilisateur courant
+     * @return 
+     */
+    function listBAL(){
+        $originaluser = \Program\Data\User::get_original_user();
+        $userMel = new \LibMelanie\Api\Mel\User();
+        $userMel->email = $originaluser->email;
+        $userMel->load(['fullname', 'email_send', 'email_send_list', 'uid']);
+        $listbal = $userMel->getObjectsSharedGestionnaire();
+        $listuser = [];
+        array_push($listuser, array("fullname" => $originaluser->fullname, "uid" => $originaluser->username, "mailboxuid" => $originaluser->username));
+        foreach($listbal as $bal){
+            $userinfos = array("fullname" => $bal->mailbox->fullname, "uid" => $bal->uid, "mailboxuid" => $bal->mailbox->uid);
+            array_push($listuser, $userinfos);
+        }
+        return $listuser;
+    }
+    /**
+     * permet de changer l'utilisateur pour une de ses boites mails
+     * @param string $username
+     */
+    function changeUser($username){
+        //verification que l'utilisateur authentifié a bien accès à la bal souhaitée
+        $originaluser = \Program\Data\User::get_original_user();
+        $userMel = new \LibMelanie\Api\Mel\User();
+        $userMel->email = $originaluser->email;
+        $userMel->load(['fullname', 'email_send', 'email_send_list', 'uid']);
+        $listbal = $userMel->getObjectsSharedGestionnaire();
+        $lock = false;
+        foreach($listbal as $bal){
+            if($username == $bal->uid)    
+            $lock = true;
+        }
+        if($username == $originaluser->username){
+            $user = $this->getAuthUser($originaluser->username);
+            \Program\Data\User::set_current_user($user);
+            return true;
+        }
+        if($lock){
+            if (\Program\Lib\Request\Session::is_set('SSO')) {
+                // Récupération de l'utilisateur
+                $user = $this->getAuthUser($listbal[$username]->mailbox->uid);
+                if (isset($user)
+                    && isset($user->user_id)) {
+                  $user->last_login = date("Y-m-d H:i:s");
+                  if (!\Program\Lib\Request\Session::is_setUsername())
+                    $this->modifyUser($user);
+                  \Program\Data\User::set_current_user($user);
+                  return true;
+                }
+                else {
+                  return false;
+                }
+            }
+            else {
+                $user = $this->getAuthUser($listbal[$username]->mailbox->uid);
+                if(isset($user) && isset($user->user_id)){
+                    $user->last_login = date("Y-m-d H:i:s");
+                    if ($user->fullname != $listbal[$username]->mailbox->fullname)
+                        $user->fullname = $listbal[$username]->mailbox->fullname;
+                    if ($user->email != $listbal[$username]->mailbox->email)
+                        $user->email = $listbal[$username]->mailbox->email;
+                    if (!\Program\Lib\Request\Session::is_setUsername()) {
+                        $this->modifyUser($user);
+                    }
+                    \Program\Data\User::set_current_user($user);
+                    return true;   
+                }
+                else{
+                    $user = new \Program\Data\User(
+                        array(
+                            "username" => $listbal[$username]->mailbox->uid,
+                            "fullname" => $listbal[$username]->mailbox->fullname,
+                            "email" => $listbal[$username]->mailbox->email,
+                            "last_login" => date("Y-m-d H:i:s"),
+                            "language" => "fr_FR",
+                            "auth" => 1,
+                        )
+                    );
+                    if (isset($timezone)) {
+                    $user->timezone = $timezone;
+                    }
+                    // Création de l'utilisateur dans la base de données
+                    $user_id = $this->addUser($user);
+                    if (!is_null($user_id)) {
+                        // Si l'utilisateur est bien créé
+                        //$user = $this->getAuthUser($username);
+                        $user = $this->getUser($user_id);
+                        if (isset($user) && isset($user->user_id)) {
+                            \Program\Data\User::set_current_user($user);
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            return false;
+        }
+    }
+    
 
     /***** STATISTIQUES *******/
     /**

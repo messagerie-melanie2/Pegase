@@ -393,7 +393,7 @@ class Ajax
           self::$message = "Poll does not exist";
           \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Ajax::add_tentative_calendar() Error : Poll does not exist");
           self::Send();
-        } elseif (!\Program\Data\User::isset_current_user()) {
+        } elseif (!\Program\Data\User::isset_current_user() && \Program\Data\Poll::get_current_poll()->type!="rdv") {
           self::$success = false;
           self::$message = "You have no right to access to this resource";
           \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Ajax::add_tentative_calendar() Error : You have no right to access to this resource");

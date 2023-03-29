@@ -67,7 +67,62 @@ $(document).ready(function () {
       $('#warning_change_poll_type').hide();
     }
   });
+
+  if($("#edit_poll_type").value == 'rdv'){
+    let i = "ok";
+  }
+  reasonItems = [];
+  displayReasonsManager()
+  let reasons = document.querySelector('#reasons');
+  let reasonsList = reasons.value.split(';');
+  reasonsList.forEach(reason => {
+    if(reason !== '')
+      addReason(reason,reasonItems);
 });
+const addbutton = document.querySelector('.js-reason-add');
+addbutton.addEventListener('click', event => {
+  const input = document.querySelector('.js-reason-input');
+  const text = input.value.trim();
+  if(text !== ''){
+    addReason(text,reasonItems);
+    input.value = '';
+    input.focus();
+    updateReasons(reasonItems);
+  }
+})
+const list = document.querySelector('.js-reason-list');
+list.addEventListener('click', event => {
+  if (event.target.classList.contains('js-delete-reason')){
+    const itemKey = event.target.parentElement.dataset.key;
+    deleteReason(itemKey);
+    updateReasons(reasonItems);
+  }
+})
+$('#addr_req').hide();
+$('#phone_req').hide();
+$("#address_asked").change(function () {
+  if (this.checked) {
+    $('#addr_req').show();
+    document.getElementById("address_required").checked = true;
+  }
+  else {
+    $('#addr_req').hide();
+    document.getElementById("address_required").checked = false;
+  }
+});
+$("#phone_asked").change(function () {
+  if (this.checked) {
+    $('#phone_req').show();
+    document.getElementById("phone_required").checked = true;
+  }
+  else {
+    $('#phone_req').hide();
+    document.getElementById("phone_required").checked = false;
+  }
+});
+
+});
+
 // Permet de switcher de type de sondage lors d'un clic sur le span
 function switch_poll_type(args) {
   var type = args.type ? args.type : 'date';
@@ -75,6 +130,12 @@ function switch_poll_type(args) {
   $('#edit_fieldset .poll_type span').removeClass('selected');
   $('#edit_fieldset .poll_type span.poll_type_' + type).addClass('selected');
   $("#edit_poll_type").change();
+}
+
+function update_select_poll_type(){
+  var type = $('#edit_poll_type').val();
+  $('#edit_fieldset .poll_type span').removeClass('selected');
+  $('#edit_fieldset .poll_type span.poll_type_' + type).addClass('selected');
 }
 
 //Permet d'afficher les champs nécessaires en fonction du type de sondage
@@ -136,4 +197,67 @@ function testMinAttendees() {
       $("#warning_max_attendees").text("");
     }
   })
+}
+
+function displayReasonsManager() {
+  var displayReason = document.querySelector('#enable_reason_checkbox');
+  var dispValue = true;
+  if (displayReason.checked == true)
+    dispValue = false;
+  var reasonManager = document.querySelector('.reasons-manager');
+  reasonManager.hidden= dispValue;
+}
+
+function addReason(text, reasonItems) {
+  const reason = {
+    text,
+    id: Math.random() * Date.now(),
+  };
+  reasonItems.push(reason);
+  renderReason(reason);
+}
+
+function deleteReason(key){
+  const index =  reasonItems.findIndex(item => item.id === Number(key));
+  const reason = {
+    deleted: true,
+    ...reasonItems[index]
+  };
+  reasonItems = reasonItems.filter(item => item.id !== Number(key));
+  renderReason(reason);
+}
+
+function updateReasons(reasonItems){
+  reasonsList = "";
+  reasonTable = [];
+  reasonItems.forEach(reason => {
+    reasonTable.push(reason.text);
+  });
+  reasonsList = reasonTable.join(';');
+  document.querySelector("#reasons").value = reasonsList;
+
+}
+
+function renderReason(reason){
+  const list = document.querySelector('.js-reason-list');
+  const item = document.querySelector(`[data-key='${reason.id}']`);
+
+  if (reason.deleted){
+    item.remove();
+    return
+  }
+  const node = document.createElement("li");
+  node.setAttribute('class', 'reason-item');
+  node.setAttribute('data-key', reason.id);
+  node.innerHTML = `
+    <span>${reason.text}</span>
+    <button class="delete-reason js-delete-reason">
+    X
+    </button>
+  `;
+  list.append(node);
+}
+
+function hidePhone(){
+  
 }

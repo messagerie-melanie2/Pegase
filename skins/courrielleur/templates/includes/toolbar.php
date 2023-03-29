@@ -32,6 +32,9 @@ use Program\Lib\Request\Session as s;
 		<a class="button back notext customtooltip_bottom" title="<?= l::g("Go back to main page", false) ?>" href="<?= o::url("main") ?>"><?= l::g('Back') ?></a>
 		<?php } else { ?>
 			<a class="button addpoll customtooltip_bottom" title="<?= l::g("Create a new poll", false) ?>" href="<?= o::url("edit", ACT_NEW) ?>"><span class="inner"><?= l::g('New poll') ?></span></a>
+			<span id="connected_as">
+				<?= l::g('Connected as') ?> <b title="<?= u::get_original_user()->fullname ?>"><?= s::is_set('SSO') ? u::get_original_user()->email : u::get_original_user()->username ?></b>
+			</span>
 			<?php } ?>
 			<span class="spacer"></span>
 			

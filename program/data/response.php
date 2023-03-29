@@ -37,6 +37,10 @@ namespace Program\Data;
  * @property string $response Données de réponse de l'utilisateur pour le sondage, sérialisées
  * @property string $calendar_id Identifiant du calendrier utilisé si ce n'est pas celui par défaut de l'utilisateur
  * @property string $calendar_name Nom du calendrier utilisé si ce n'est pas celui par défaut de l'utilisateur
+ * @property string $settings Liste des paramètres de la réponse
+ * @property string $reason Motif du rdv de la réponse
+ * @property string $phone_number Numéro de téléphone de l'utilisateur
+ * @property string $postal_address Adresse postale de l'utilisateur
  *
  * @package Data
  */
@@ -122,6 +126,99 @@ class Response extends MagicObject implements \JsonSerializable
       // Valeur par défaut
       return null;
   }
+  /**
+   * Positionne la valeur de paramètre $reason depuis les settings de la réponse
+   * @param string $reason
+   * @return boolean
+   */
+  protected function __set_reason($reason)
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    $settings['reason'] = $reason;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $reason depuis les settings de la réponse
+   * @return string
+   */
+  protected function __get_reason()
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['reason']))
+      return $settings['reason'];
+    else
+      // Valeur par défaut
+      return "";
+  }
+  /**
+   * Positionne la valeur de paramètre $phone_number depuis les settings de la réponse
+   * @param string $phone_number
+   * @return boolean
+   */
+  protected function __set_phone_number($phone_number)
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    $settings['phone_number'] = $phone_number;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $phone_number depuis les settings de la réponse
+   * @return string
+   */
+  protected function __get_phone_number()
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['phone_number']))
+      return $settings['phone_number'];
+    else
+      // Valeur par défaut
+      return "";
+  }
+  /**
+   * Positionne la valeur de paramètre $postal_address depuis les settings de la réponse
+   * @param string $postal_address
+   * @return boolean
+   */
+  protected function __set_postal_address($postal_address)
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    $settings['postal_address'] = $postal_address;
+    $this->settings = serialize($settings);
+    return true;
+  }
+  /**
+   * Retourne la valeur de paramètre $postal_address depuis les settings de la réponse
+   * @return string
+   */
+  protected function __get_postal_address()
+  {
+    $settings = unserialize($this->settings);
+    if ($settings === false) {
+      $settings = array();
+    }
+    if (isset($settings['postal_address']))
+      return $settings['postal_address'];
+    else
+      // Valeur par défaut
+      return "";
+  }
 
   public function jsonSerialize()
   {
@@ -130,6 +227,7 @@ class Response extends MagicObject implements \JsonSerializable
       'user_username' => $this->user_username,
       'user_email' => $this->user_email,
       'response' => $this->response,
+      'settings' => $this->settings,
     ];
   }
 }

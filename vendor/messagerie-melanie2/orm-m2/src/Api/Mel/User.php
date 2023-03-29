@@ -141,6 +141,18 @@ class User extends Defaut\User {
    */
   const LOAD_ATTRIBUTES = ['fullname', 'uid', 'name', 'email', 'email_list', 'email_send', 'email_send_list', 'server_routage', 'internet_access_user', 'shares', 'type'];
   /**
+   * Filtre pour la méthode load() si c'est un objet de partage
+   * 
+   * @ignore
+   */
+  const LOAD_OBJECTSHARE_FILTER = "(uid=%%uid%%)";
+  /**
+   * Filtre pour la méthode load() avec un email si c'est un object de partage
+   * 
+   * @ignore
+   */
+  const LOAD_OBJECTSHARE_FROM_EMAIL_FILTER = self::LOAD_FROM_EMAIL_FILTER;
+  /**
    * Filtre pour la méthode getBalp()
    * 
    * @ignore
@@ -246,6 +258,7 @@ class User extends Defaut\User {
     "acces_internet_profil"   => [MappingMce::name => 'info', MappingMce::prefixLdap => 'AccesInternet.Profil: ', MappingMce::type => MappingMce::stringLdap],
     "acces_internet_ts"       => [MappingMce::name => 'info', MappingMce::prefixLdap => 'AccesInternet.AcceptationCGUts: ', MappingMce::type => MappingMce::stringLdap],
     "mdrive"                  => [MappingMce::name => 'info', MappingMce::prefixLdap => 'MDRIVE: ', MappingMce::type => MappingMce::booleanLdap, MappingMce::trueLdapValue => 'oui', MappingMce::falseLdapValue => 'non'],
+    "mdrive_quota"            => 'mineqmelmdrivequota', // Quota du MDrive
     "outofoffices"            => [MappingMce::name => 'mineqmelreponse', MappingMce::type => MappingMce::arrayLdap], // Affichage du message d'absence de l'utilisateur
     "acces_synchro_admin_profil"    => 'mineqmelaccessynchroa',       // Profil de synchro administrateur
     "acces_synchro_admin_datetime"  => 'mineqmelaccessynchroa',       // Date de synchro administrateur
@@ -256,6 +269,7 @@ class User extends Defaut\User {
     "cerbere"                   => [MappingMce::name => 'info', MappingMce::prefixLdap => 'AUTH.Cerbere:', MappingMce::type => MappingMce::stringLdap],
     "double_authentification"   => [MappingMce::name => 'mineqinfosec', MappingMce::prefixLdap => 'DoubleAuth.Obligatoire: ', MappingMce::type => MappingMce::booleanLdap, MappingMce::trueLdapValue => 'oui', MappingMce::falseLdapValue => 'non'],
     "is_mailbox"                => [MappingMce::name => 'objectclass', MappingMce::trueLdapValue => 'mineqMelBoite', MappingMce::type => MappingMce::booleanLdap],             // Est-ce qu'il s'agit bien d'une boite Mél ?
+    "modifiedtime"              => 'mineqmodifiedtimestamp',
   ];
 
   /**
@@ -865,8 +879,8 @@ class User extends Defaut\User {
       $i = 0;
       foreach ($this->objectmelanie->outofoffices as $oof) {
         $object = new Outofoffice($oof);
-        if ($object->type == Outofoffice::TYPE_ALL) {
-          $key = $object->type.$i++;
+        if (isset($object->days)) {
+          $key = Outofoffice::HEBDO.$i++;
         }
         else {
           $key = $object->type;

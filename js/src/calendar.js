@@ -306,17 +306,83 @@ $(document)
             function () {
               if ($(this).hasClass('hide-calendar')) {
                 $(this).removeClass('hide-calendar');
-                $(this).addClass('fc-state-active');
+                //$(this).addClass('fc-state-active');
                 $('#calendar span.fc-header-legend').hide();
+                this.innerHTML = poll.labels['show calendar'];
                 calendar.fullCalendar('removeEventSource',
                   getExternEventSource());
               } else {
                 $(this).addClass('hide-calendar');
-                $(this).removeClass('fc-state-active');
+                //$(this).removeClass('fc-state-active');
                 $('#calendar span.fc-header-legend').show();
+                this.innerHTML = poll.labels['hide calendar'];
                 calendar.fullCalendar('addEventSource',
                   getExternEventSource());
               }
+            });
+}
+//Ajout du bouton de duplication des semaine
+if (poll.env.is_type_rdv) {
+    $('#calendar div.fc-right div.fc-button-group')
+        .append(
+            '<button type="button" style="-moz-user-select: none;" class="fc-button-duplicate-proposals fc-button duplicate-proposals fc-state-default fc-corner-right">' + poll.labels['duplicate proposals'] + '</button>');
+    $("#calendar div.fc-right button.fc-button-duplicate-proposals")
+        .hover(function() {
+            $(this).addClass('fc-state-hover');
+        }, function() {
+            $(this).removeClass('fc-state-hover');
+        });
+    $("#calendar div.fc-right button.fc-button-duplicate-proposals")
+        .click(
+            function() {
+                var events = $('#calendar').fullCalendar('clientEvents');
+                var elements = document.getElementsByClassName("fc-day fc-mon");
+                if(elements.length == 0){
+                    console.log("prb affichage");
+                    var currentDate = $('#calendar').fullCalendar('getDate');
+                }else{
+                    var currentDate = moment(elements[0].getAttribute('data-date'));
+                }
+                
+                var endDate = currentDate.clone().add(7,'days');
+                events.forEach(function(event){
+
+                    if ( currentDate.isBefore(event.start) && event.start.isBefore(endDate)){
+
+                        if (event.title == poll.env.poll_title){
+                            var start = event.start.clone();
+                            start.add(7,'days');
+                            var end = event.end.clone();
+                            end.add(7,'days');
+                            var allDay = event.allDay;
+                            var newEvent = {
+                                title: poll.env.poll_title,
+                                start : start,
+                                end: end,
+                                allDay: allDay
+                            };
+                            var addEvent = true;
+                                                                
+                            events.forEach(function(eventbis){
+                                if (eventbis.title == newEvent.title){
+                                    if(eventbis.start.toString() == newEvent.start.toString()){
+                                        if(eventbis.end.toString() == newEvent.end.toString()){
+                                            if(eventbis.allDay == newEvent.allDay){
+                                                addEvent = false;
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            if (addEvent){
+                                $('#calendar').fullCalendar('renderEvent', newEvent, true);
+                                addNewDate(newEvent.start.toDate(), newEvent.end.toDate(), newEvent.allDay);    
+                            }
+                        }
+                    }
+                });
+                $('#calendar').fullCalendar('changeView', 'agendaWeek', endDate);
+            
             });
       }
     });

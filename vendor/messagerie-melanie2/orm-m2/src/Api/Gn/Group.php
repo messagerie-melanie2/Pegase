@@ -52,21 +52,7 @@ class Group extends Defaut\Group {
      * 
      * @ignore
      */
-    const LOAD_ATTRIBUTES = ['dn', 'fullname', 'email', 'owners'];
-
-    /**
-     * TODO le cn devrait être récupérable directement
-     * renvoi le cn
-     * @return mixed|null
-     * @throws \Safe\Exceptions\PcreException
-     */
-    public function getMapCn() {
-        if (\Safe\preg_match("#(cn=)(.*)(,dmd*)#",$this->dn, $matches)) {
-            return $matches[2];
-        } else {
-            return null;
-        }
-    }
+    const LOAD_ATTRIBUTES = ['dn', 'fullname', 'email', 'owners', 'cn'];
 
     /**
      * Récupère la liste des membres d'un groupe
@@ -82,9 +68,8 @@ class Group extends Defaut\Group {
             $filter = $ldap->getConfig("get_users_by_group");
             $filter = str_replace("%%memberOf%%", $this->dn, $filter);
             $search = $ldap->search($ldap->getConfig("base_dn"), $filter);
+            $attributes = $ldap->getConfig("get_user_infos_attributes");
             $entries = $ldap->get_entries($search);
-
-            $attributesMember = $ldap->getConfig('get_user_infos_attributes');
 
             if ($entries
                     && is_array($entries)
@@ -92,17 +77,31 @@ class Group extends Defaut\Group {
                 array_shift($entries);
                 foreach ($entries as $i => $entry) {
                     $member = new Member();
-                    foreach ($attributesMember as $k) {
-                        if (isset($entry[$k])) {
-                            $member->$k = $entry[$k][0];
-                        } else {
-                            $member->$k = null;
-                        }
-                    }
+                    $member->dn = $entry['dn'];
+                    $member->load($attributes);
                     $this->_members[] = $member;
                 }
             }
         }
         return $this->_members;
+    }
+
+    public function getCsaMembers() {
+        $ldap = Ldap::GetInstance(LdapConfig::$SEARCH_LDAP);
+        $base_group = $ldap->getConfig("base_group_dn");
+        $this->dn = 'cn=csa_'.$this->uid.','.$base_group;
+
+        return $this->getMapMembers();
+    }
+
+    /**
+     * Mapping cn field
+     * 
+     * @param string $cn          
+     */
+    public function setMapCn($cn) {
+        $ldap = Ldap::GetInstance(LdapConfig::$SEARCH_LDAP);
+        $base_group = $ldap->getConfig("base_group_dn");
+        $this->dn = "cn=$cn,$base_group";
     }
 }

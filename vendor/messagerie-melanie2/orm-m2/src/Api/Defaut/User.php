@@ -87,12 +87,14 @@ abstract class User extends MceObject {
    * Liste des workspaces de l'utilisateur
    * 
    * @var Workspace[]
+   * @ignore
    */
   protected $_userWorkspaces;
   /**
    * Liste de tous les workspaces auquel l'utilisateur a accés
    * 
    * @var Workspace[]
+   * @ignore
    */
   protected $_sharedWorkspaces;
 
@@ -100,18 +102,21 @@ abstract class User extends MceObject {
    * Liste des news que l'utilisateur peut consulter
    * 
    * @var News\News[]
+   * @ignore
    */
   protected $_userNews;
   /**
    * Liste des rss que l'utilisateur peut consulter
    * 
    * @var News\Rss[]
+   * @ignore
    */
   protected $_userRss;
   /**
    * Liste des droits de l'utilisateur sur les news et rss
    * 
    * @var News\NewsShare[]
+   * @ignore
    */
   protected $_userNewsShares;
 
@@ -119,18 +124,21 @@ abstract class User extends MceObject {
    * Calendrier par défaut de l'utilisateur
    * 
    * @var Calendar
+   * @ignore
    */
   protected $_defaultCalendar;
   /**
    * Liste des calendriers de l'utilisateur
    * 
    * @var Calendar[]
+   * @ignore
    */
   protected $_userCalendars;
   /**
    * Liste de tous les calendriers auquel l'utilisateur a accés
    * 
    * @var Calendar[]
+   * @ignore
    */
   protected $_sharedCalendars;
 
@@ -144,12 +152,14 @@ abstract class User extends MceObject {
    * Liste des carnets d'adresses de l'utilisateur
    * 
    * @var Addressbook
+   * @ignore
    */
   protected $_userAddressbooks;
   /**
    * Liste de tous les carnets d'adresses auquel l'utilisateur a accés
    * 
    * @var Addressbook
+   * @ignore
    */
   protected $_sharedAddressbooks;
 
@@ -157,18 +167,21 @@ abstract class User extends MceObject {
    * Liste de tâches par défaut de l'utilisateur
    * 
    * @var Taskslist
+   * @ignore
    */
   protected $_defaultTaskslist;
   /**
    * Liste des listes de tâches de l'utilisateur
    * 
    * @var Taskslist
+   * @ignore
    */
   protected $_userTaskslists;
   /**
    * Liste de toutes les listes de tâches auquel l'utilisateur a accés
    * 
    * @var Taskslist
+   * @ignore
    */
   protected $_sharedTaskslists;
 
@@ -176,18 +189,21 @@ abstract class User extends MceObject {
    * Liste des objets partagés accessibles à l'utilisateur
    * 
    * @var ObjectShare[]
+   * @ignore
    */
   protected $_objectsShared;
   /**
    * Liste des objets partagés accessibles en emission à l'utilisateur
    * 
    * @var ObjectShare[]
+   * @ignore
    */
   protected $_objectsSharedEmission;
   /**
    * Liste des objets partagés accessibles en gestionnaire à l'utilisateur
    * 
    * @var ObjectShare[]
+   * @ignore
    */
   protected $_objectsSharedGestionnaire;
 
@@ -195,18 +211,21 @@ abstract class User extends MceObject {
    * Liste des boites partagées accessibles à l'utilisateur
    * 
    * @var User[]
+   * @ignore
    */
   protected $_shared;
   /**
    * Liste des boites partagées accessibles en emission à l'utilisateur
    * 
    * @var User[]
+   * @ignore
    */
   protected $_sharedEmission;
   /**
    * Liste des boites partagées accessibles en gestionnaire à l'utilisateur
    * 
    * @var User[]
+   * @ignore
    */
   protected $_sharedGestionnaire;
 
@@ -214,12 +233,14 @@ abstract class User extends MceObject {
    * Liste des partages pour l'objet courant
    * 
    * @var Share[]
+   * @ignore
    */
   protected $_shares;
   /**
    * Liste des groupes pour l'objet courant
    * 
    * @var Group[]
+   * @ignore
    */
   protected $_lists;
 
@@ -227,6 +248,7 @@ abstract class User extends MceObject {
    * Nom de la conf serveur utilisé pour le LDAP
    * 
    * @var string
+   * @ignore
    */
   protected $_server;
 
@@ -234,6 +256,7 @@ abstract class User extends MceObject {
    * Est-ce que l'objet est déjà chargé depuis l'annuaire ?
    * 
    * @var boolean
+   * @ignore
    */
   protected $_isLoaded;
 
@@ -241,6 +264,7 @@ abstract class User extends MceObject {
    * Est-ce que l'objet existe dans l'annuaire ?
    * 
    * @var boolean
+   * @ignore
    */
   protected $_isExist;
 
@@ -248,6 +272,7 @@ abstract class User extends MceObject {
    * Liste des preferences de l'utilisateur
    * 
    * @var UserPrefs[]
+   * @ignore
    */
   protected $_preferences;
 
@@ -279,6 +304,34 @@ abstract class User extends MceObject {
     '_preferences',
   ];
 
+  /**
+   * Droits de lecture sur la boite
+   */
+  protected static $_sharesRead = ['G', 'C', 'E', 'L'];
+
+  /**
+   * Droits d'écriture sur la boite
+   */
+  protected static $_sharesWrite = ['G', 'C', 'E'];
+
+  /**
+   * Droits d'envoi de messages sur la boite
+   */
+  protected static $_sharesSend = ['G', 'C']; 
+
+  /**
+   * Droits de niveau administrateur ou gestionnaire sur la boite
+   */
+  protected static $_sharesAdmin = ['G'];
+
+  /**
+   * Configuration de l'item name associé à l'objet courant
+   * 
+   * @var string
+   * @ignore
+   */
+  protected $_itemName;
+
   // **** Constantes pour les preferences
   /**
    * Scope de preference par defaut pour l'utilisateur
@@ -296,6 +349,23 @@ abstract class User extends MceObject {
    * Scope de preference pour les listes de taches de l'utilisateur
    */
   const PREF_SCOPE_TASKSLIST = \LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_SCOPE;
+
+  /**
+   * Droit de lecture
+   */
+  const RIGHT_READ = 'read';
+  /**
+   * Droit d'écriture
+   */
+  const RIGHT_WRITE = 'write';
+  /**
+   * Droit d'émission
+   */
+  const RIGHT_SEND = 'send';
+  /**
+   * Droit de gestion
+   */
+  const RIGHT_ADMIN = 'admin';
 
   // **** Configuration des filtres et des attributs par défaut
   /**
@@ -316,6 +386,24 @@ abstract class User extends MceObject {
    * @ignore
    */
   const LOAD_ATTRIBUTES = ['fullname', 'uid', 'name', 'email', 'email_list', 'email_send', 'email_send_list', 'server_routage', 'shares', 'type'];
+  /**
+   * Filtre pour la méthode load() si c'est un objet de partage
+   * 
+   * @ignore
+   */
+  const LOAD_OBJECTSHARE_FILTER = null;
+  /**
+   * Filtre pour la méthode load() avec un email si c'est un object de partage
+   * 
+   * @ignore
+   */
+  const LOAD_OBJECTSHARE_FROM_EMAIL_FILTER = null;
+  /**
+   * Attributs par défauts pour la méthode load() si c'est un objet de partage
+   * 
+   * @ignore
+   */
+  const LOAD_OBJECTSHARE_ATTRIBUTES = ['fullname', 'uid', 'email_send', 'email_send_list', 'shares'];
   /**
    * Filtre pour la méthode getBalp()
    * 
@@ -405,11 +493,15 @@ abstract class User extends MceObject {
     $this->get_class = get_class($this);
     
     M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->__construct($server)");
+
+    // Récupération de l'itemName
+    $this->_itemName = $itemName;
+
     // Définition de l'utilisateur
-    $this->objectmelanie = new UserMelanie($server, null, static::MAPPING, $itemName);
+    $this->objectmelanie = new UserMelanie($server, null, static::MAPPING, $this->_itemName);
     // Gestion d'un second serveur d'annuaire dans le cas ou les informations sont répartis
     if (isset(\LibMelanie\Config\Ldap::$OTHER_LDAP)) {
-      $this->otherldapobject = new UserMelanie(\LibMelanie\Config\Ldap::$OTHER_LDAP, null, static::MAPPING, $itemName);
+      $this->otherldapobject = new UserMelanie(\LibMelanie\Config\Ldap::$OTHER_LDAP, null, static::MAPPING, $this->_itemName);
     }
     $this->_server = $server ?: \LibMelanie\Config\Ldap::$SEARCH_LDAP;
   }
@@ -459,13 +551,21 @@ abstract class User extends MceObject {
    * @param boolean $master Utiliser le serveur maitre (nécessaire pour faire des modifications)
    * @param string $user_dn DN de l'utilisateur si ce n'est pas le courant a utiliser
    * @param boolean $gssapi Utiliser une authentification GSSAPI sans mot de passe
+   * @param string $itemName Nom de l'objet associé dans la configuration LDAP
+   * 
    * @return boolean
    */
-  public function authentification($password = null, $master = false, $user_dn = null, $gssapi = false) {
+  public function authentification($password = null, $master = false, $user_dn = null, $gssapi = false, $itemName = null) {
     if ($master) {
       $this->_server = \LibMelanie\Config\Ldap::$MASTER_LDAP;
     }
-    return $this->objectmelanie->authentification($password, $master, $user_dn, $gssapi);
+
+    // Récupération de l'itemName
+    if (isset($itemName)) {
+      $this->_itemName = $itemName;
+    }
+
+    return $this->objectmelanie->authentification($password, $master, $user_dn, $gssapi, $this->_itemName);
   }
 
   /**
@@ -484,11 +584,21 @@ abstract class User extends MceObject {
       return $this->_isLoaded;
     }
     $useIsLoaded = !isset($attributes);
-    if (!isset($attributes)) {
-      $attributes = static::LOAD_ATTRIBUTES;
+    // MANTIS 0006995: [User] Permettre un load() différent sur un objet de partage
+    if ($this->getMapIs_objectshare()) {
+      if (!isset($attributes)) {
+        $attributes = static::LOAD_OBJECTSHARE_ATTRIBUTES;
+      }
+      $filter = static::LOAD_OBJECTSHARE_FILTER;
+      $filterFromEmail = static::LOAD_OBJECTSHARE_FROM_EMAIL_FILTER;
     }
-    $filter = static::LOAD_FILTER;
-    $filterFromEmail = static::LOAD_FROM_EMAIL_FILTER;
+    else {
+      if (!isset($attributes)) {
+        $attributes = static::LOAD_ATTRIBUTES;
+      }
+      $filter = static::LOAD_FILTER;
+      $filterFromEmail = static::LOAD_FROM_EMAIL_FILTER;
+    }
     if (isset(\LibMelanie\Config\Ldap::$SERVERS[$this->_server])) {
       if (isset(\LibMelanie\Config\Ldap::$SERVERS[$this->_server]['get_user_infos_filter'])) {
         $filter = \LibMelanie\Config\Ldap::$SERVERS[$this->_server]['get_user_infos_filter'];
@@ -534,6 +644,36 @@ abstract class User extends MceObject {
   }
 
   /**
+   * Est-ce que l'utilisateur a les droits demandés sur cette boite
+   * 
+   * @param string $username
+   * @param string $right Voir User::RIGHT_*
+   * 
+   * @return boolean
+   */
+  public function asRight($username, $right) {
+    foreach ($this->getMapShares() as $share) {
+      if ($share->user == $username) {
+        switch ($right) {
+          case self::RIGHT_ADMIN:
+            return in_array($share->type, static::$_sharesAdmin);
+            break;
+          case self::RIGHT_SEND:
+            return in_array($share->type, static::$_sharesSend);
+            break;
+          case self::RIGHT_WRITE:
+            return in_array($share->type, static::$_sharesWrite);
+            break;
+          case self::RIGHT_READ:
+            return in_array($share->type, static::$_sharesRead);
+            break;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
    * Récupère la liste des objets de partage accessibles à l'utilisateur
    * 
    * @param array $attributes [Optionnal] List of attributes to load
@@ -558,7 +698,7 @@ abstract class User extends MceObject {
       $this->_objectsShared = [];
       $class = $this->__getNamespace() . '\\ObjectShare';
       foreach ($list as $key => $object) {
-        $this->_objectsShared[$key] = new $class($this->_server);
+        $this->_objectsShared[$key] = new $class($this->_server, $this->_itemName);
         $this->_objectsShared[$key]->setObjectMelanie($object);
       }
       $this->executeCache();
@@ -590,7 +730,7 @@ abstract class User extends MceObject {
       $list = $this->objectmelanie->getBalp($attributes, $filter);
       $this->_shared = [];
       foreach ($list as $key => $object) {
-        $this->_shared[$key] = new static($this->_server);
+        $this->_shared[$key] = new static($this->_server, $this->_itemName);
         $this->_shared[$key]->setObjectMelanie($object);
       }
       $this->executeCache();
@@ -623,7 +763,7 @@ abstract class User extends MceObject {
       $this->_objectsSharedEmission = [];
       $class = $this->__getNamespace() . '\\ObjectShare';
       foreach ($list as $key => $object) {
-        $this->_objectsSharedEmission[$key] = new $class($this->_server);
+        $this->_objectsSharedEmission[$key] = new $class($this->_server, $this->_itemName);
         $this->_objectsSharedEmission[$key]->setObjectMelanie($object);
       }
       $this->executeCache();
@@ -655,7 +795,7 @@ abstract class User extends MceObject {
       $list = $this->objectmelanie->getBalpEmission($attributes, $filter);
       $this->_sharedEmission = [];
       foreach ($list as $key => $object) {
-        $this->_sharedEmission[$key] = new static($this->_server);
+        $this->_sharedEmission[$key] = new static($this->_server, $this->_itemName);
         $this->_sharedEmission[$key]->setObjectMelanie($object);
       }
       $this->executeCache();
@@ -688,7 +828,7 @@ abstract class User extends MceObject {
       $this->_objectsSharedGestionnaire = [];
       $class = $this->__getNamespace() . '\\ObjectShare';
       foreach ($list as $key => $object) {
-        $this->_objectsSharedGestionnaire[$key] = new $class($this->_server);
+        $this->_objectsSharedGestionnaire[$key] = new $class($this->_server, $this->_itemName);
         $this->_objectsSharedGestionnaire[$key]->setObjectMelanie($object);
       }
       $this->executeCache();
@@ -720,7 +860,7 @@ abstract class User extends MceObject {
       $list = $this->objectmelanie->getBalpGestionnaire($attributes, $filter);
       $this->_sharedGestionnaire = [];
       foreach ($list as $key => $object) {
-        $this->_sharedGestionnaire[$key] = new static($this->_server);
+        $this->_sharedGestionnaire[$key] = new static($this->_server, $this->_itemName);
         $this->_sharedGestionnaire[$key]->setObjectMelanie($object);
       }
       $this->executeCache();
@@ -753,7 +893,7 @@ abstract class User extends MceObject {
       $this->_lists = [];
       $class = $this->__getNamespace() . '\\Group';
       foreach ($list as $key => $object) {
-        $this->_lists[$key] = new $class($this->_server);
+        $this->_lists[$key] = new $class($this->_server, $this->_itemName);
         $this->_lists[$key]->setObjectMelanie($object);
       }
       $this->executeCache();
@@ -786,7 +926,7 @@ abstract class User extends MceObject {
       $this->_lists = [];
       $class = $this->__getNamespace() . '\\Group';
       foreach ($list as $key => $object) {
-        $this->_lists[$key] = new $class($this->_server);
+        $this->_lists[$key] = new $class($this->_server, $this->_itemName);
         $this->_lists[$key]->setObjectMelanie($object);
       }
       $this->executeCache();
@@ -819,7 +959,7 @@ abstract class User extends MceObject {
       $this->_lists = [];
       $class = $this->__getNamespace() . '\\Group';
       foreach ($list as $key => $object) {
-        $this->_lists[$key] = new $class($this->_server);
+        $this->_lists[$key] = new $class($this->_server, $this->_itemName);
         $this->_lists[$key]->setObjectMelanie($object);
       }
       $this->executeCache();
@@ -2086,7 +2226,7 @@ abstract class User extends MceObject {
       if (isset($this->uid) && strpos($this->uid, $this->getObjectShareDelimiter()) !== false 
           || isset($this->email) && strpos($this->email, $this->getObjectShareDelimiter()) !== false) {
         $class = $this->__getNamespace() . '\\ObjectShare';
-        $this->objectshare = new $class();
+        $this->objectshare = new $class($this->_server, $this->_itemName);
         $this->objectshare->setObjectMelanie($this->objectmelanie);
       }
     }
@@ -2230,5 +2370,18 @@ abstract class User extends MceObject {
    */
   protected function getMapIs_mailbox() {
     return true;
+  }
+
+  /**
+   * Mapping shares field
+   * 
+   * @return Share[] Liste des partages de l'objet
+   */
+  protected function getMapShares() {
+    M2Log::Log(M2Log::LEVEL_DEBUG, $this->get_class . "->getMapShares()");
+    if (!isset($this->_shares)) {
+      $this->_shares = [];
+    }
+    return $this->_shares;
   }
 }
