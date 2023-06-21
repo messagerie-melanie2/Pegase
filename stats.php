@@ -99,8 +99,20 @@ $count_auth_users = \Program\Drivers\Driver::get_driver()->countAuthUsers($befor
 $count_no_auth_users = \Program\Drivers\Driver::get_driver()->countNoauthUsers($before_start, $end);
 // Récupération du nombre de sondages créés pour le mois
 $count_polls = \Program\Drivers\Driver::get_driver()->countPolls($start, $end);
+// Récupération du nombre de sondages dates créés pour le mois
+$count_date_polls = \Program\Drivers\Driver::get_driver()->countDatePolls($start, $end);
+// Récupération du nombre de sondages libres créés pour le mois
+$count_prop_polls = \Program\Drivers\Driver::get_driver()->countPropPolls($start, $end);
+// Récupération du nombre de sondages rdv créés pour le mois
+$count_rdv_polls = \Program\Drivers\Driver::get_driver()->countRdvPolls($start, $end);
 // Récupération du nombre de réponses créées pour le mois
 $count_responses = \Program\Drivers\Driver::get_driver()->countResponses($start, $end);
+// Récupération du nombre de réponses à des sondages de date créées pour le mois
+$count_date_responses = \Program\Drivers\Driver::get_driver()->countDateResponses($start, $end);
+// Récupération du nombre de réponses à des sondages libres créées pour le mois
+$count_prop_responses = \Program\Drivers\Driver::get_driver()->countPropResponses($start, $end);
+// Récupération du nombre de réponses à des sondages de rendez-vous créées pour le mois
+$count_rdv_responses = \Program\Drivers\Driver::get_driver()->countRdvResponses($start, $end);
 
 // Ecriture des résultats
 echo "Statistiques pour le mois de " . $months[$month]. " $year";
@@ -111,5 +123,16 @@ echo "Nombre d'utilisateurs non authentifies : $count_no_auth_users";
 echo "\r\n\r\n";
 echo "Nombre de sondages crees : $count_polls";
 echo "\r\n\r\n";
+echo "Nombre de sondages de date crees : $count_date_polls";
+echo "\r\n\r\n";
+echo "Nombre de sondages libres crees : $count_prop_polls";
+echo "\r\n\r\n";
+echo "Nombre de sondages de rendez-vous crees : $count_rdv_polls";
+echo "\r\n\r\n";
 echo "Nombre de reponses aux sondages : $count_responses";
 echo "\r\n\r\n";
+echo "Nombre de reponses aux sondages de date : $count_date_responses";
+echo "\r\n\r\n";
+echo "Nombre de reponses aux sondages libres : $count_prop_responses";
+echo "\r\n\r\n";
+echo "Nombre de reponses aux sondages de rendez-vous : $count_rdv_responses";

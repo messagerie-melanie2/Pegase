@@ -52,6 +52,18 @@ class Utils
           //On l'ajoute en confirmé dans l'agenda de l'organisateur  
           // if (\Program\Data\Poll::get_current_poll()->prop_in_agenda) {
           //Uniquement s'il souhaite les afficher dans son agenda
+          //Vérification 
+          $compteur = 0;
+          $responses = \Program\Drivers\Driver::get_driver()->getPollResponses(\Program\Data\Poll::get_current_poll()->poll_id);
+          foreach ($responses as $key => $resp) {
+          $resp = unserialize($resp->response);
+            if (key($resp) == $proposals[$prop_key]) {
+              $compteur++;
+              if ($compteur == \Program\Data\Poll::get_current_poll()->max_attendees_per_prop) {
+                return false;
+              }
+            }
+          }
           \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), null, null, null, true);
           // }
           //On l'ajoute en confirmé dans l'agenda de l'utilisateur passé en paramètre (null par défaut)
@@ -72,9 +84,21 @@ class Utils
             // Supprime la date de la liste des events
             if (\Program\Data\Poll::get_current_poll()->type == 'rdv') {
               //On le remet en provisoire uniquement si l'organisateur souhaite les afficher dans son agenda
+              //Vérification 
+              $compteur = 0;
+              $responses = \Program\Drivers\Driver::get_driver()->getPollResponses(\Program\Data\Poll::get_current_poll()->poll_id);
+              foreach ($responses as $key => $resp) {
+              $resp = unserialize($resp->response);
+                if (key($resp) == $proposals[$prop_key]) {
+                  $compteur++;
+                  if ($compteur == \Program\Data\Poll::get_current_poll()->max_attendees_per_prop) {
+                    return false;
+                  }
+                }
+              }
               if (\Program\Data\Poll::get_current_poll()->prop_in_agenda) {
                 //S'il y a des participants sur cet évènement
-                if (isset($nb_attendeed_per_prop[$prop_key])) {
+                if (isset($nb_attendeed_per_prop[$prop_key]) && $nb_attendeed_per_prop[$prop_key] > 1) {
                   \Program\Lib\Event\Drivers\Driver::get_driver()->delete_event($proposals[$prop_key], (isset($events[$proposals[$prop_key]]) ? $events[$proposals[$prop_key]] : null), null, $user, $cal);
                   \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), null, null, null, true);
                 } else {
@@ -96,7 +120,7 @@ class Utils
               if (\Program\Data\Poll::get_current_poll()->type == 'rdv') {
                 //On le remet en provisoire uniquement si l'organisateur souhaite les afficher dans son agenda
                 if (\Program\Data\Poll::get_current_poll()->prop_in_agenda) {
-                  if (isset($nb_attendeed_per_prop[$prop_key])) {
+                  if (isset($nb_attendeed_per_prop[$prop_key]) && $nb_attendeed_per_prop[$prop_key] > 1) {
                     //On supprime puis remet l'évènement afin d'enlever le participant modifié
                     \Program\Lib\Event\Drivers\Driver::get_driver()->delete_event($proposals[$prop_key], (isset($events[$proposals[$prop_key]]) ? $events[$proposals[$prop_key]] : null), null, $user, $cal);
                     \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), null, null, null, true);

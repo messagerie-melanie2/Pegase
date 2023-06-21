@@ -98,6 +98,8 @@ class Ajax
       self::$text = Show::GetValidateProposalsText(false);
     } else if (o::get_env("action") == ACT_GET_USER_FREEBUSY) {
       self::get_user_freebusy();
+    } else if (o::get_env("action") == ACT_DELETE_EVENT) {
+      self::delete_event_calendar();
     } else {
       self::$success = false;
       self::$message = "Invalid request";
@@ -668,5 +670,57 @@ class Ajax
     ob_flush();
     flush();
     exit();
+  }
+
+  private static function delete_event_calendar()
+  {
+    \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Ajax::delete_tentative_calendar()");
+    if (!\Program\Data\Poll::isset_current_poll()) {
+      self::$success = false;
+      self::$message = "Poll does not exist";
+      \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Ajax::delete_tentative_calendar() Error : Poll does not exist");
+      self::Send();
+    } elseif (!\Program\Data\User::isset_current_user() && \Program\Lib\Request\Session::get("user_noauth_name") == null) {
+      self::$success = false;
+      self::$message = "You have no right to access to this resource";
+      \Program\Lib\Log\Log::l(\Program\Lib\Log\Log::DEBUG, "Ajax::delete_tentative_calendar() Error : You have no right to access to this resource");
+      self::Send();
+    } elseif (!\Program\Lib\Event\Drivers\Driver::get_driver()->CAN_WRITE_CALENDAR) {
+      self::$success = false;
+      self::$message = "";
+      self::Send();
+    }
+    // Récupération du calendrier en input
+    $cal = r::getInputValue("_c", POLL_INPUT_GET);
+    $proposals= unserialize(\Program\Data\Poll::get_current_poll()->proposals);
+    $prop_keys = r::getInputValue("prop_keys", POLL_INPUT_POST);
+    $propkey = r::getInputValue("prop_key", POLL_INPUT_POST);
+    // Charge le eventslist depuis la base de données
+    $new_eventslist = false;
+    if (!\Program\Data\EventsList::isset_current_eventslist()) {
+      $new_eventslist = true;
+      $events = [];
+    } else {
+      $events = unserialize(\Program\Data\EventsList::get_current_eventslist()->events);
+    }
+    //test si l'évenement éxiste
+    if (\Program\Lib\Event\Drivers\Driver::get_driver()->event_exists($proposals[$propkey], (isset($events[$proposals[$propkey]]) ? $events[$proposals[$propkey]] : null), null, null, null, $cal)){
+      //supprime l'évenement
+      if(\Program\Lib\Event\Drivers\Driver::get_driver()->delete_event($proposals[$propkey],(isset($events[$proposals[$propkey]]) ? $events[$proposals[$propkey]] : null), null, null, $cal)){
+        // Supprime la date de la liste des events
+        if (isset($events[$proposals[$propkey]])) {
+          unset($events[$proposals[$propkey]]);
+        }
+      }
+    }
+
+    //envoie un mail à 'lorganisateur pour l'informer de l'annulation du rdv
+    \Program\Lib\Mail\Mail::SendCancelResponseNotificationMail(\Program\Data\Poll::get_current_poll());
+    //Mise à jour du calendrier de l'organisateur
+    $organiser = \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id);
+    //Supression de l'évenement pour l'organisateur
+    \Program\Lib\Event\Drivers\Driver::get_driver()->delete_event($proposals[$propkey], null, \Program\Data\Poll::get_current_poll(), $organiser, null, null);
+    //on recréer l'évenement en provisoire pour l'organisateur
+    \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$propkey], \Program\Data\Poll::get_current_poll(), $organiser, \Program\Data\Event::STATUS_TENTATIVE, null, null, null, null );
   }
 }

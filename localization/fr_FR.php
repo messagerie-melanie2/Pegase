@@ -340,6 +340,7 @@ $labels['None'] = "Libre";
 $labels['Tentative'] = "Provisoire";
 $labels['Confirmed'] = "Occupé";
 $labels['Cancelled'] = "Annulé";
+$labels['Telework'] = "Télétravail";
 $labels['Would you like to add responses to your calendar as tentative ?'] = "Souhaitez-vous enregistrer vos réponses dans votre agenda en événements provisoires ?";
 $labels['Would you like to add responses to your calendar as confirmed ?'] = "Souhaitez-vous enregistrer vos réponses dans votre agenda en événements confirmés ?";
 $labels['This event has status tentative, you can view more information about the poll by opening this link'] = "Cet événement est provisoire, vous pouvez voir plus d'informations sur le sondage en cliquant ici";
@@ -425,6 +426,7 @@ $labels['Adding prop to your calendar...'] = 'Enregistrement du/des événement(
 $labels['Load freebusy...'] = 'Chargement de vos disponibilités';
 $labels['Loading your events...'] = 'Chargement des événements de votre agenda...';
 $labels['Deleting tentatives...'] = "Suppression des provisoires...";
+$labels['Delete of your calendar...'] = "Supression de l'événement dans votre calendrier...";
 // Copyright
 $labels['copyright'] = 'MTES/MCT - PNE annuaire et messagerie';
 // Mail
@@ -446,6 +448,10 @@ $labels['Modify proposals mail subject'] = "%%app_name%% : Les propositions du s
 $labels['Modify response mail subject'] = "%%app_name%% : Votre réponse au sondage « %%poll_title%% » vient d'être modifiée";
 $labels['Deleted response mail subject'] = "%%app_name%% : Votre participation au sondage « %%poll_title%% » vient d'être supprimé";
 $labels['Deleted poll mail subject'] = "%%app_name%% : Le sondage « %%poll_title%% » vient d'être supprimé";
+
+$labels['User cancel response'] = "%%app_name%% : l'utilisateur %%user_shortname%% a annulé sa réponse au sondage « %%poll_title%% »";
+
+
 
 $labels['New title'] = 'Nouveau titre';
 $labels['New location'] = 'Nouvel emplacement';

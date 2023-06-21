@@ -527,6 +527,8 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
     $organizer->extern = false;
     self::$event->organizer = $organizer;
     
+    //initialisation de la description
+    $description = "";
     // Modification de l'événement provisoire
     if (isset($status) && strtolower($status) == Api\Mel\Event::STATUS_TENTATIVE && !$selected_date) {
       self::$event->title = "[" . \Config\IHM::$TITLE . " " . Localization::g(ucfirst(strtolower($status)), false) . "] " . self::$event->title;

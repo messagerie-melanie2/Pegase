@@ -402,7 +402,7 @@ class Show
       self::view_validation_buttons($last_col);
     }
     $hidden_field_csrf_token = new \Program\Lib\HTML\html_hiddenfield(array("name" => "csrf_token", "value" => Session::getCSRFToken()));
-    $hidden_field_motif_rdv = new \Program\Lib\HTML\html_hiddenfield(array("name" => "motifrdv", "value" =>''));
+    $hidden_field_motif_rdv = new \Program\Lib\HTML\html_hiddenfield(array("name" => "reason", "value" =>''));
     $hidden_field_phone_number = new \Program\Lib\HTML\html_hiddenfield(array("name" => "phone_number", "value" =>''));
     $hidden_field_postal_address= new \Program\Lib\HTML\html_hiddenfield(array("name" => "postal_address", "value" =>''));;
 
@@ -478,7 +478,7 @@ class Show
           } else {
             $best_proposal = '"' . $prop . '" (' . self::$nb_resp[$prop_value] . ' ' . (self::$nb_resp[$prop_value] > 1 ? Localization::g('responses') : Localization::g('response')) . ')';
           }
-          if (count(o::get_env("best_proposals")) == 1) {
+          if (is_countable(o::get_env("best_proposals")) && count(o::get_env("best_proposals")) == 1) {
             $html .= \Program\Lib\HTML\html::div([], Localization::g('Proposal with the most responses is ', $html) . $best_proposal);
           } else {
             $html .= \Program\Lib\HTML\html::div([], Localization::g('One of the proposals with the most responses is ', $html) . $best_proposal);
@@ -1412,7 +1412,7 @@ class Show
       $class = "";
 
       //On enlève une réponse supplémentaire pour l'utilisateur qui à répondu
-      if (array_keys($Response)[0] == $prop_value) {
+      if (isset($Response) && array_keys($Response)[0] == $prop_value) {
         $nb_max_attendees_per_prop = \Program\Data\Poll::get_current_poll()->max_attendees_per_prop - (self::$nb_resp[$prop_value] + 1);
       } else {
         $nb_max_attendees_per_prop = \Program\Data\Poll::get_current_poll()->max_attendees_per_prop - self::$nb_resp[$prop_value];
@@ -1609,7 +1609,7 @@ class Show
         $resp = array();
         $prop_keys = array();
         foreach ($_POST as $key => $post) {
-          if ($key == "motifrdv") {
+          if ($key == "reason") {
             $reason = Request::getInputValue($key, POLL_INPUT_POST);
           }
           if ($key == "phone_number") {
@@ -1618,7 +1618,7 @@ class Show
           if ($key == "postal_address"){
             $postal_address = Request::getInputValue($key, POLL_INPUT_POST);
           }
-          if ($key != "user_username" && $key != "user_firstname" && $key != "user_department" && $key != "user_commune" && $key != "user_email" && $key != "user_phone_number" && $key != "user_object" && $key != "user_siren" && $key != "hidden_modify" && $key != "csrf_token" && $key != "motifrdv" && $key != "phone_number" && $key != "postal_address" && $key != "calendar_new_response") {
+          if ($key != "user_username" && $key != "user_firstname" && $key != "user_department" && $key != "user_commune" && $key != "user_email" && $key != "user_phone_number" && $key != "user_object" && $key != "user_siren" && $key != "hidden_modify" && $key != "csrf_token" && $key != "reason" && $key != "phone_number" && $key != "postal_address" && $key != "calendar_new_response") {
             $resp[Request::getInputValue($key, POLL_INPUT_POST)] = true;
             $prop_keys[] = str_replace('check_', '', $key);
           }
@@ -1652,8 +1652,6 @@ class Show
               o::set_env("error", "Error when changing the response");
               return;
             }
-          }
-
            // Gestion du calendrier
            $calendar_id = Request::getInputValue("calendar_new_response", POLL_INPUT_POST);
 
@@ -1668,6 +1666,9 @@ class Show
               \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, $response, o::get_env("poll_organizer"));
             }
           }
+          }
+
+          
         } elseif (isset($user_id)) {
           // Enregistrement de la réponse dans bdd
           if (isset($reason) && $reason!=''){
@@ -1676,15 +1677,21 @@ class Show
             $response = new \Program\Data\Response(array("user_id" => $user_id, "poll_id" => \Program\Data\Poll::get_current_poll()->poll_id, "response" => serialize($resp), "phone_number" => $phone_number , "postal_address"=> $postal_address));
           }
           
-          //Envoie de mail
-          if(Utils::canSendMail() && !Utils::is_poll_organizer($user_id)){
-            if (unserialize($response->response) != null){
-              if(Utils::is_rdv()){
-                //mail de confirmation au participant
-                \Program\Lib\Mail\Mail::SendRdvICSMail(\Program\Data\Poll::get_current_poll(), $prop_keys[0], $response);
+          if (self::check_max_attendees($response)) {
+            if (!\Program\Drivers\Driver::get_driver()->addPollUserResponse($response)) {
+              o::set_env("error", "Error when saving the response");
+              return;
+            }
+            //Envoie de mail
+            if(Utils::canSendMail() && !Utils::is_poll_organizer($user_id)){
+              if (unserialize($response->response) != null){
+                if(Utils::is_rdv()){
+                  //mail de confirmation au participant
+                  \Program\Lib\Mail\Mail::SendRdvICSMail(\Program\Data\Poll::get_current_poll(), $prop_keys[0], $response);
+                }
+                //mail de notification à l'organisateur
+                \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, $response, o::get_env("poll_organizer"));
               }
-              //mail de notification à l'organisateur
-              \Program\Lib\Mail\Mail::SendResponseNotificationMail(\Program\Data\Poll::get_current_poll(), $user_name, $response, o::get_env("poll_organizer"));
             }
           }
           
@@ -1711,12 +1718,7 @@ class Show
             }
           }
 
-          if (self::check_max_attendees($response)) {
-            if (!\Program\Drivers\Driver::get_driver()->addPollUserResponse($response)) {
-              o::set_env("error", "Error when saving the response");
-              return;
-            }
-          }
+          
         }
         if (Utils::is_rdv() && $response->calendar_id != null) {
           Utils::add_tentative_calendar($response->calendar_id, $prop_keys);
@@ -1978,6 +1980,8 @@ class Show
 
   /**
    * Vérifie que le nombre de réponse maximum pour la proposition choisie ne soit pas atteint
+   * retourne true si le nombre n'est pas atteint
+   * retourne false si le nombre est atteint
    */
   private static function check_max_attendees($response)
   {

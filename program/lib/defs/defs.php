@@ -75,3 +75,4 @@ define('ACT_DELETE_TENTATIVES','delete_tentatives');
 define('ACT_DATE_ACCEPTED','date_accepted');
 define('ACT_DATE_DECLINED','date_declined');
 define('ACT_SAVE_SETTINGS','save');
+define('ACT_DELETE_EVENT','cancel_event');

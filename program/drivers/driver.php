@@ -311,10 +311,64 @@ abstract class Driver {
 
     /**
      * [STATISTIQUES]
+     * Récupération du nombre de sondages dates qui ont été créé entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de sondages créés
+     */
+    abstract function countDatePolls($start, $end);
+
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre de sondages libres qui ont été créé entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de sondages créés
+     */
+    abstract function countPropPolls($start, $end);
+
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre de sondages rdv qui ont été créé entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de sondages créés
+     */
+    abstract function countRdvPolls($start, $end);
+
+    /**
+     * [STATISTIQUES]
      * Récupération du nombre de réponses qui ont été faites entre start et end
      * @param DateTime $start Début des recherches pour les statistiques
      * @param DateTime $end Fin des recherches pour les statistiques
      * @return int Nombre de réponses faites
      */
     abstract function countResponses($start, $end);
+
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre de réponses à des sondages de date qui ont été faites entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de réponses faites
+     */
+    abstract function countDateResponses($start, $end);
+
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre de réponses à des sondages libres qui ont été faites entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de réponses faites
+     */
+    abstract function countPropResponses($start, $end);
+
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre de réponses à des sondages de Rendez-vous qui ont été faites entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de réponses faites
+     */
+    abstract function countRdvResponses($start, $end);
 }

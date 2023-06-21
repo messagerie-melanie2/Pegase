@@ -262,19 +262,21 @@ class Mail
     $body = str_replace("%%user_fullname%%", $user_name, $body);
     //si sondage avec motif
     $reason = "";
+    $infos = "";
     if ($poll->reason)
       $reason =  "Pour le motif : <b> " . $response->reason . "</b>";
     $body = str_replace("%%reason%%", $reason, $body);
-    if ($response->phone_number != '' || $response->postal_address != ''){
+    if ($response->phone_number != '' || $response->postal_address != '') {
       $infos = " <br>";
-      if($response->phone_number != '')
+      if ($response->phone_number != '')
         $infos = $infos . "Téléphone : <b>" . $response->phone_number . "</b><br>";
-      if($response->postal_address != '')
+      if ($response->postal_address != '')
         $infos = $infos . "Adresse : <b>" . $response->postal_address . "</b><br>";
     }
     $body = str_replace("%%userinfo%%", $infos, $body);
 
     if (\Program\Data\Poll::get_current_poll()->type == 'rdv') {
+      $date = Output::format_prop_poll($poll, array_keys(unserialize($response->response))[0], false);
       $body = str_replace("%%user_response%%", Output::format_prop_poll($poll, array_keys(unserialize($response->response))[0], false), $body);
     }
 
@@ -1000,24 +1002,33 @@ class Mail
    * @param \Program\Data\Response $response reponse au sondage
    * 
    */
-  public static function SendRdvICSMail(\Program\Data\Poll $poll, $prop_key, $response){
+  public static function SendRdvICSMail(\Program\Data\Poll $poll, $prop_key, $response)
+  {
     Log::l(Log::DEBUG, "Mail::SendRdvICSMail()");
     $subject = Localization::g("Validate appointment attendee mail subject", true);
     $message_id = md5($poll->organizer_id . time() . "SendRdvICSMail") . $poll->poll_uid . '-' . strtotime($poll->created) . "@" . \Config\IHM::$TITLE;
     $in_reply_to = md5($poll->organizer_id) . $poll->poll_uid . '-' . strtotime($poll->created) . "@" . \Config\IHM::$TITLE;
     $from = \Config\IHM::$FROM_MAIL;
     $receiver = \Program\Data\User::get_current_user();
-    if($poll->auth_only){
+    if ($poll->auth_only) {
       $to = '=?UTF-8?B?' . base64_encode('"' . $receiver->fullname . '"') . '?=' . "\r\n <" . $receiver->email . ">";
-    }else{
-      $to = Request::getInputValue('user_email', POLL_INPUT_POST);
+    } else {
+      //ternaire pour gérer les utilisateur auth qui répondent aux sondage non auth
+      if(null != Request::getInputValue('user_email', POLL_INPUT_POST)){
+        $to = Request::getInputValue('user_email', POLL_INPUT_POST);
+      }elseif($receiver != null){
+        $to = '=?UTF-8?B?' . base64_encode('"' . $receiver->fullname . '"') . '?=' . "\r\n <" . $receiver->email . ">";
+      }else{
+        $to = \Program\Lib\Request\Session::get("user_noauth_email");
+      }
+      //$to = null != Request::getInputValue('user_email', POLL_INPUT_POST) ? Request::getInputValue('user_email', POLL_INPUT_POST) : '=?UTF-8?B?' . base64_encode('"' . $receiver->fullname . '"') . '?=' . "\r\n <" . $receiver->email . ">";
     }
     
 
-    $body= file_get_contents(__DIR__ . '/templates/' . \Config\IHM::$DEFAULT_LOCALIZATION . '/response_notification_rdv_invitee.html');
+    $body = file_get_contents(__DIR__ . '/templates/' . \Config\IHM::$DEFAULT_LOCALIZATION . '/response_notification_rdv_invitee.html');
     $as_attachment = true;
     $proposals = unserialize($poll->proposals);
-    $ics = \Program\Lib\Event\Drivers\Driver::get_driver()->generate_ics(key(unserialize($response->response)));
+    $ics = \Program\Lib\Event\Drivers\Driver::get_driver()->generate_ics(key(unserialize($response->response)), $poll, $receiver);
     //$boundary = '-----=' . md5(uniqid(mt_rand()));
     
     // Replace elements
@@ -1031,14 +1042,15 @@ class Mail
     $body = str_replace("%%poll_download_ics_url%%", Output::get_download_ics_url($poll, $prop_key, \Program\Data\Event::PARTSTAT_ACCEPTED), $body);
     //si sondage avec motif
     $reason = "";
+    $infos = "";
     if ($poll->reason)
       $reason =  "Pour le motif : <b> " . $response->reason . "</b>.";
     $body = str_replace("%%reason%%", $reason, $body);
-    if ($response->phone_number != '' || $response->postal_address != ''){
+    if ($response->phone_number != '' || $response->postal_address != '') {
       $infos = "Vos informations de contact : ";
-      if($response->phone_number != '')
+      if ($response->phone_number != '')
         $infos = $infos . "<br>Téléphone : <b>" . $response->phone_number . "</b>";
-      if($response->postal_address != '')
+      if ($response->postal_address != '')
         $infos = $infos . "<br>Adresse : <b>" . $response->postal_address . "</b>";
     }
     $body = str_replace("%%infos%%", $infos, $body);
@@ -1068,6 +1080,39 @@ class Mail
     $mailstring = "$from $to $subject $body $message_id $in_reply_to"; 
     //Log::l(Log::INFO, $mailstring);
     return self::SendMail($from, $to, $subject, null, null, null, $body, $message_id, $in_reply_to, $as_attachment);
+  }
+
+  /**
+   * Méthode d'envoi du message à l'organisateur quand un participant annule un rdv
+   * @param \Program\Data\Poll $poll sondage validé
+   */
+  public static function SendCancelResponseNotificationMail(\Program\Data\Poll $poll){
+    Log::l(Log::DEBUG, "Mail::SendCancelResponseNotificationMail()");
+    $organizer = \Program\Drivers\Driver::get_driver()->getUser($poll->organizer_id);
+    $user_name = \Program\Data\User::get_current_user()->username;
+    if ($user_name == null){
+      $user_name = \Program\Lib\Request\Session::get("user_noauth_email");
+    }
+
+    $subject = Localization::g("User cancel response", false);
+    $message_id = md5($poll->organizer_id . time() . "SendCancelResponseNotificationMail") . $poll->poll_uid . '-' . strtotime($poll->created) . "@" . \Config\IHM::$TITLE;
+    $in_reply_to = md5($poll->organizer_id) . $poll->poll_uid . '-' . strtotime($poll->created) . "@" . \Config\IHM::$TITLE;
+    $from = \Config\IHM::$FROM_MAIL;
+    $to = '=?UTF-8?B?' . base64_encode('"' . $organizer->fullname . '"') . '?=' . "\r\n <" . $organizer->email . ">";
+    $body = file_get_contents(__DIR__ . '/templates/' . \Config\IHM::$DEFAULT_LOCALIZATION . '/response_cancel_notification.html');
+
+    // Replace elements
+    $subject = str_replace("%%app_name%%", \Config\IHM::$TITLE, $subject);
+    $subject = str_replace("%%poll_title%%", $poll->title, $subject);
+    $subject = str_replace("%%user_shortname%%", self::UserShortName($user_name), $subject);
+    $body = str_replace("%%app_name%%", \Config\IHM::$TITLE, $body);
+    $body = str_replace("%%app_url%%", Output::get_main_url(), $body);
+    $body = str_replace("%%poll_title%%", $poll->title, $body);
+    $body = str_replace("%%poll_url%%", Output::get_poll_url($poll), $body);
+    $body = str_replace("%%user_fullname%%", $user_name, $body);
+
+    return self::SendMail($from, $to, $subject, null, null, null, $body, $message_id, $in_reply_to);
+
   }
 
   /**

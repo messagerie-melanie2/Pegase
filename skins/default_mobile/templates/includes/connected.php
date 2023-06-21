@@ -27,7 +27,7 @@ use Program\Lib\Request\Localization as l;
 <?php if (u::isset_current_user()) { ?>
 <div id="conn">
     <span>
-        <?= l::g('Connected as') ?> <b title="<?= u::get_current_user()->fullname ?>"><?= u::get_current_user()->username ?></b>
+        <?= l::g('Connected as') ?> <b title="<?= u::get_current_user()->username ?>"><?= u::get_current_user()->fullname ?></b>
     </span>
     <?php if (o::get_env("page") != "main") { ?>
         <div><a class="pure-button-home" data-role="button" title="<?= l::g("Go back to the main page", false) ?>" href="<?= o::url("main") ?>"><?= l::g('Return to the index') ?></a></div>

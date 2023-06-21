@@ -513,30 +513,60 @@ abstract class Driver {
         'RSVP' => 'TRUE'
     ]);
     
-    // Récupération des réponses du sondage
-    $responses = \Program\Drivers\Driver::get_driver()->getPollResponses($poll->poll_id);
-    
-    // Parcours les réponses pour ajouter les participants
-    foreach ($responses as $response) {
-      // Ne pas ajouter l'organisateur
-      if ($response->user_id == $poll->organizer_id) {
-        continue;
+    //si sondage rdv  n'ajouter que le participant à l'ics
+    if ($poll->type == "rdv") {
+      $responses = \Program\Drivers\Driver::get_driver()->getPollResponses($poll->poll_id);
+
+      // Parcours les réponses pour ajouter les participants
+      foreach ($responses as $response) {
+        // Ne pas ajouter l'organisateur
+        if ($response->user_id == $poll->organizer_id) {
+          continue;
+        }
+        if (key(unserialize($response->response)) == $date){
+          // Récupération de l'utilisateur
+          if ($response->user_id == $user->user_id) {
+            $attendee = $user;
+            $partstat = isset($part_status) ? $part_status : 'NEED-ACTION';
+          } else {
+            $attendee = \Program\Drivers\Driver::get_driver()->getUser($response->user_id);
+            $partstat = 'NEED-ACTION';
+          }
+          // Add attendee
+          $vevent->add('ATTENDEE', 'mailto:' . $attendee->email, [
+              'CN' => isset($attendee->fullname) ? $attendee->fullname : $attendee->username,
+              'ROLE' => 'REQ-PARTICIPANT',
+              'PARTSTAT' => $partstat,
+              'RSVP' => 'TRUE'
+          ]);
+        }
       }
-      // Récupération de l'utilisateur
-      if ($response->user_id == $user->user_id) {
-        $attendee = $user;
-        $partstat = isset($part_status) ? $part_status : 'NEED-ACTION';
-      } else {
-        $attendee = \Program\Drivers\Driver::get_driver()->getUser($response->user_id);
-        $partstat = 'NEED-ACTION';
+    }else{
+      // Récupération des réponses du sondage
+      $responses = \Program\Drivers\Driver::get_driver()->getPollResponses($poll->poll_id);
+      
+      // Parcours les réponses pour ajouter les participants
+      foreach ($responses as $response) {
+        // Ne pas ajouter l'organisateur
+        if ($response->user_id == $poll->organizer_id) {
+          continue;
+        }
+        // Récupération de l'utilisateur
+        if ($response->user_id == $user->user_id) {
+          $attendee = $user;
+          $partstat = isset($part_status) ? $part_status : 'NEED-ACTION';
+        } else {
+          $attendee = \Program\Drivers\Driver::get_driver()->getUser($response->user_id);
+          $partstat = 'NEED-ACTION';
+        }
+          // Add attendee
+        $vevent->add('ATTENDEE', 'mailto:' . $attendee->email, [
+            'CN' => isset($attendee->fullname) ? $attendee->fullname : $attendee->username,
+            'ROLE' => 'REQ-PARTICIPANT',
+            'PARTSTAT' => $partstat,
+            'RSVP' => 'TRUE'
+        ]);
       }
-      // Add organizer
-      $vevent->add('ATTENDEE', 'mailto:' . $attendee->email, [
-          'CN' => isset($attendee->fullname) ? $attendee->fullname : $attendee->username,
-          'ROLE' => 'REQ-PARTICIPANT',
-          'PARTSTAT' => $partstat,
-          'RSVP' => 'TRUE'
-      ]);
     }
     
     return $vcalendar->serialize();

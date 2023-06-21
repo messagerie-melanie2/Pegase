@@ -857,6 +857,75 @@ class Melanie2 extends \Program\Drivers\Driver {
 
     /**
      * [STATISTIQUES]
+     * Récupération du nombre de sondages dates qui ont été créé entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de sondages créés
+     */
+    function countDatePolls($start, $end) {
+        $query = "SELECT count(*) FROM polls p WHERE created >= :start AND created <= :end AND type = 'date' ;";
+        $params = array(
+                        "start" => $start->format('Y-m-d H:i:s'),
+                        "end" => $end->format('Y-m-d H:i:s'),
+        );
+        // Execution de la requête, retourne le résultat un array de Poll
+        $ret = \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$READ_SERVER)->executeQuery($query, $params);
+        // Retourne le résultat du count
+        if (is_array($ret)
+                && count($ret) > 0
+                && isset($ret[0]['count']))
+                    return $ret[0]['count'];
+                return false;
+    }
+
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre de sondages libres qui ont été créé entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de sondages créés
+     */
+    function countPropPolls($start, $end) {
+        $query = "SELECT count(*) FROM polls p WHERE created >= :start AND created <= :end AND type = 'prop' ;";
+        $params = array(
+                        "start" => $start->format('Y-m-d H:i:s'),
+                        "end" => $end->format('Y-m-d H:i:s'),
+        );
+        // Execution de la requête, retourne le résultat un array de Poll
+        $ret = \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$READ_SERVER)->executeQuery($query, $params);
+        // Retourne le résultat du count
+        if (is_array($ret)
+                && count($ret) > 0
+                && isset($ret[0]['count']))
+                    return $ret[0]['count'];
+                return false;
+    }
+
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre de sondages rdv qui ont été créé entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de sondages créés
+     */
+    function countRdvPolls($start, $end) {
+        $query = "SELECT count(*) FROM polls p WHERE created >= :start AND created <= :end AND type = 'rdv' ;";
+        $params = array(
+                        "start" => $start->format('Y-m-d H:i:s'),
+                        "end" => $end->format('Y-m-d H:i:s'),
+        );
+        // Execution de la requête, retourne le résultat un array de Poll
+        $ret = \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$READ_SERVER)->executeQuery($query, $params);
+        // Retourne le résultat du count
+        if (is_array($ret)
+                && count($ret) > 0
+                && isset($ret[0]['count']))
+                    return $ret[0]['count'];
+                return false;
+    }
+
+    /**
+     * [STATISTIQUES]
      * Récupération du nombre de réponses qui ont été faites entre start et end
      * @param DateTime $start Début des recherches pour les statistiques
      * @param DateTime $end Fin des recherches pour les statistiques
@@ -864,6 +933,75 @@ class Melanie2 extends \Program\Drivers\Driver {
      */
     function countResponses($start, $end) {
         $query = "SELECT count(*) FROM responses r WHERE response_time >= :start AND response_time <= :end;";
+        $params = array(
+                        "start" => $start->format('Y-m-d H:i:s'),
+                        "end" => $end->format('Y-m-d H:i:s'),
+        );
+        // Execution de la requête, retourne le résultat un array de Poll
+        $ret = \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$READ_SERVER)->executeQuery($query, $params);
+        // Retourne le résultat du count
+        if (is_array($ret)
+                && count($ret) > 0
+                && isset($ret[0]['count']))
+                    return $ret[0]['count'];
+                return false;
+    }
+
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre de réponses à des sondage de date qui ont été faites entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de réponses faites
+     */
+    function countDateResponses($start, $end) {
+        $query = "SELECT count(*) FROM responses r INNER JOIN polls p ON r.poll_id = p.poll_id WHERE r.response_time >= :start AND r.response_time <= :end AND p.type = 'date' ;";
+        $params = array(
+                        "start" => $start->format('Y-m-d H:i:s'),
+                        "end" => $end->format('Y-m-d H:i:s'),
+        );
+        // Execution de la requête, retourne le résultat un array de Poll
+        $ret = \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$READ_SERVER)->executeQuery($query, $params);
+        // Retourne le résultat du count
+        if (is_array($ret)
+                && count($ret) > 0
+                && isset($ret[0]['count']))
+                    return $ret[0]['count'];
+                return false;
+    }
+
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre de réponses à des sondage libres qui ont été faites entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de réponses faites
+     */
+    function countPropResponses($start, $end) {
+        $query = "SELECT count(*) FROM responses r INNER JOIN polls p ON r.poll_id = p.poll_id WHERE r.response_time >= :start AND r.response_time <= :end AND p.type = 'prop' ;";
+        $params = array(
+                        "start" => $start->format('Y-m-d H:i:s'),
+                        "end" => $end->format('Y-m-d H:i:s'),
+        );
+        // Execution de la requête, retourne le résultat un array de Poll
+        $ret = \Program\Lib\Backend\DB\DB::GetInstance(\Config\Sql::$READ_SERVER)->executeQuery($query, $params);
+        // Retourne le résultat du count
+        if (is_array($ret)
+                && count($ret) > 0
+                && isset($ret[0]['count']))
+                    return $ret[0]['count'];
+                return false;
+    }
+
+    /**
+     * [STATISTIQUES]
+     * Récupération du nombre de réponses à des sondage de Rdv qui ont été faites entre start et end
+     * @param DateTime $start Début des recherches pour les statistiques
+     * @param DateTime $end Fin des recherches pour les statistiques
+     * @return int Nombre de réponses faites
+     */
+    function countRdvResponses($start, $end) {
+        $query = "SELECT count(*) FROM responses r INNER JOIN polls p ON r.poll_id = p.poll_id WHERE r.response_time >= :start AND r.response_time <= :end AND p.type = 'rdv' ;";
         $params = array(
                         "start" => $start->format('Y-m-d H:i:s'),
                         "end" => $end->format('Y-m-d H:i:s'),
