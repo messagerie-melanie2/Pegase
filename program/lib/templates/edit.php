@@ -65,7 +65,8 @@ class Edit {
 		o::set_env("CHECK_FIELDS", \Config\IHM::$CHECK_FIELDS);
 		o::set_env("REQUIRED_FIELDS", \Config\IHM::$REQUIRED_FIELDS);
 		o::set_env("NOT_REQUIRED_FIELDS", \Config\IHM::$NOT_REQUIRED_FIELDS);
-		o::set_env("MIN_ATTENDEES", max(\Program\Data\Poll::get_nb_attendees_per_prop(\Program\Data\Poll::get_current_poll())));
+		if (!empty(\Program\Data\Poll::get_nb_attendees_per_prop(\Program\Data\Poll::get_current_poll())))
+			o::set_env("MIN_ATTENDEES", max(\Program\Data\Poll::get_nb_attendees_per_prop(\Program\Data\Poll::get_current_poll())));
 		self::LockPoll ();
 	}
 
@@ -220,7 +221,7 @@ class Edit {
 		        if (\Program\Drivers\Driver::get_driver ()->modifyPoll ( $poll )) {
 		          o::set_env ( "message", 'The poll is modified' );
 		          // Envoi du message de notification
-		          if ($send_notification  && !\Program\Lib\Utils\Utils::is_rdv()) {
+		          if ($send_notification && !\Program\Lib\Utils\Utils::is_rdv()) {
 		            \Program\Lib\Mail\Mail::SendModifyPollNotificationMail($poll, $old_title, $old_location, $old_description);
 		          }
 		        }

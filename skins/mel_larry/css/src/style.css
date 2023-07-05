@@ -1310,6 +1310,13 @@ a.pure-button-delete-date {
     left: 390px;
 }
 
+
+.toolbar span#connected_as {
+    position: absolute;
+    right: 190px;
+    top: 18px;
+}
+
 .toolbar a.button.notext {
     text-indent: -9999px;
 }

@@ -67,7 +67,7 @@ use Program\Lib\Request\Output as o,
 						<div id="edit_max_attendees_per_prop">
 							<div class="pure-control-group">
 								<label for="edit_max_attendees" class="voice">Nombre de participants autorisés par proposition</label>
-								<input id="edit_max_attendees" type="number" onkeydown="return event.keyCode !== 69" name="edit_max_attendees_per_prop" value="<?= p::isset_current_poll() ? o::tohtml(p::get_current_poll()->max_attendees_per_prop) : r::getInputValue('max_attendees_per_prop', POLL_INPUT_GET) ?>" class="customtooltip_right" title="<?= l::g('Number of participants allowed', false) ?>" required x-moz-errormessage="<?= l::g('You have to put a title for the poll')?>"  placeholder="<?= l::g('Edit number of participants') ?>" />
+								<input id="edit_max_attendees" type="number" onkeydown="return event.keyCode !== 69" name="edit_max_attendees_per_prop" value="<?= p::isset_current_poll() ? o::tohtml(p::get_current_poll()->max_attendees_per_prop) : r::getInputValue('max_attendees_per_prop', POLL_INPUT_GET) ?>" class="customtooltip_right" title="<?= l::g('Number of participants allowed', false) ?>" x-moz-errormessage="<?= l::g('You have to put a title for the poll')?>"  placeholder="<?= l::g('Edit number of participants') ?>" />
 								<span id="warning_max_attendees"></span>
 							</div>
 							<br>
