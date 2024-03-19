@@ -120,6 +120,7 @@ class Edit_prop {
                       "class" => "pure-button pure-button-delete-date",
                       "style" => "padding-top: 3px;",
                       "onclick" => "deletePropDiv('edit_prop$i');",
+					  "href" => "#"
                   ),
                   ""
                 ) .

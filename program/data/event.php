@@ -46,6 +46,7 @@ class Event extends MagicObject {
     const STATUS_CONFIRMED = 'CONFIRMED';
     const STATUS_CANCELLED = 'CANCELLED';
     const STATUS_NONE = 'NONE';
+    const STATUS_TELEWORK = 'TELEWORK';
 
     // PARTICIPANT STATUS Fields
     const PARTSTAT_ACCEPTED = 'ACCEPTED';

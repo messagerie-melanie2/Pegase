@@ -37,7 +37,7 @@ legend {
 }
 
 h1 {
-    color: var(--global-action-color);
+    color: var(--global-text-color);
     font-size: 20px;
     margin: 0;
 }
@@ -47,6 +47,7 @@ fieldset {
     justify-content: center;
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 #prevcontent {
@@ -109,6 +110,14 @@ fieldset {
     font-size: 20px;
 }
 
+#edit_title {
+    margin: 15px 0px 10px 0px;
+}
+
+.edit_textbox{
+    margin-bottom: 10px !important;
+}
+
 #edit_form div.treetoggle:before {
     font-family: 'Material Symbols Outlined' !important;
     content: "\e5cc"!important;
@@ -149,6 +158,10 @@ fieldset {
 
 #left-panel .poll__list_element{
     padding-left: 20px;
+}
+
+#left-panel .poll__list_element:hover{
+    background-color: var(--listitem-selected-bg-color);
 }
 
 #left-panel .left-panel-poll-list div.poll__list_element.selected,
@@ -281,8 +294,8 @@ fieldset {
     margin-top: 5px;
     margin-left: 10px;
     margin-bottom: 5px;
+    padding: 5px;
     width: 200px;
-    height: 20px;
     font-size: 12px;
     font-weight: 500;
     color: var(--balselect-color);
@@ -466,6 +479,11 @@ a.pure-button-delete-date {
     margin-left: 5px;
 }
 
+a.pure-button-delete-date:hover {
+    background : url('../../images/supprimer.png?v=e784.5000') center center no-repeat;
+    box-shadow: 0 2px 4px rgb(0,0,0,0.25);
+}
+
 @media (prefers-color-scheme: dark) {
     a.pure-button-delete-date {
         background: url('../../images/supprimer-dark.png?v=e784.5000') center center no-repeat;
@@ -528,7 +546,7 @@ a.pure-button-delete-date {
 #head .poll_title {
     font-size: 20px;
     font-weight: bold;
-    color: var(--main-text-color);
+    color: var(--proposal-title-text-color);
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -544,7 +562,6 @@ a.pure-button-delete-date {
 #head .poll_lock,
 #head .poll_erase {
     float: right;
-    margin-top: -10px;
 }
 
 #head .poll_lock #button_unlock_poll,
@@ -552,9 +569,10 @@ a.pure-button-delete-date {
 #head .poll_erase #button_erase_poll,
 #head .poll_erase #button_restore_poll {
     padding: 7px 10px;
-    color: #fff;
+    color: var(--buttons-text-color);
     font-weight: bold;
-    background: var(--buttons-border-color);
+    border: solid 1px var(--buttons-border-color);
+    background-color: var(--listitem-selected-bg-color);
     border-radius: 15px;
     font-size: 15px;
 }
@@ -563,7 +581,7 @@ a.pure-button-delete-date {
 #head .poll_lock #button_lock_poll:hover,
 #head .poll_erase #button_erase_poll:hover,
 #head .poll_erase #button_restore_poll:hover {
-    background: var(--listbox-bg-color);
+    background: var(--global-action-hover-color);
 }
 
 #head .poll_erase #button_restore_poll {
@@ -642,6 +660,7 @@ a.pure-button-delete-date {
     font-size: 14px;
     display: flex;
     align-items: center;
+    color: var(--proposal-title-text-color);
 }
 
 #head .poll_location .label:before{
@@ -663,7 +682,7 @@ a.pure-button-delete-date {
 #head .poll_location .location {
     display: block;
     font-size: 12px;
-    color: var(--proposal-title-text-color);
+    color: var(--main-text-color);
     margin-left: 4%;
 }
 
@@ -751,7 +770,7 @@ a.pure-button-delete-date {
     right: 0px;
     font-size: 13px;
     font-weight: bold;
-    color: #fff;
+    color: var(--buttons-text-color);
     background: var(--buttons-bg-color);
     border: solid 1px rgba(0, 0, 0, 0.2);
     width: 119px;
@@ -972,6 +991,7 @@ a.pure-button-delete-date {
     padding: 0;
     background: var(--green);
     border-radius: 15px;
+    border: none;
 }
 
 #proposals_table .validate_prop a.pure-button-calendar:before {
@@ -1028,6 +1048,7 @@ a.pure-button-delete-date {
     cursor: pointer;
     border-radius: 15px;
     background: var(--buttons-bg-color);
+    display: flex;
 }
 
 #proposals_table a.pure-button-validate-prop::before {
@@ -1036,12 +1057,6 @@ a.pure-button-delete-date {
     color: var(--buttons-text-color);
     font-size: 24px;
     font-weight: bold;
-}
-
-@media (prefers-color-scheme: dark) {
-    #proposals_table a.pure-button-validate-prop {
-        background: url("../../images/check-dark.png?v=e784.5000") no-repeat 15px center var(--buttons-bg-color);
-    }
 }
 
 #proposals_table .pure-button-validate-prop:hover {
@@ -1473,7 +1488,7 @@ a.pure-button-delete-date {
     width: 40px;
     height: 31px;
     background: transparent;
-    color: white;
+    color: var(--toolbar-button-color);
     padding: 0;
     text-decoration: none;
 }
@@ -1493,7 +1508,7 @@ a.pure-button-delete-date {
 }
 
 .toolbar a.button#button_edit_poll .edit_poll{
-    color: white;
+    color: var(--toolbar-button-color);
     font-size: 30px !important;
 }
 
@@ -1512,7 +1527,25 @@ a.pure-button-delete-date {
 }
 
 .toolbar a.button#button_modify_responses_poll .edit_response{
-    color: white;
+    color: var(--toolbar-button-color);
+    font-size: 30px !important;
+}
+
+.toolbar a.button#button_export_csv {
+    height: 100%;
+    width: 68px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.toolbar a.button#button_export_csv:hover {
+    background-color: var(--listitem-selected-bg-color);
+}
+
+.toolbar a.button#button_export_csv .upload{
+    color: var(--toolbar-button-color);
     font-size: 30px !important;
 }
 
@@ -1657,10 +1690,9 @@ a.pure-button-delete-date {
 
 .toolbar a.button.deletepoll .delete_poll {
     /* background: url("../../images/trash-can-regular.svg") no-repeat scroll center center var(--buttons-bg-color); */
-    color:white;
+    color:var(--toolbar-button-color);
     font-size: 30px !important;
 }
-
 
 .best_proposals {
     font-weight: bold;
@@ -1668,10 +1700,6 @@ a.pure-button-delete-date {
 
 .validate_proposals {
     font-weight: bold;
-}
-
-#props_new {
-    position: absolute;
 }
 
 #edit {
@@ -1743,10 +1771,6 @@ a.pure-button-delete-date {
     height: 24px;
 }
 
-#edit .pure-control-group .date_input
-{
-    background:var(--inputs-bg-color) url(../../images/calendar.png)  97% 50% no-repeat ;
-}
 #edit .pure-control-group .input[type=date]::-ms-clear
 {
     display: none;
@@ -1883,14 +1907,20 @@ a.pure-button-delete-date {
     font-weight: bold;
 }
 
-#edit .pure-button-submit-date
-{
+#edit .pure-button-return:hover {
+    background-color: var(--global-action-hover-color);
+}
+
+#edit .pure-button-submit-date {
     padding: 7px 14px;
     line-height: 42px;
     margin-left: 5px;
     background-color: #f50059;
     font-weight: bold;
     color: #fff;
+}
+#edit .pure-button-submit-date:focus {
+    outline-offset: 3px;
 }
 
 #content.edit_end h1 {
@@ -1912,6 +1942,10 @@ a.pure-button-delete-date {
     background-color: var(--buttons-bg-color);
     border: solid 1px var(--buttons-border-color);
     ;
+}
+
+#content.edit_end .buttons .pure-button:hover {
+    background-color: var(--global-action-hover-color);
 }
 
 .add_attendee_button,
@@ -2109,6 +2143,9 @@ input[type="checkbox"]{
     
   border-radius: 15px;
   }
+  input:focus+.checkmark {
+    outline: -webkit-focus-ring-color auto 1px;
+  }
 
 .container {
     display: block;
@@ -2139,7 +2176,7 @@ input[type="checkbox"]{
     left: 0;
     height: 12px;
     width: 12px;
-    border: 1px solid var(--buttons-bg-color);
+    border: 1px solid ;
 
     border-radius: 15px;
 }
@@ -2181,7 +2218,7 @@ input[type="checkbox"]{
 
 fieldset #props_list .pure-control-group {
   position: relative;
-  width:400px;
+  /* width:400px; */
   margin-bottom: 10px;
 }
 
@@ -2231,7 +2268,7 @@ fieldset #props_list .pure-control-group .delete-prop:before{
 } */
 
 .ui-dialog.ui-widget {
-    height: 450px !important;
+    /* height: 450px !important; */
     width: 450px !important;
     top: 10% !important;
     border-radius: 10px !important;
@@ -2318,14 +2355,13 @@ fieldset #props_list .pure-control-group .delete-prop:before{
 }
 
 .dialog_popup button{
-    position: absolute;
-    bottom: 0px;
-    right: 5px;
+    float: right;
     background: var(--buttons-bg-color);
     color: var(--buttons-text-color);
     border-radius: 15px;
     display: flex;
     align-items: center;
+    margin-top: 10px;
     padding: 5px 5px 5px 15px;
 }
 
@@ -2373,5 +2409,13 @@ fieldset #props_list .pure-control-group .delete-prop:before{
   div {
     scrollbar-width: var(--scrollbar-width-moz) !important;
     scrollbar-color: var(--scrollbar-handler-color) var(--scrollbar-background-color);
+  }
+
+  .ui-widget-content a {
+    color: var(--buttons-text-color)!important;
+  }
+  a.disabled {
+    pointer-events: none;
+    opacity: 0.5;
   }
   

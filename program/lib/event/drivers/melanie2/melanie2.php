@@ -128,6 +128,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
       // Création de l'utilisateur M2
       self::$user = new Api\Mel\User();
       self::$user->uid = $user->username;
+      self::$user->load();
     }
     // Récupération du calendrier
     $_calendar = new Api\Mel\Calendar(self::$user);
@@ -241,6 +242,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
         // Création de l'utilisateur M2
         self::$user = new Api\Mel\User();
         self::$user->uid = $user->username;
+        self::$user->load();
       }
       // Récupération du calendrier
       $_calendar = new Api\Mel\Calendar(self::$user);
@@ -256,12 +258,22 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
         return [];
       }
 
+      // Problème avec l'agenda de l'organisateur
+      if (!isset($organizer_calendar)) {
+        $organizer = \Program\Drivers\Driver::get_driver()->getUser($poll->organizer_id);
+        if (isset($organizer)) {
+          $organizer_calendar = $organizer->username;
+        }
+      }
+
       // Initialisation de l'événement
       $this->init_event($date, $poll, $user, $status, $part_status, $selected_date, $organizer_calendar);
       // Définition des élèments manquants de l'évènement
       self::$event->setUserMelanie(self::$user);
       self::$event->setCalendarMelanie($_calendar->getObjectMelanie());
       self::$event->owner = self::$user->uid;
+      self::$event->creator_email = self::$user->email;
+      self::$event->creator_name  = self::$user->fullname;
       self::$event->created = time();
       $ret = self::$event->save();
       if (!is_null($ret)) {
@@ -295,6 +307,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
       // Création de l'utilisateur M2
       self::$user = new Api\Mel\User();
       self::$user->uid = $user->username;
+      self::$user->load();
     }
 
     // Récupération de la liste des calendriers Mélanie2
@@ -390,6 +403,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
         // Création de l'utilisateur M2
         self::$user = new Api\Mel\User();
         self::$user->uid = $user->username;
+        self::$user->load();
       }
       // Récupération du calendrier
       $_calendar = new Api\Mel\Calendar(self::$user);
@@ -453,6 +467,7 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
         // Création de l'utilisateur M2
         self::$user = new Api\Mel\User();
         self::$user->uid = $user->username;
+        self::$user->load();
       }
       // Récupération du calendrier
       $_calendar = new Api\Mel\Calendar(self::$user);
@@ -543,7 +558,10 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
       if (isset($poll->description))
         $description .= "\n\n" . $poll->description;
     } else {
-      // Récupération des réponses du sondage
+      $description .= "[" . \Config\IHM::$TITLE . "] " . Localization::g('URL to the poll', false) . " : " . Output::get_poll_url($poll);  
+      if (isset($poll->description))
+        $description .= "\n\n" . $poll->description . "\n\n";
+            // Récupération des réponses du sondage
       $responses = \Program\Drivers\Driver::get_driver()->getPollResponses($poll->poll_id);
       $attendees = array();
       $attendees_title = array();
@@ -583,12 +601,15 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
             $attendee->role = Api\Mel\Attendee::ROLE_REQ_PARTICIPANT;
             $attendee->name = $name;
             // Unserialize les réponses de l'utilisateur
-            $attendee->response = Api\Mel\Attendee::RESPONSE_NEED_ACTION;
+            $attendee->response = $poll->type == "rdv" ? Api\Mel\Attendee::RESPONSE_ACCEPTED : Api\Mel\Attendee::RESPONSE_NEED_ACTION;
             // Force automatiquement le status du participant
             if ($response->user_id == $user->user_id && isset($part_status)) {
               $attendee->response = strtolower($part_status);
             }
-            if (isset($resp[$date]) && $resp[$date]) {
+            if ($poll->type == "rdv" && isset($resp[$date]) && $resp[$date]){
+              if($response == $responses[0])
+                $attendees_list .= "$name ";
+            }elseif (isset($resp[$date]) && $resp[$date]) {
               $attendees_list .= "[" . Localization::g('Yes', false) . "] $name\n";
             } elseif (isset($resp["$date:if_needed"]) && $resp["$date:if_needed"]) {
               $attendees_list .= "[" . Localization::g('If needed', false) . "] $name\n";
@@ -604,7 +625,10 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
             } else {
               $name = isset($user_resp->fullname) && $user_resp->fullname != "" ? $user_resp->fullname : $user_resp->username;
             }
-            if (isset($resp[$date]) && $resp[$date]) {
+            if ($poll->type == "rdv" && isset($resp[$date]) && $resp[$date]) {
+              if($response == $responses[0])
+                $attendees_list .= "$name\n";
+            } elseif (isset($resp[$date]) && $resp[$date]) {
               $attendees_list .= "[" . Localization::g('Yes', false) . "] $name\n";
             } else {
               $attendees_list .= "[" . Localization::g('No', false) . "] $name\n";
@@ -627,22 +651,98 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
 
     if (isset($attendees_title) && $poll->organizer_id == $user->user_id && $poll->type == 'rdv') {
       $attendees_title = implode('-', $attendees_title);
-      self::$event->title =  self::$event->title . ' ' .  $poll->title . " : " . $attendees_title;
+      $attendees = [];
+      self::$event->title =  self::$event->title . ' ' .  $poll->title; // . " : " . $attendees_title
+      $responses = \Program\Drivers\Driver::get_driver()->getPollResponses($poll->poll_id);
+      foreach ($responses as $response) {
+        $resp = unserialize($response->response);
+        if (isset($resp[$date])&& $resp[$date] && $response->user_id !== \Program\Data\User::get_current_user()->user_id) {
+          $user = \Program\Drivers\Driver::get_driver()->getUser($response->user_id);
+if ($response == $responses[0]){
+          $description .= " " . $user->email . " ";
+} else {
+            $description .= $user->fullname . " " . $user->email . " ";
+          }
+          // ajout d'un attendee
+          $attendee = new Api\Mel\Attendee();
+          $attendee->email = $user->email;
+          $attendee->role = Api\Mel\Attendee::ROLE_REQ_PARTICIPANT;
+          $attendee->name = $user->username;
+          $attendee->response = Api\Mel\Attendee::RESPONSE_ACCEPTED;
+          array_push($attendees,$attendee);
+if ($response-> reason !== null && $response->reason !== "")
+            $description .= "\nMotif : " . $response->reason;
+          if ($response->phone_number !== null && $response->phone_number !== "")
+            $description .= "\nTéléphone : " .$response->phone_number . " ";
+          if ($response->postal_address !== null && $response->postal_address !== "")
+            $description .= "\nAdresse postale : " .$response->postal_address . " ";
+                    $description .= "\n\n";
+        } else {
+          continue;
+        } 
+      }
+
       $user = \Program\Data\User::get_current_user();
       //$description .= "\n\n" . $user->phone_number . " " . $user->commune . " " . $user->siren;
       if ($user == null) {
         $name = \Program\Lib\Request\Session::get("user_noauth_name") == "" ? Request::getInputValue("user_noauth_name", POLL_INPUT_POST) : \Program\Lib\Request\Session::get("user_noauth_name");
         $mail = \Program\Lib\Request\Session::get("user_noauth_email") == "" ? Request::getInputValue("user_noauth_email", POLL_INPUT_POST) : \Program\Lib\Request\Session::get("user_noauth_email");
         $description .= $name . " " . $mail ;
+        // attendee
+        $attendee = new Api\Mel\Attendee();
+        $attendee->email = $mail;
+        $attendee->role = Api\Mel\Attendee::ROLE_REQ_PARTICIPANT;
+        $attendee->name = $name;
+        $attendee->response = Api\Mel\Attendee::RESPONSE_ACCEPTED;
+        array_push($attendees,$attendee);
       } else {
         $description .= $user->fullname . " " . $user->email ;
+        // attendee
+        $attendee = new Api\Mel\Attendee();
+        $attendee->email = $user->email;
+        $attendee->role = Api\Mel\Attendee::ROLE_REQ_PARTICIPANT;
+        $attendee->name = $user->username;
+        $attendee->response = Api\Mel\Attendee::RESPONSE_ACCEPTED;
+        array_push($attendees,$attendee);
       }
-      $description .= "\n" . Request::getInputValue("adress", POLL_INPUT_POST) . "\n " . Request::getInputValue("phone", POLL_INPUT_POST);
-      if ($user != null)
+            if ($user != null)
         $description .=" " . $user->siren;
       if ($poll->reason) {
         $description .= "\nMotif : " . Request::getInputValue("reason", POLL_INPUT_POST);
       }
+if (Request::getInputValue("phone", POLL_INPUT_POST) !== null && Request::getInputValue("phone", POLL_INPUT_POST) !== "")
+          $description .= "\nTéléphone : " .Request::getInputValue("phone", POLL_INPUT_POST) . " ";
+        if (Request::getInputValue("adress", POLL_INPUT_POST) !== null && Request::getInputValue("adress", POLL_INPUT_POST) !== "")
+          $description .= "\nAdresse postale : " . Request::getInputValue("adress", POLL_INPUT_POST) . " ";
+        $description .= "\n\n";
+      
+      // event->attendees = $attendees
+      self::$event->attendees = $attendees;
+    } else if (isset($attendees_title) && $poll->type == 'rdv'){
+      $attendees = [];
+      $user = \Program\Data\User::get_current_user();
+      //$description .= "\n\n" . $user->phone_number . " " . $user->commune . " " . $user->siren;
+      if ($user == null) {
+        $name = \Program\Lib\Request\Session::get("user_noauth_name") == "" ? Request::getInputValue("user_noauth_name", POLL_INPUT_POST) : \Program\Lib\Request\Session::get("user_noauth_name");
+        $mail = \Program\Lib\Request\Session::get("user_noauth_email") == "" ? Request::getInputValue("user_noauth_email", POLL_INPUT_POST) : \Program\Lib\Request\Session::get("user_noauth_email");
+        // attendee
+        $attendee = new Api\Mel\Attendee();
+        $attendee->email = $mail;
+        $attendee->role = Api\Mel\Attendee::ROLE_REQ_PARTICIPANT;
+        $attendee->name = $name;
+        $attendee->response = Api\Mel\Attendee::RESPONSE_ACCEPTED;
+        array_push($attendees,$attendee);
+    } else {
+        // attendee
+        $attendee = new Api\Mel\Attendee();
+        $attendee->email = $user->email;
+        $attendee->role = Api\Mel\Attendee::ROLE_REQ_PARTICIPANT;
+        $attendee->name = $user->username;
+        $attendee->response = Api\Mel\Attendee::RESPONSE_ACCEPTED;
+        array_push($attendees,$attendee);
+      }
+      self::$event->title = self::$event->title . ' ' . $poll->title;
+      self::$event->attendees = $attendees;
     } else {
       self::$event->title = self::$event->title . ' ' . $poll->title;
     }
@@ -650,5 +750,111 @@ class Melanie2 extends \Program\Lib\Event\Drivers\Driver
     self::$event->description = $description;
     if (isset($poll->location))
       self::$event->location = $poll->location;
+  }
+
+  /*
+   * @param string $date Date de l'évènement
+   * @param string $event_uid [Optionnel] UID de l'événement
+   * @param \Program\Data\Poll $poll [Optionnel] Sondage à utiliser, si ce n'est pas le courant
+  */
+  public function update_other_calendar($date, $event_uid, $poll = null){
+    //récupération du user qui quitte l'évennement
+    $leavingUser = \Program\Data\User::get_current_user();
+    // Récupération du sondage
+    if (!isset($poll)) {
+      if (\Program\Data\Poll::isset_current_poll()) {
+        $poll = \Program\Data\Poll::get_current_poll();
+      } else {
+        return false;
+}
+    }
+    $event = new Api\Mel\Event();
+    $responses = \Program\Drivers\Driver::get_driver()->getPollResponses($poll->poll_id);
+
+    // Récupération de l'organisateur
+    $poll_organizer = Output::get_env("poll_organizer");
+    if (!isset($poll_organizer)) {
+      $poll_organizer = \Program\Drivers\Driver::get_driver()->getUser($poll->organizer_id);
+    }
+    // Permet de savoir si l'évenement de l'organisateur existe pour l'ajout des participants
+    $organizer_event_exists = true;
+    $organizer = new Api\Mel\Organizer($event);
+    $organizer->email = $poll_organizer->email;
+    $organizer->name = $poll_organizer->fullname;
+    $organizer->uid = $poll_organizer->username;
+    $organizer->extern = false;
+    
+    
+    //édition de la description
+    $attendees =[];
+    $description = "[" . \Config\IHM::$TITLE . "] " . Localization::g('URL to the poll', false) . " : " . Output::get_poll_url($poll);
+    if (isset($poll->description)) {
+      $description .= "\n\n" . $poll->description;
+    }
+    if (isset($infos)){
+      $description .= "\n\n" . $infos;
+    }
+    foreach ($responses as $response) {
+      $resp = unserialize($response->response);
+      if (isset($resp[$date])&& $resp[$date] && $response->user_id !== $leavingUser->user_id) {
+        $user = \Program\Drivers\Driver::get_driver()->getUser($response->user_id);
+        $description .= $user->fullname . " " . $user->email . " ";
+        // ajout d'un attendee
+        $attendee = new Api\Mel\Attendee();
+        $attendee->email = $user->email;
+        $attendee->role = Api\Mel\Attendee::ROLE_REQ_PARTICIPANT;
+        $attendee->name = $user->username;
+        $attendee->response = Api\Mel\Attendee::RESPONSE_ACCEPTED;
+        array_push($attendees,$attendee);
+if ($response-> reason !== null && $response->reason !== "")
+          $description .= "\nMotif : " . $response->reason;
+        if ($response->phone_number !== null && $response->phone_number !== "")
+          $description .= "\nTéléphone : " .$response->phone_number . " ";
+        if ($response->postal_address !== null && $response->postal_address !== "")
+          $description .= "\nAdresse postale : " .$response->postal_address . " ";
+                $description .= "\n\n";
+      }
+    }
+    // On update l'event pour les utilisateurs restant dans l'event
+    $event = new Api\Mel\Event();
+    $event->uid = isset($event_uid) ? $event_uid : $this->generate_event_uid($date, $poll);
+    $event->calendar = $organizer->uid;
+if ($this->is_remaining_participant($date, $event_uid, $poll)){
+      if($event->load()){
+        $event->description = $description;
+        $event->attendees = $attendees;
+        $event->status = Api\Mel\Event::STATUS_CONFIRMED;
+        $event->title = $poll->title;
+        $ret = $event->save();
+      }
+    } else {
+    if($event->load()){
+      $event->description = $description;
+      $event->attendees = $attendees;
+      $ret = $event->save();
+    }
+}
+    return isset($ret);
+  }
+
+  public function is_remaining_participant($date, $event_uid, $poll = null) {
+    // Récupération du sondage
+    if (!isset($poll)) {
+      if (\Program\Data\Poll::isset_current_poll()) {
+        $poll = \Program\Data\Poll::get_current_poll();
+      } else {
+        return false;
+      }
+    }
+    $leavingUser = \Program\Data\User::get_current_user();
+    $responses = \Program\Drivers\Driver::get_driver()->getPollResponses($poll->poll_id);
+    $result = false;
+    foreach ($responses as $response) {
+      $resp = unserialize($response->response);
+      if (isset($resp[$date])&& $resp[$date] && $response->user_id !== $leavingUser->user_id) {
+        $result = true;
+      }
+    }
+    return $result;
   }
 }

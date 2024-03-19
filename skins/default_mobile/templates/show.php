@@ -149,10 +149,103 @@ use Program\Data\User as u;
             </div>
             <br>
           <?php } ?>
+        <?php } ?>
+        </div>
+      </div>
+      <?php if (!p::get_current_poll()->deleted) { ?>
+        <div class="dialog_popup" id="lock_poll_popup" title="<?= l::g('Lock the poll') ?>">
+          <div class="dialog_popup_content">
+            <div><?= l::g('Remember to lock the poll when it\'s finished') ?></div>
+            <?php if (p::get_current_poll()->type == 'date') { ?>
+              <div><?= l::g('So you can create the meeting') ?></div>
+            <?php } ?>
+            <div><a title="<?= l::g("Clic here to lock the poll", false) ?>" class="pure-button pure-button-edit-poll customtooltip_bottom" href="<?= o::url(null, ACT_LOCK, array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"> <?= l::g('Clic here to lock the poll') ?></a></div>
+          </div>
+        </div>
+
+        <div class="dialog_popup" id="validate_prop_popup" title="<?= l::g('Validate one or more prop') ?>">
+          <div class="dialog_popup_content">
+            <div><?= l::g('Your poll is now lock! You can validate one or more proposal to notify the attendees') ?></div>
+            <div class="dialog_popup_content_separator"></div>
+            <div><?= s::GetBestProposalPopup() ?></div>
+          </div>
+        </div>
+
+        <div class="dialog_popup" id="add_to_calendar_popup" title="<?= l::g('Validate your presence') ?>">
+          <div class="dialog_popup_content">
+            <div><?= l::g('Organizer has validate one or more date, you can now say if you be there or not') ?></div>
+            <div><?= s::GetAddCalendarProposalsPopup() ?></div>
+          </div>
         </div>
       <?php } ?>
+
+      <div class="dialog_popup" id="confirmation_rdv" title="Validation du rendez-vous">
+        <div class="dialog_popup_content">
+          <div class="event_info">
+              <div><?= l::g('you have selected the date') ?> :</div>
+              <div id="rdv_date" style="font-weight:bold"><p></p></div>
+              <div id="email_area">
+                <div><?= l::g('confirmation email will be send to') ?> :</div>
+                <div id="email"style="font-weight:bold"><?= $_SESSION['user_email']?></div>
     </div>
-    <?php t::inc('copyright') ?>
+              
+
+          </div>
+          <div id="reason">
+            <div><?= l::g('reason')?>:</div>
+            <select name="reasons" id="choose_reason">
+              <?php $reasons = explode(";", p::get_current_poll()->reasons)?>
+              <?php foreach($reasons as $reason){ ?>
+                  <option value="<?= $reason ?>"> <?= $reason ?> </option>
+              <?php } ?>
+            </select>
+          </div>
+          <br>
+          
+          <div class="user_infos">
+            <?php if (u::get_current_user()!=null && u::get_current_user()->is_cerbere){ ?>
+              <?php if(p::get_current_poll()->phone_asked || p::get_current_poll()->address_asked){?>
+                <div style="font-weight:bold"><?= l::g('contact info')?> :</div>
+              <?php } ?>
+              <?php if(p::get_current_poll()->phone_asked){ ?>
+                <div><?= l::g('phone_number') ?><?= p::get_current_poll()->phone_required ? "*": "" ?> : </div>
+                <div id="phone_warning" style="color:red"></div>
+                <?php if(u::get_current_user()->phone_number == null){ ?>
+                  <input type="tel" id="phone" placeholder="">
+                <?php }else{ ?>
+                  <input type="tel" id="phone" value=<?= u::get_current_user()->phone_number?> readonly=true>
+                <?php } ?>
+              <?php } ?>
+              <?php if(p::get_current_poll()->address_asked){ ?>
+                <div><?= l::g('postal address') ?><?= p::get_current_poll()->address_required ? "*": "" ?> : </div>
+                <div id="address_warning" style="color:red"></div>
+                <?php if(u::get_current_user()->commune == null){ ?>
+                  <input type="text" id="postal_addr" placeholder=""  style="width: 100%">
+                <?php }else{ ?>
+                  <input type="text" id="postal_addr" value="<?= u::get_current_user()->commune ?>"  readonly=true style="width: 100%">
+                <?php } ?>
+              <?php } ?>
+              
+            <?php }else{ ?>
+              <?php if(p::get_current_poll()->phone_asked || p::get_current_poll()->address_asked){?>
+                <div style="font-weight:bold"><?= l::g('contact info')?> :</div>
+              <?php } ?>
+              <?php if(p::get_current_poll()->phone_asked){ ?>
+                <div><?= l::g('phone_number') ?><?= p::get_current_poll()->phone_required ? "*": "" ?> : </div>
+                <div id="phone_warning" style="color:red"></div>
+                <input type="tel" id="phone" placeholder="">
+              <?php } ?>
+              <?php if(p::get_current_poll()->address_asked){ ?>
+                <div><?= l::g('postal address') ?><?= p::get_current_poll()->address_required ? "*": "" ?> : </div>
+                <div id="address_warning" style="color:red"></div>
+                <input type="text" id="postal_addr"  style="width: 100%">
+              <?php } ?>
+            <?php } ?>
+          </div>
+          <input type="hidden" id="stock" value='' >
+          
+          <button  onclick="selectedreason(this.form)" type="submit" class="pure-button pure-button-submit customtooltip_top accept_continue" title="<?= l::g("Validate this proposal") ?>"><?= l::g('Validate this proposal') ?></button>
+        </div>
   </div>
 </body>
 <?php t::inc('foot') ?>

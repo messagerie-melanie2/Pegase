@@ -59,7 +59,9 @@ class Cookie {
 	 * @param string $key
 	 */
 	public static function getCookie($key) {
+		if(isset($_COOKIE[strtolower($key)]))
 		return $_COOKIE[strtolower($key)];
+		return null;
 	}
 	/**
 	 * Supprimer le cookie avec les valeurs par défaut de configuration

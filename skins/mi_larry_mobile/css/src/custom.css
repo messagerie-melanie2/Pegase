@@ -1,0 +1,102 @@
+.ui-header-fixed .ui-btn, .ui-header .ui-btn-left{
+  margin-left: 60px;
+}
+.pure-button-disconnect,
+.pure-button-home,
+.pure-button-submit,
+.pure-button-save,
+.pure-button-edit-poll,
+.pure-button-see-poll,
+.pure-button-new-poll,
+.pure-button-modify-poll,
+.pure-button-validate-prop,
+.pure-button-unvalidate-prop,
+.pure-button-calendar,
+.pure-button-light-red,
+.pure-button-connect-with-account {
+    color: white;
+    border-radius: 2px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    margin-bottom: 5px;
+    width: 95%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 100%;
+    white-space: pre-line;
+
+}
+
+.pure-button-connect-with-account {
+    background: #336699; /* this is a  blue */
+}
+.pure-button-see-poll {
+    background: #476583; /* this is a  blue */
+}
+.pure-button-edit-poll {
+    background: #476583; /* this is a  blue */
+}
+.pure-button-submit {
+    background: #476583; /* this is a light blue */
+}
+.pure-button-disconnect {
+    background: rgb(223, 117, 20); /* this is an orange */
+}
+
+.pure-button-home {
+    background: rgb(66, 184, 221); /* this is a light blue */
+}
+
+.pure-button-save {
+    background: #837797; /* this is a blue */
+}
+
+.pure-button-modify-poll {
+	background: #476583; /* this is a light blue */
+    margin-bottom: 5px;
+}
+.pure-button-light-red {
+	background: #8887D2; /* this is a light red */
+}
+.pure-button-new-poll {
+	background: #8887D2; /* this is a light red */
+}
+.pure-button-calendar {
+    background: rgb(66, 184, 221); /* this is a blue */
+    font-size: 80%;
+    padding: 2px 5px;
+    background-image: url("../../images/1397844068_agenda-2-01.png");
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 25px;
+	width: 25px;
+	margin-right: 3px;
+	float: left;
+}
+.pure-button-calendar:hover {
+    background-image: url("../../images/1397844068_agenda-2-01.png");
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.pure-button-validate-prop {
+    background: #769DDB; /* this is a blue */
+    font-size: 80%;
+    width: 80px;
+}
+
+.pure-button-unvalidate-prop {
+    background: rgb(202, 60, 60); /* this is a blue */
+    font-size: 80%;
+    padding: 2px 5px;
+    background-image: url("../../images/1395836978_remove-01_white_small.png");
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 25px;
+	width: 25px;
+	float: right;
+}
+.pure-button-unvalidate-prop:hover {
+    background-image: url("../../images/1395836978_remove-01_white_small.png");
+	background-repeat: no-repeat;
+	background-position: center;
+}

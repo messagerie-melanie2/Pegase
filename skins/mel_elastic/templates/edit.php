@@ -58,30 +58,25 @@ use Program\Lib\Request\Output as o,
 							<?php } ?>
 							<div id="warning_change_poll_type"><?= l::g("Warning: If you change poll type, proposals previously add (date or free) will be lost") ?></div>
 						</div>
-						<br>
 						<div class="pure-control-group">
 							<label for="edit_title" class="voice">Titre du sondage</label>
 							<input id="edit_title" type="text" name="edit_title" value="<?= p::isset_current_poll() ? o::tohtml(p::get_current_poll()->title) : r::getInputValue('title', POLL_INPUT_GET) ?>" class="customtooltip_right" title="<?= l::g('Title of the poll', false) ?>" placeholder="<?= l::g('Edit title') ?>*" required x-moz-errormessage="<?= l::g('You have to put a title for the poll') ?>" />
 						</div>
-						<br>
 						<div id="edit_max_attendees_per_prop">
-							<div class="pure-control-group">
+							<div class="pure-control-group edit_textbox">
 								<label for="edit_max_attendees" class="voice">Nombre de participants autorisés par proposition</label>
 								<input id="edit_max_attendees" type="number" onkeydown="return event.keyCode !== 69" name="edit_max_attendees_per_prop" value="<?= p::isset_current_poll() ? o::tohtml(p::get_current_poll()->max_attendees_per_prop) : r::getInputValue('max_attendees_per_prop', POLL_INPUT_GET) ?>" class="customtooltip_right" title="<?= l::g('Number of participants allowed', false) ?>" x-moz-errormessage="<?= l::g('You have to put a title for the poll')?>" placeholder="<?= l::g('Edit number of participants') ?>" />
 								<span id="warning_max_attendees"></span>
 							</div>
-							<br>
 						</div>
-						<div class="pure-control-group">
+						<div class="pure-control-group edit_textbox">
 							<label for="edit_location" class="voice">Lieu</label>
 							<input id="edit_location" type="text" name="edit_location" value="<?= p::isset_current_poll() ? o::tohtml(p::get_current_poll()->location) : r::getInputValue('location', POLL_INPUT_GET) ?>" class="customtooltip_right" title="<?= l::g('Location of the poll', false) ?>" placeholder="<?= l::g('Edit location') ?>" />
 						</div>
-						<br>
-						<div class="pure-control-group">
+						<div class="pure-control-group edit_textbox">
 							<label for="edit_description" class="voice">Description</label>
 							<textarea class="customtooltip_right" placeholder="<?= l::g('Description') ?>" title="<?= l::g('Description of the poll', false) ?>" rows="4" id="edit_description" name="edit_description"><?= p::isset_current_poll() ? p::get_current_poll()->description : r::getInputValue('description', POLL_INPUT_GET) ?></textarea>
 						</div>
-						<br>
 						
 						<div id="enable_reason">
 							<div class="pure-control-group">

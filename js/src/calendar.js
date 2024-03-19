@@ -161,6 +161,7 @@ $(document)
                   $("#calendar .fc-center").hide();
                   $("#calendar .fc-right").hide();
                   $("#calendar .fc-view-container").hide();
+                  $("#calendar").css("height", "30px");
                   $("#calendar .fc-button-group button").removeClass('fc-state-active');
                   $(this).addClass('fc-state-active')
                   $("#props_list").show();
@@ -193,6 +194,7 @@ $(document)
           $("#calendar .fc-center").show();
           $("#calendar .fc-right").show();
           $("#calendar .fc-view-container").show();
+          $("#calendar").css("height", "");
           $("#props_list").hide();
           $("#props_new").hide();
           $('#calendar').fullCalendar('changeView', 'agendaWeek');
@@ -206,6 +208,7 @@ $(document)
           $("#calendar .fc-center").show();
           $("#calendar .fc-right").show();
           $("#calendar .fc-view-container").show();
+          $("#calendar").css("height", "");
           $("#props_list").hide();
           $("#props_new").hide();
           $('#calendar').fullCalendar('changeView', 'agendaDay');
@@ -219,6 +222,7 @@ $(document)
           $("#calendar .fc-center").show();
           $("#calendar .fc-right").show();
           $("#calendar .fc-view-container").show();
+          $("#calendar").css("height", "");
           $("#props_list").hide();
           $("#props_new").hide();
           $('#calendar').fullCalendar('changeView', 'agendaWeek');
@@ -322,7 +326,7 @@ $(document)
             });
 }
 //Ajout du bouton de duplication des semaine
-if (poll.env.is_type_rdv) {
+if (poll.env.is_type_rdv || poll.env.is_type_date) {
     $('#calendar div.fc-right div.fc-button-group')
         .append(
             '<button type="button" style="-moz-user-select: none;" class="fc-button-duplicate-proposals fc-button duplicate-proposals fc-state-default fc-corner-right">' + poll.labels['duplicate proposals'] + '</button>');
@@ -364,10 +368,10 @@ if (poll.env.is_type_rdv) {
                             var addEvent = true;
                                                                 
                             events.forEach(function(eventbis){
-                                if (eventbis.title == newEvent.title){
-                                    if(eventbis.start.toString() == newEvent.start.toString()){
-                                        if(eventbis.end.toString() == newEvent.end.toString()){
-                                            if(eventbis.allDay == newEvent.allDay){
+                                if (eventbis.title == poll.env.poll_title){
+                                    if(eventbis.start.toString() == start.toString()){
+                                        if(eventbis.end.toString() == end.toString()){
+                                            if(eventbis.allDay == allDay){
                                                 addEvent = false;
                                             }
                                         }
@@ -375,8 +379,15 @@ if (poll.env.is_type_rdv) {
                                 }
                             });
                             if (addEvent){
+                              var id = addNewDate(start.toDate(), end.toDate(), allDay); 
+                              var newEvent = {
+                                id: id,
+                                title: poll.env.poll_title,
+                                start : start,
+                                end: end,
+                                allDay: allDay
+                              }; 
                                 $('#calendar').fullCalendar('renderEvent', newEvent, true);
-                                addNewDate(newEvent.start.toDate(), newEvent.end.toDate(), newEvent.allDay);    
                             }
                         }
                     }
@@ -555,7 +566,7 @@ function createList() {
   new_html += ' à : ';
   new_html += '<input style="width: ' + date_input_width + 'px;" id="datepicker_end-new_date" type="date"  class="date_input"> ';
   new_html += '<input style="width: ' + time_input_width + 'px;" id="timepicker_end-new_date" type="time" class="time_input">  ';
-  new_html += '<a class="pure-button pure-button-submit-date" onclick="getNewDate()">Ajouter';
+  new_html += '<a class="pure-button pure-button-submit-date" href="#" onclick="getNewDate()">Ajouter';
   new_html += '</a>';
   new_html += '<span id="error_message-new_date" style="display:none; color:red" >Merci de remplir les champs nécessaires</span>';
   new_html += '</div>';
@@ -584,7 +595,7 @@ function fillList(id, value) {
 
   }
   html_list += '<input style="width: ' + time_input_width + 'px;" id="timepicker_end-' + id + '" type="time" class="list_input time_input" value="' + date_input[4] + '" >  ';
-  html_list += '<a class="pure-button pure-button-delete-date" "style"="padding-top: 3px;" onclick="deleteDate(\'' + id + '\');">';
+  html_list += '<a class="pure-button pure-button-delete-date" "style"="padding-top: 3px;" onclick="deleteDate(\'' + id + '\');" href = "#">';
   html_list += '</a>';
   html_list += '<span id="error_message-' + id + '" style="display:none; color:red" >Merci de remplir les champs nécessaires</span>';
   html_list += '</div>';
@@ -676,6 +687,9 @@ function getNewDate() {
   $('#datepicker_end-new_date').val("");
   $('#timepicker_start-new_date').val("");
   $('#timepicker_end-new_date').val("");
+
+  //On remet le focus sur le début de ligne pour la vue liste
+  document.getElementById("datepicker_start-new_date").focus();
   // Retourne l'id
   return id;
 

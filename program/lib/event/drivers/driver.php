@@ -609,4 +609,13 @@ abstract class Driver {
    * @return boolean True si l'événement a bien été supprimé, False sinon
    */
   abstract function delete_event($date, $event_uid = null, $poll = null, $user = null, $calendar = null);
+  
+  /*
+   * @param string $date Date de l'évènement
+   * @param string $event_uid [Optionnel] UID de l'événement
+   * @param \Program\Data\Poll $poll [Optionnel] Sondage à utiliser, si ce n'est pas le courant
+  */
+  abstract function update_other_calendar($date, $event_uid, $poll);
+
+  abstract function is_remaining_participant($date, $event_uid, $poll = null);
 }

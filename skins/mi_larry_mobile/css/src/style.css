@@ -1,0 +1,288 @@
+@CHARSET "UTF-8";
+h3 {
+  color: #4B6184;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+#mce_portail{
+  z-index: 1099 !important;
+  padding-top: 5px !important;
+}
+#header {
+  min-width: 0px;
+}
+#prevcontent {
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+}
+#content {
+  background-color: #fff;
+  padding: 0px 5px;
+  margin-top: 0px;
+  box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+  overflow: hidden;
+  min-width: 0px;
+}
+#copyright {
+  color: black;
+  font-size: 80%;
+  margin-left: 35px;
+}
+#header {
+  background: #3a3636;
+  height: 40px;
+  width: 100%;
+  margin-top: 0px;
+  position: fixed;
+  z-index: 100;
+  min-width: 1040px;
+}
+#header a {
+  text-decoration: none;
+}
+.message {
+	width: 90%;
+	color: #1B1A47;
+	background-color: white;
+	box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+	padding: 0px;
+	z-index: 2000;
+	position: fixed;
+ 	color: #848484;
+ 	opacity: 0.9;
+ 	top: 0;
+ 	font-size: 95%;
+ 	text-align: center;
+}
+
+.message:hover {
+  	opacity: 1;
+}
+
+.success {
+	border-bottom: 2px solid #9FC3A1;
+	border-left: 2px solid #9FC3A1;
+	border-right: 2px solid #9FC3A1;
+	padding: 5px 20px 5px 20px;
+	margin: 0px;
+}
+
+.error {
+	border-bottom: 2px solid #C42D2D;
+	border-right: 2px solid #C42D2D;
+	border-left: 2px solid #C42D2D;
+	padding: 5px 20px 5px 20px;
+	margin: 0px;
+}
+.pure-form select, input[type=time], input[type=date], input[type=text], input[type=url], input[type=email], input[type=password], input[type=tel] {
+  -webkit-appearance: none; -moz-appearance: none;
+  display: block;
+  margin: 0;
+  width: 100%;
+  border: 1px solid #bbb;
+}
+
+#listyourpolls > div,
+#listpollsresponded > div {
+	margin-bottom: 10px;
+}
+
+#warning_change_poll_type {
+	width: 100%;
+	color: red;
+	font-size: 90%;
+	display: none;
+}
+#proposals_div.swipe {
+	margin-left: 42px;
+}
+#proposals_div {
+	overflow: auto;
+	margin-left: 105px;
+	margin-bottom: 10px;
+	margin-right: -20px;
+}
+#proposals_table {
+	border-spacing: 3px;
+	border-collapse: separate;
+	width: 100%;
+	right: 0;
+	font-size: 80%;
+}
+#proposals_table .prop_header {
+	background-color: #6B7F9F;
+	color: #ffffff;
+	padding: 20px 10px;
+	border-radius: 2px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+#proposals_table .prop_header_time {
+	background-color: #F8FAFC;
+	color: dark-grey;
+	padding: 4px;
+	padding-top: 30px;
+    padding-bottom: 30px;
+}
+#proposals_table td {
+	min-width: 50px;
+	vertical-align: middle;
+	padding-top: 20px;
+  padding-bottom: 20px;
+}
+#proposals_table .prop_accepted {
+	background-color: #B9E6C7;
+	border-radius: 2px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    color: green;
+}
+#proposals_table .prop_refused {
+	background-color: #F5CFD4;
+	border-radius: 2px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    color: red;
+    height: 18px;
+}
+#proposals_table .prop_if_needed {
+  background-color: #F5DBC0;
+  border-radius: 2px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  color: #61380B;
+  height: 18px;
+}
+#proposals_table .prop_not_responded {
+	background-color: #FFFFFF;
+	border-radius: 2px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    border: 1px solid grey;
+}
+#proposals_table .prop_not_responded:hover {
+	background-color: #E4EBF5;
+	cursor : pointer;
+}
+#proposals_table .prop_change {
+	cursor : pointer;
+}
+#proposals_table .prop_best {
+	color: #0B2D64;
+	font-weight: bold;
+	background-color: #B8C4D7;
+	border-radius: 2px;
+}
+#proposals_table .validate_prop {
+	height: 25px;
+	border: 1px solid green;
+	background: url("../../images/1395859186_Symbol_-_Check_small.png") center center no-repeat;
+}
+#proposals_table .validate_prop_header {
+	background-color: #75B531;
+	border: 1px solid green;
+}
+#proposals_table .prop_cell_nobackground {
+	background-color: #ffffff;
+}
+#proposals_table .first_col.swipe {
+  width: 10px;
+}
+#proposals_table .first_col {
+	position:absolute;
+    *position: relative; /*ie7*/
+    left: 0;
+    width: 120px;
+    z-index: 100;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#proposals_table .prop_change .ui-checkbox {
+  margin: 0 auto;
+}
+#proposals_table .prop_row_new_response .first_col {
+  padding: 0;
+}
+#proposals_table .last_col {
+	position:absolute;
+    *position: relative; /*ie7*/
+    right: 0;
+    min-width: 0px;
+}
+#proposals_table .nb_attendees.swipe {
+  width: 10px;
+}
+#proposals_table .nb_attendees {
+	color: #0B2D64;
+	font-weight: bold;
+	background-color: #CFD9E9;
+	border-radius: 2px;
+	padding-left: 5px;
+	width: 120px;
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#proposals_table td.user_list_name.swipe {
+  width: 10px;
+}
+#proposals_table td.user_list_name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-color: #F8FAFC;
+    padding-left: 5px;
+    width: 120px;
+}
+#proposals_table td.user_list_name_connected {
+	border: 1px solid #BDCADF;
+	border-radius: 2px;
+}
+#proposals_table td.user_freebusy_first_col.swipe {
+  width: 10px;
+}
+#proposals_table td.user_freebusy_first_col {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-color: #8095A9;
+    color: white;
+    padding-left: 5px;
+    width: 205px;
+    border-radius: 2px;
+    width: 120px;
+}
+#proposals_table .freebusy_confirmed {
+    background-color: #DBE3FC;
+    border-radius: 2px;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+    color: #14214A;
+    border: 1px solid #96A2C4;
+    height: 18px;
+}
+#proposals_table .freebusy_none {
+    background-color: #E2F2D0;
+    border-radius: 2px;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+    color: #006100;
+    border: 1px solid #94A97B;
+    height: 18px;
+}
+#proposals_table .freebusy_tentative {
+    background-color: #F5F5E0;
+    border-radius: 2px;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+    color: #4B2112;
+    border: 1px solid #B6B77C;
+    height: 18px;
+}
+.best_proposals {
+	font-weight: bold;
+}
+.validate_proposals {
+	font-weight: bold;
+}
+.hidden {
+    display: none;
+}
+a.showmore {
+	font-size: 70%;
+	margin-top: 10px;
+}

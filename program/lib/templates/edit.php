@@ -147,7 +147,7 @@ class Edit {
 					if ($type == "rdv") {
 						$poll->max_attendees_per_prop = !empty($edit_max_attendees_per_prop) ? $edit_max_attendees_per_prop : 1;
 						$poll->prop_in_agenda = $edit_prop_in_agenda == "true";
-						$poll->reason = $reason == "true";
+						$poll->reason = empty($reasons) ? false : $reason == "true";
 						$poll->reasons = !empty($reasons) ? $reasons : '';
 						$poll->phone_asked = $phone_asked == "true";
 						$poll->phone_required = $phone_required == "true";
@@ -201,7 +201,7 @@ class Edit {
 					else {
 						$poll->max_attendees_per_prop = $edit_max_attendees_per_prop;
 					}
-					$poll->reason = $reason == "true";
+					$poll->reason = empty($reasons) ? false : $reason == "true";
 					$poll->reasons = !empty($reasons) ? $reasons : '';
 					$poll->phone_asked = $phone_asked == "true";
 					$poll->phone_required = $phone_required == "true";

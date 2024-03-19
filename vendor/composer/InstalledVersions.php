@@ -25,12 +25,12 @@ class InstalledVersions
     private static $installed = array (
   'root' => 
   array (
-    'pretty_version' => 'dev-1.1-DREAL',
-    'version' => 'dev-1.1-DREAL',
+    'pretty_version' => '1.0.17.x-dev',
+    'version' => '1.0.17.9999999-dev',
     'aliases' => 
     array (
     ),
-    'reference' => 'bb09be6b847557bd1e376a4b66ef1071c6ac6b80',
+    'reference' => '308ae16c9bdc8d546d073bb8b3d3f0aca38c717b',
     'name' => 'messagerie-melanie2/pegase',
   ),
   'versions' => 
@@ -46,21 +46,21 @@ class InstalledVersions
     ),
     'messagerie-melanie2/orm-m2' => 
     array (
-      'pretty_version' => '0.6.5.4',
-      'version' => '0.6.5.4',
+      'pretty_version' => '0.6.5.21',
+      'version' => '0.6.5.21',
       'aliases' => 
       array (
       ),
-      'reference' => 'c9ea450fd9691d9418ae036b4b86c65ad973ce4b',
+      'reference' => 'fb2a035edd0105e49d6783e61fd2182d06eb0443',
     ),
     'messagerie-melanie2/pegase' => 
     array (
-      'pretty_version' => 'dev-1.1-DREAL',
-      'version' => 'dev-1.1-DREAL',
+      'pretty_version' => '1.0.17.x-dev',
+      'version' => '1.0.17.9999999-dev',
       'aliases' => 
       array (
       ),
-      'reference' => 'bb09be6b847557bd1e376a4b66ef1071c6ac6b80',
+      'reference' => '308ae16c9bdc8d546d073bb8b3d3f0aca38c717b',
     ),
     'psr/log' => 
     array (

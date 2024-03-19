@@ -288,9 +288,9 @@ class Ajax
       }
     }
     if (isset($proposals[$prop_key]) && isset($validate_proposals[$proposals[$prop_key]])) {
-      //On ajoute le calendrier de l'organisateur si l'organisateur valide la date
+      // On ajoute le calendrier de l'organisateur si l'organisateur valide la date
       if (\Program\Data\Poll::get_current_poll()->organizer_id == \Program\Data\User::get_current_user()->user_id) {
-      $event_uid = \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, null, null, $part_status, $cal, false, $cal);
+        $event_uid = \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, null, null, $part_status, $cal, false, $cal);
       }
       else {
         $event_uid = \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, null, null, $part_status, $cal);
@@ -722,5 +722,8 @@ class Ajax
     \Program\Lib\Event\Drivers\Driver::get_driver()->delete_event($proposals[$propkey], null, \Program\Data\Poll::get_current_poll(), $organiser, null, null);
     //on recréer l'évenement en provisoire pour l'organisateur
     \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$propkey], \Program\Data\Poll::get_current_poll(), $organiser, \Program\Data\Event::STATUS_TENTATIVE, null, null, null, null );
+//si il reste un participant dans l'evenement on remet ses infos dans l'évenement
+    if (\Program\Lib\Event\Drivers\Driver::get_driver()->is_remaining_participant($proposals[$propkey],(isset($events[$proposals[$propkey]]) ? $events[$proposals[$propkey]] : null), null))
+      \Program\Lib\Event\Drivers\Driver::get_driver()->update_other_calendar($proposals[$propkey],(isset($events[$proposals[$propkey]]) ? $events[$proposals[$propkey]] : null), null);
   }
 }

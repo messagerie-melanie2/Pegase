@@ -56,7 +56,7 @@ function addPropDiv(value) {
 	var html = '<div class="pure-control-group">';
 	html += '<label style="width: 35%;" for="'+id+'">'+poll.labels['Edit proposition']+'</label>';
 	html += ' <input id="'+id+'" type="text" name="'+id+'" class="edit_prop" placeholder="'+poll.labels['Edit proposition']+'" value="'+value+'">';
-	html += ' <a class="pure-button pure-button-delete-date" style="padding-top: 3px;" onclick="deletePropDiv(\''+id+'\');"></a>';
+	html += ' <a class="pure-button pure-button-delete-date" style="padding-top: 3px;" onclick="deletePropDiv(\''+id+'\');" href = "#"></a>';
 	html += '<br></div>';
 	$('#props_list').append(html);
 }

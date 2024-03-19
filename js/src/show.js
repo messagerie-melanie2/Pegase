@@ -455,34 +455,44 @@ function selectedreason(args){
 }
 
 function unvalidate_prop_rdv(args) {
-  poll.show_loading(poll.labels['Delete of your calendar...']);
-  var prop_keys = [];
-  $("#proposals_form input:checkbox").each(
-    function () {
-      prop_keys.push($(this).attr('name')
-        .replace('check_', ''));
+  poll.confirm(
+    poll.labels['Are you sure you want to delete your response ?'],
+    poll.labels['Yes'],
+    poll.labels['No'],
+    function Yes() {
+      poll.show_loading(poll.labels['Delete of your calendar...']);
+      var prop_keys = [];
+      $("#proposals_form input:checkbox").each(
+        function () {
+          prop_keys.push($(this).attr('name')
+            .replace('check_', ''));
+        }
+      );
+      var prop_key = args.name.replace('check_', '');
+      $('#' + args.id).removeAttr('checked');
+      $.ajax({
+        type: 'POST',
+        url: '?_p=ajax&_a=cancel_event' + (poll.env.calendar_id ? '&_c=' + poll.env.calendar_id : ""),
+        data: {
+          token: poll.env.csrf_token,
+          poll_uid: poll.env.poll_uid,
+          reason: $('#choose_reason').val(),
+          prop_keys: prop_keys,
+          prop_key: prop_key
+        },
+        success: function () {
+          poll.hide_loading();
+      $('form').submit();
+        },
+        error: function (o, status, err) {
+          poll.hide_loading();
+        }
+      });
+    },
+    function No() {
+
     }
   );
-  var prop_key = args.name.replace('check_', '');
-  $('#' + args.id).removeAttr('checked');
-  $.ajax({
-    type: 'POST',
-    url: '?_p=ajax&_a=cancel_event' + (poll.env.calendar_id ? '&_c=' + poll.env.calendar_id : ""),
-    data: {
-      token: poll.env.csrf_token,
-      poll_uid: poll.env.poll_uid,
-      reason: $('#choose_reason').val(),
-      prop_keys: prop_keys,
-      prop_key: prop_key
-    },
-    success: function () {
-      poll.hide_loading();
-  $('form').submit();
-    },
-    error: function (o, status, err) {
-      poll.hide_loading();
-    }
-  });
 }
 
 // Function pour valider/dévalider une proposition

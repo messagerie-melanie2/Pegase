@@ -71,17 +71,17 @@
         },
         {
             "name": "messagerie-melanie2/orm-m2",
-            "version": "0.6.5.4",
-            "version_normalized": "0.6.5.4",
+            "version": "0.6.5.21",
+            "version_normalized": "0.6.5.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/messagerie-melanie2/ORM-M2.git",
-                "reference": "c9ea450fd9691d9418ae036b4b86c65ad973ce4b"
+                "reference": "fb2a035edd0105e49d6783e61fd2182d06eb0443"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagerie-melanie2/ORM-M2/zipball/c9ea450fd9691d9418ae036b4b86c65ad973ce4b",
-                "reference": "c9ea450fd9691d9418ae036b4b86c65ad973ce4b",
+                "url": "https://api.github.com/repos/messagerie-melanie2/ORM-M2/zipball/fb2a035edd0105e49d6783e61fd2182d06eb0443",
+                "reference": "fb2a035edd0105e49d6783e61fd2182d06eb0443",
                 "shasum": ""
             },
             "require": {
@@ -92,7 +92,7 @@
             "require-dev": {
                 "composer/composer": "*"
             },
-            "time": "2023-02-23T13:08:20+00:00",
+            "time": "2023-08-28T10:09:38+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -125,7 +125,7 @@
                 "Tasks"
             ],
             "support": {
-                "source": "https://github.com/messagerie-melanie2/ORM-M2/tree/0.6.5.4",
+                "source": "https://github.com/messagerie-melanie2/ORM-M2/tree/0.6.5.21",
                 "issues": "https://github.com/messagerie-melanie2/ORM-M2/issues"
             },
             "install-path": "../messagerie-melanie2/orm-m2"
@@ -258,6 +258,6 @@
             "install-path": "../sabre/vobject"
         }
     ],
-    "dev": true,
+    "dev": false,
     "dev-package-names": []
 }

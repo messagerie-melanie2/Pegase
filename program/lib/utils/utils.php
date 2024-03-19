@@ -122,8 +122,10 @@ class Utils
                 if (\Program\Data\Poll::get_current_poll()->prop_in_agenda) {
                   if (isset($nb_attendeed_per_prop[$prop_key]) && $nb_attendeed_per_prop[$prop_key] > 1) {
                     //On supprime puis remet l'évènement afin d'enlever le participant modifié
-                    \Program\Lib\Event\Drivers\Driver::get_driver()->delete_event($proposals[$prop_key], (isset($events[$proposals[$prop_key]]) ? $events[$proposals[$prop_key]] : null), null, $user, $cal);
-                    \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), null, null, null, true);
+                    //fonction maj event autres gens
+                    \Program\Lib\Event\Drivers\Driver::get_driver()->update_other_calendar($proposals[$prop_key],(isset($events[$proposals[$prop_key]]) ? $events[$proposals[$prop_key]] : null), null);
+                    //\Program\Lib\Event\Drivers\Driver::get_driver()->delete_event($proposals[$prop_key], (isset($events[$proposals[$prop_key]]) ? $events[$proposals[$prop_key]] : null), null, $user, $cal);
+                    //\Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposals[$prop_key], null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), null, null, null, true);
                   } else {
                     //Si aucun participant on remet l'évènement en provisoire
                     \Program\Lib\Event\Drivers\Driver::get_driver()->add_to_calendar($proposal, null, \Program\Drivers\Driver::get_driver()->getUser(\Program\Data\Poll::get_current_poll()->organizer_id), \Program\Data\Event::STATUS_TENTATIVE);

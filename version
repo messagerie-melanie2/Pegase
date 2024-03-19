@@ -1,7 +1,31 @@
-Pégase - Version 1.0.17
-Pégase - Build 20230705092800
+Pégase - Version 1.0.19
+Pégase - Build 20240306154700
 Pégase - Liste des changements
 
+Pégase - 1.0.19
+===================================
+ 0007957: [Interface] [DATE] Accessibilité depuis page 2 option calendaire = LISTE choix du créneau bouton AJOUTER via TABULATION
+        0008014: [Accessibilité] Accessibilité -> bouton AJOUTER
+ 0007716: [Calendrier] Lorsqu'une assistante accepte à la place de son chef un sondage de date, le user_name n'affiche pas le nom de son chef
+ 0008025: [General] [prise rdv] Titre modifié par " titre + : NOM PARTICIPANT "
+ 0007863: [General] pouvoir modifier une invitation après avoir validé le sondage 0007682 (ticket bnum) 
+ 0007709: [Calendrier] Sondage de date: Avoir le bouton dupliquer sur les semaines suivantes
+ 0007686: [Messages] confirmation en cas d'annulation par l'utilisateur
+ 0007777: [Interface] Sondage : Suite verrouillage sondage - "Valider cette proposition" est en couleur foncée par rapport au color backgroud
+ 0007960: [Interface] Skin elastic: l'affichage de l'étape 2 en mode Liste on ne visualise pas Période
+ 0007111: [Driver BDD] Double cliquer sur un sondage l'ouvre dans toute l'iframe et impossible de retourner aux autres sondages
+ 0007560: [Mobile] [sondage rdv] Ajouter les options doctolib sur l'interface mobile de prise de rdv
+ 0008011: [General] affichage de l'accueil lors du changement de Bal
+ 0008028: [Interface] Skin sondage: Sur la page 2, l'affichage en liste des dates
+ 0007563: [Interface] Audit accessibilité
+ 0007696: [General] Ajout du bouton d'export pour les 2 accès Bnum et pegase.din.developpement-durable.gouv.fr
+ 0008013: [General] Impossible de supprimer des rendez-vous dupliqués
+
+Pégase - 1.0.18
+===================================
+ 0007810: [General] Sondage date erreur dans l'évènement
+ 0007700: [General] Problème synchronisation agenda organisateur
+ Amélioration de la skin mel elastic
 
 Pégase - 1.0.17
 ===================================

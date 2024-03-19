@@ -184,6 +184,27 @@ $(document).ready(function () {
 			}
 		}
 	}
+	var links = document.querySelectorAll('a');
+
+	links.forEach(function(link){
+		link.addEventListener('click', function(e) {
+			if (link.getAttribute('href') !== '#' &&  link.hasAttribute('href')){
+				links.forEach(function(otherLink) {
+					if (otherLink !== link) {
+						otherLink.classList.add('disabled');
+					}
+				});
+			}
+		});
+	});
+	$("a").on("click", function(event) {
+		if ($(this).hasClass('clicked')) {
+			event.preventDefault();
+			return false;
+		} else {
+			$(this).addClass('clicked');
+		}
+	});
 });
 $(document).on({
 	click: function () {

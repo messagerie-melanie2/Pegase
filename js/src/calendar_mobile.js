@@ -127,7 +127,7 @@ function addDateDiv(value) {
 		var id = "edit_date" + numItems;
 		var html = '<div class="pure-control-group">';
 		html += '<input style="margin-left: 25%; width: 50%;" id="'+id+'" type="text" name="'+id+'" class="edit_date" value="'+value+'" readonly> ';
-		html += '<a class="pure-button pure-button-delete-date" "style"="padding-top: 3px;" onclick="deleteDate(\''+id+'\');">';
+		html += '<a class="pure-button pure-button-delete-date" "style"="padding-top: 3px;" onclick="deleteDate(\''+id+'\');" href = "#">';
 		html += '</a>';
 		html += '</div>';
 	}

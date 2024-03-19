@@ -119,7 +119,49 @@ use Program\Lib\Request\Session as s;
 							<textarea rows="4" cols="60" style="width: 100%;" id="edit_description" name="edit_description"><?= p::isset_current_poll() ? p::get_current_poll()->description : '' ?></textarea>
 						</div>
 						<br>
+						
+						<div id="enable_reason">
+							<div class="pure-control-group">
+								<label for="enable_reason_checkbox" class="voice">Activer l'ajout de motifs de rendez-vous</label>
+								<input id="enable_reason_checkbox" type="checkbox" name="enable_reason" value="true" <?= p::isset_current_poll() && p::get_current_poll()->reason ? 'checked' : '' ?> class="customtooltip_right" onchange="displayReasonsManager()"/>	
+								<div class= "reasons-manager" hidden=true>
+									<input id="reasons" type="hidden" name="reasons" value="<?= p::isset_current_poll() ? o::tohtml(p::get_current_poll()->reasons) : r::getInputValue('reasons', POLL_INPUT_GET) ?>" title="<?= l::g('reasons',false) ?>"/>
+									<ul class="pure-control-group reason-list js-reason-list"></ul>
+									<form class="js-form pure-control-group">
+										<div class="add-reason-bar">
+											<input type="text" aria-label="Enter a new reason" placeholder="intitulé du motif" class="js-reason-input">
+											<input type="button" value="Ajouter" class="js-reason-add">
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<div id="phone">
+							<div class="pure-control-group">
+								<label for="phone_asked" class="voice">Demander le téléphone de l'utilisateur</label>
+								<input id="phone_asked" type="checkbox" name="phone_asked" value="true" <?= p::isset_current_poll() && p::get_current_poll()->phone_asked ? 'checked' : '' ?>>
+								
+							</div>
+							<div id= "phone_req" class="pure-control-group phone-required required">
+								<label for="phone_required" class="voice">Téléphone requis</label>
+								<input id="phone_required" type="checkbox" name="phone_required" value="true" <?= p::isset_current_poll() && p::get_current_poll()->phone_required ? 'checked' : '' ?>>
+								Champ obligatoire
+							</div>
+						</div>
+						<div id="address">
 						<div class="pure-control-group">
+								<label for="address_asked" class="voice">Demander l'adresse de l'utilisateur</label>
+								<input id="address_asked" type="checkbox" name="address_asked" value="true" <?= p::isset_current_poll() && p::get_current_poll()->address_asked ? 'checked' : '' ?>>
+								
+							</div>
+							<div id= "addr_req" class="pure-control-group address-required required">
+								<label for="address_required" class="voice">Adresse requise</label>
+								<input id="address_required" type="checkbox" name="address_required" value="true" <?= p::isset_current_poll() && p::get_current_poll()->address_required ? 'checked' : '' ?>>
+								Champ Obligatoire
+							</div>
+						</div>
+						<div class="pure-control-group advanced_options folder">
+							<div class="treetoggle expanded">&nbsp;</div>
 							<label>
 								<?= l::g('Advanced options') ?>
 							</label>

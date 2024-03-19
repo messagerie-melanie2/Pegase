@@ -374,40 +374,46 @@ class Main
   {
     $html = "";
     $polls = \Program\Drivers\Driver::get_driver()->listUserRespondedPolls(\Program\Data\User::get_current_user()->user_id);
-    foreach ($polls as $poll) {
-      if ($poll->organizer_id != \Program\Data\User::get_current_user()->user_id) {
-        if ($leftPanel) {
-          $divContent = "";
-          if ($poll->count_responses > 0) {
-            $divContent .= \Program\Lib\HTML\html::span('poll_countResponses', $poll->count_responses);
+    if (count($polls) == 0) {
+      $html = \Program\Lib\HTML\HTML::div(array(
+        "class" => "nopoll"
+      ), l::g('No poll'));
+    } else {
+      foreach ($polls as $poll) {
+        if ($poll->organizer_id != \Program\Data\User::get_current_user()->user_id) {
+          if ($leftPanel) {
+            $divContent = "";
+            if ($poll->count_responses > 0) {
+              $divContent .= \Program\Lib\HTML\html::span('poll_countResponses', $poll->count_responses);
+            }
+            $divContent .= \Program\Lib\HTML\html::span('poll_title', \Program\Lib\HTML\HTML::a(array(
+              "class" => "customtooltip_bottom",
+              "title" => $poll->title,
+              "href" => Output::url(null, null, array(
+                "u" => $poll->poll_uid
+              ), false)
+            ), $poll->title));
+            $divContent .= \Program\Lib\HTML\html::span(($poll->locked == 1 ? "poll_locked" : "poll_unlocked"), ($poll->locked == 1 ? " (" . l::g('Locked') . ")" : ""));
+            $select = (\Program\Data\Poll::isset_current_poll() && \Program\Data\Poll::get_current_poll()->poll_uid == $poll->poll_uid) ? " selected" : "";
+            $html .= \Program\Lib\HTML\HTML::div(array(
+              "class" =>  $poll->type . " poll__list_element$select"
+            ), $divContent);
+          } else {
+            $html .= \Program\Lib\HTML\HTML::div(array(
+              "class" =>  $poll->type . " poll__list_element"
+            ), \Program\Lib\HTML\HTML::a(array(
+              "class" => "customtooltip_bottom",
+              "title" => l::g('Clic to view the poll (Number of responses)', false),
+              "href" => Output::url(null, null, array(
+                "u" => $poll->poll_uid
+              ), false)
+            ), $poll->title . " (" . $poll->count_responses . ")") . ($poll->locked == 1 ? " (" . l::g('Locked') . ')' : ""));
           }
-          $divContent .= \Program\Lib\HTML\html::span('poll_title', \Program\Lib\HTML\HTML::a(array(
-            "class" => "customtooltip_bottom",
-            "title" => $poll->title,
-            "href" => Output::url(null, null, array(
-              "u" => $poll->poll_uid
-            ), false)
-          ), $poll->title));
-          $divContent .= \Program\Lib\HTML\html::span(($poll->locked == 1 ? "poll_locked" : "poll_unlocked"), ($poll->locked == 1 ? " (" . l::g('Locked') . ")" : ""));
-          $select = (\Program\Data\Poll::isset_current_poll() && \Program\Data\Poll::get_current_poll()->poll_uid == $poll->poll_uid) ? " selected" : "";
-          $html .= \Program\Lib\HTML\HTML::div(array(
-            "class" =>  $poll->type . " poll__list_element$select"
-          ), $divContent);
-        } else {
-          $html .= \Program\Lib\HTML\HTML::div(array(
-            "class" =>  $poll->type . " poll__list_element"
-          ), \Program\Lib\HTML\HTML::a(array(
-            "class" => "customtooltip_bottom",
-            "title" => l::g('Clic to view the poll (Number of responses)', false),
-            "href" => Output::url(null, null, array(
-              "u" => $poll->poll_uid
-            ), false)
-          ), $poll->title . " (" . $poll->count_responses . ")") . ($poll->locked == 1 ? " (" . l::g('Locked') . ')' : ""));
         }
       }
-    }
-    if ($html == "") {
-      $html = l::g('No poll');
+      if ($html == "") {
+        $html = l::g('No poll');
+      }
     }
     return $html;
   }

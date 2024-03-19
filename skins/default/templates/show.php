@@ -76,7 +76,6 @@ use Api\SSO\SSO as sso;
                     <?php } else { ?>
                       <span class="lock_label"><?= l::g('The poll is lock') ?></span>
                       <a id="button_unlock_poll" title="<?= l::g("Clic to unlock the poll", false) ?>" class="button pure-button unlockpoll customtooltip_bottom" href="<?= o::url(null, ACT_UNLOCK, array("u" => p::get_current_poll()->poll_uid, "t" => Session::getCSRFToken())) ?>"><?= l::g('Unlock') ?></a>
-
                   <?php }
                   } ?>
                 </div>

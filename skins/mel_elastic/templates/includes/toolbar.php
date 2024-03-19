@@ -65,13 +65,13 @@ use Program\Drivers\Driver as d;
 		) { ?>
 			<?php if (p::get_current_poll()->organizer_id == u::get_current_user()->user_id) { ?>
 				<div class="toolbar_buttons">
-					<a id="button_edit_poll" title="<?= l::g("Clic to edit the poll", false) ?>" class="button" href="<?= o::url("edit", ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>" title="<?= l::g('Modify poll') ?>">
+					<a id="button_edit_poll" title="<?= l::g("Clic to edit the poll", false) ?>" class="button customtooltip_bottom" href="<?= o::url("edit", ACT_MODIFY, array("u" => p::get_current_poll()->poll_uid)) ?>" title="<?= l::g('Modify poll') ?>">
 						<span class="material-symbols-outlined edit_poll">
 							edit
 						</span>
 						Editer
 					</a>
-					<a id="button_modify_responses_poll" title="<?= l::g("Clic to change everybody responses", false) ?>" class="button" href="<?= o::url(null, ACT_MODIFY_ALL, array("u" => p::get_current_poll()->poll_uid)) ?>" title="<?= l::g('Modify responses') ?>">
+					<a id="button_modify_responses_poll" title="<?= l::g("Clic to change everybody responses", false) ?>" class="button customtooltip_bottom" href="<?= o::url(null, ACT_MODIFY_ALL, array("u" => p::get_current_poll()->poll_uid)) ?>" title="<?= l::g('Modify responses') ?>">
 						<span class="material-symbols-outlined edit_response">
 							edit_note
 						</span>
@@ -82,6 +82,12 @@ use Program\Drivers\Driver as d;
 							delete
 						</span>
 						Suprimer
+					</a>
+					<a id="button_export_csv" title="<?= l::g("Clic to export in CSV", false) ?>" class="button customtooltip_bottom" href="<?= o::url(null, ACT_DOWNLOAD_CSV, array("u" => p::get_current_poll()->poll_uid, "t" => s::getCSRFToken())) ?>">
+						<span class="material-symbols-outlined upload">
+							upload
+						</span>
+						Exporter
 					</a>
 				</div>
 			<?php } ?>

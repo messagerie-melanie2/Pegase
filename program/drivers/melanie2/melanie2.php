@@ -111,7 +111,7 @@ class Melanie2 extends \Program\Drivers\Driver {
                             }
                       }
                     }
-              }
+                }
             }
             //
         }
@@ -719,6 +719,7 @@ class Melanie2 extends \Program\Drivers\Driver {
         if($username == $originaluser->username){
             $user = $this->getAuthUser($originaluser->username);
             \Program\Data\User::set_current_user($user);
+            header("Location: " . \Program\Lib\Request\Output::get_main_url());
             return true;
         }
         if($lock){
@@ -731,6 +732,7 @@ class Melanie2 extends \Program\Drivers\Driver {
                   if (!\Program\Lib\Request\Session::is_setUsername())
                     $this->modifyUser($user);
                   \Program\Data\User::set_current_user($user);
+                  header("Location: " . \Program\Lib\Request\Output::get_main_url());
                   return true;
                 }
                 else {
@@ -749,6 +751,7 @@ class Melanie2 extends \Program\Drivers\Driver {
                         $this->modifyUser($user);
                     }
                     \Program\Data\User::set_current_user($user);
+                    header("Location: " . \Program\Lib\Request\Output::get_main_url());
                     return true;   
                 }
                 else{
@@ -773,6 +776,7 @@ class Melanie2 extends \Program\Drivers\Driver {
                         $user = $this->getUser($user_id);
                         if (isset($user) && isset($user->user_id)) {
                             \Program\Data\User::set_current_user($user);
+                            header("Location: " . \Program\Lib\Request\Output::get_main_url());
                             return true;
                         }
                     }

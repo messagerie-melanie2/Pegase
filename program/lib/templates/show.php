@@ -1569,9 +1569,16 @@ class Show
         $username = Request::getInputValue("user_username", POLL_INPUT_POST);
         $hidden_modify = Request::getInputValue("hidden_modify", POLL_INPUT_POST);
         if (\Program\Data\User::isset_current_user()) {
-          $user_id = \Program\Data\User::get_current_user()->user_id;
-          $user_name = isset(\Program\Data\User::get_current_user()->fullname) ? \Program\Data\User::get_current_user()->fullname : \Program\Data\User::get_current_user()->username;
-          $user_email = isset(\Program\Data\User::get_current_user()->email) ? \Program\Data\User::get_current_user()->email : null;
+          if(null !== Request::getInputValue("calendar_new_response", POLL_INPUT_POST)) {
+            $user_selected = \Program\Drivers\Driver::get_driver()->getAuthUser(Request::getInputValue("calendar_new_response", POLL_INPUT_POST));
+            $user_id = $user_selected->user_id;
+            $user_name = isset($user_selected->fullname) ? $user_selected->fullname : $user_selected->username;
+            $user_email = isset($user_selected->email) ? $user_selected->email : null;
+          } else {
+            $user_id = \Program\Data\User::get_current_user()->user_id;
+            $user_name = isset(\Program\Data\User::get_current_user()->fullname) ? \Program\Data\User::get_current_user()->fullname : \Program\Data\User::get_current_user()->username;
+            $user_email = isset(\Program\Data\User::get_current_user()->email) ? \Program\Data\User::get_current_user()->email : null;
+          }
         } elseif (Session::is_set("user_noauth_id") && Session::is_set("user_noauth_name") && Session::is_set("user_noauth_poll_id") && Session::get("user_noauth_poll_id") == \Program\Data\Poll::get_current_poll()->poll_id) {
           $user_id = Session::get("user_noauth_id");
           $user_name = Session::get("user_noauth_name");

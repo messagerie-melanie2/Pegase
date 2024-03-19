@@ -43,7 +43,7 @@ use Program\Drivers\Driver as d;
 			<?php } ?>
 		</select>
 	<?php } ?>
-<h2 id="aria-label-left-panel" class="voice"><?=l::g('Left panel')?></h2>
+	<h2 id="aria-label-left-panel" class="voice"><?=l::g('Left panel')?></h2>
 	<?php if (u::isset_current_user()) { ?>
 		<h3><?= l::g('All polls') ?></h3>
 		<div class="left-panel-poll-list">

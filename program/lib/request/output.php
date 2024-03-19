@@ -413,9 +413,18 @@ class Output {
 		if (isset ( $poll )) {
 			$url = explode ( '?', Request::getCurrentURL () );
 			$url = $url [0];
+$params = '?_skin=' . self::$skin;
+			$url .= $params;
 		} else if (\Program\Data\Poll::isset_current_poll ()) {
 			$url = explode ( '?', Request::getCurrentURL () );
 			$url = $url [0];
+		$params = '?_skin=' . self::$skin;
+			$url .= $params;
+		}
+		if ($url === ""){
+			$url = Request::getCurrentURL();
+			$params = '?_skin=' . self::$skin;
+			$url .= $params;
 		}
 		return $url;
 	}

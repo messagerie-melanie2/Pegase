@@ -1844,6 +1844,15 @@ div.background-image {
     color: #fff;
 }
 
+#edit .pure-button-return {
+    background-color: var(--buttons-bg-color);
+    color: var(--buttons-text-color);
+    position: absolute;
+    bottom: 60px;
+    left: 90px;
+    font-weight: bold;
+}
+
 #edit .pure-button-submit-date
 {
     padding: 7px 14px;
@@ -1984,4 +1993,13 @@ a.showmore {
 
 .voice{
     display: none;
+}
+
+a.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+input#phone, input#postal_addr{
+    margin-bottom: 5px;;
 }
